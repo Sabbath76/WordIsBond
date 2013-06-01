@@ -10,4 +10,13 @@
 
 @interface CRSSItem : NSObject
 
+//This method kicks off a parse of a URL at a specified string
+- (void)setup;
+
+@property (nonatomic, retain) NSString *title;
+@property (nonatomic, retain) NSString *description;
+@property (nonatomic, retain) NSString *imageURLString;
+@property (nonatomic, retain) NSString *mediaURLString;
+@property (nonatomic, retain) UIImage *appIcon;
+
 @end

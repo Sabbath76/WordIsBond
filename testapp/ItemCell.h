@@ -10,4 +10,8 @@
 
 @interface ItemCell : UITableViewCell
 
+@property (nonatomic, weak) IBOutlet UILabel *title;
+//@property (nonatomic, weak) IBOutlet UILabel *prepTimeLabel;
+@property (nonatomic, weak) IBOutlet UIImageView *imageView;
+
 @end

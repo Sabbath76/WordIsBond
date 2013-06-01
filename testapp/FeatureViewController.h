@@ -8,6 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import "RSSFeed.h"
+
+
 @interface FeatureViewController : UITableViewController
+
+@property (strong, nonatomic) id detailItem;
+
+- (void)setFeed:(RSSFeed *)feed;
+- (void)updateFeed;
 
 @end

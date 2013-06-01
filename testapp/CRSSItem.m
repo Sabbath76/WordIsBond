@@ -10,4 +10,106 @@
 
 @implementation CRSSItem
 
+@synthesize title, description, imageURLString, appIcon, mediaURLString;
+
+//- (void)dealloc
+//{
+//    [title release];
+//    [description release];
+    
+//    [super dealloc];
+//}
+
+- (NSString*) findProperty: (NSString *)search
+{
+    NSRange rangeOuter = [description rangeOfString:search];
+    if (rangeOuter.location != NSNotFound)
+    {
+        NSRange rangeToSearchWithin = NSMakeRange(rangeOuter.location, description.length - rangeOuter.location);
+        NSRange range = [description rangeOfString:@"src" options:0 range:rangeToSearchWithin];
+        if (range.location != NSNotFound)
+        {
+            int startPos = range.location+range.length;
+            NSString *subString = [description substringFromIndex:startPos];
+            NSString *urlString;
+            NSScanner *scanner = [NSScanner scannerWithString:subString];
+            [scanner scanUpToString:@"\"" intoString:NULL];
+            [scanner scanString:@"\"" intoString:NULL];
+            [scanner scanUpToString:@"\"" intoString:&urlString];
+            
+            return urlString;
+        }
+    }
+
+    return NULL;
+}
+
+- (void) setup
+{
+    imageURLString = [self findProperty:@"img"];
+    
+    NSString *media = [self findProperty:@"iframe"];
+    
+    if (media)
+    {
+        NSRange rangeOuter = [media rangeOfString:@"soundcloud"];
+        if (rangeOuter.location != NSNotFound)
+        {
+            NSRange rangeToSearchWithin = NSMakeRange(rangeOuter.location, media.length - rangeOuter.location);
+            NSRange range = [media rangeOfString:@"url" options:0 range:rangeToSearchWithin];
+            if (range.location != NSNotFound)
+            {
+                mediaURLString = [media substringFromIndex:range.location+4];
+                mediaURLString = [mediaURLString stringByReplacingOccurrencesOfString:@"%3A" withString:@":"];
+                mediaURLString = [mediaURLString stringByReplacingOccurrencesOfString:@"%2F" withString:@"/"];
+            }
+        }
+    }
+
+/*            //    			https://api.soundcloud.com/tracks/3100297/stream?client_id=YOUR_CLIENT_ID
+            _mediaSource = theWebView.replace("http://w.soundcloud.com/player/?url=", "");
+            _mediaSource = theWebView.replace("https://w.soundcloud.com/player/?url=", "");
+            _mediaSource = _mediaSource.replace("%3A", ":");
+            _mediaSource = _mediaSource.replace("%2F", "/");
+            
+            //    			int trackidx = _mediaSource.indexOf("tracks/");
+            //    			if (trackidx >= 0)
+            //    			{
+            //					_mediaSource = _mediaSource.substring(trackidx+7);
+            //    			}
+            
+            Integer cut = _mediaSource.indexOf('&');
+            if (cut >= 0)
+            {
+                _mediaSource = _mediaSource.substring(0, cut);
+            }
+            _mediaSource = _mediaSource + "/stream?client_id=YOUR_CLIENT_ID";
+            
+            _mediaType = EMediaType.Media_Audio;
+ */
+ /*       else if (theWebView.contains("bandcamp"))
+        {
+            int trackidx = theWebView.indexOf("track=");
+            int endpt = theWebView.indexOf("/", trackidx);
+            if ((trackidx >= 0) && (endpt >= 0))
+            {
+                String trackNumber = theWebView.substring(trackidx+6, endpt);
+                _mediaSource = String.format("http://popplers5.bandcamp.com/download/track?enc=mp3-128&id=%s&stream=1", trackNumber);
+                _mediaType = EMediaType.Media_Audio;
+            }
+            / *    			else
+             {
+             int albumidx = theWebView.indexOf("album=");
+             endpt = theWebView.indexOf("/", albumidx);
+             if ((albumidx >= 0) && (endpt >= 0))
+             {
+             String albumNumber = theWebView.substring(albumidx+6, endpt);
+             _mediaSource = String.format("http://popplers5.bandcamp.com/download/album?enc=mp3-128&id=%s&stream=1", albumNumber);
+             _mediaType = EMediaType.Media_Audio;
+             }
+             }
+             * /    		}   
+    }*/
+}
+
 @end

@@ -10,4 +10,9 @@
 
 @interface RSSFeed : NSObject
 
+@property (nonatomic, retain) NSMutableArray *items;
+@property (nonatomic, retain) NSMutableArray *features;
+
+- (void)handleLoadedApps:(NSArray *)loadedApps;
+
 @end
