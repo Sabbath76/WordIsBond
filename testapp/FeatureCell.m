@@ -10,7 +10,7 @@
 #import "CRSSItem.h"
 
 #import "DetailViewController.h"
-
+#import <QuartzCore/QuartzCore.h>
 
 @implementation FeatureCell
 
@@ -35,7 +35,8 @@
     NSLog(@"%@", NSStringFromCGRect(oldFrame));
     
 //    self.horizontalTableView.frame = oldFrame;
-    self.horizontalTableView.frame = (CGRect){ 0, 100, 320, 200};
+    horizontalTableView.frame = CGRectMake(0, 500,horizontalTableView.frame.size.width, horizontalTableView.frame.size.height);
+///    self.horizontalTableView.frame = (CGRect){ 0, 100, 320, 200};
     leftMostFeature = 0;
 //    self.horizontalTableView.frame = (CGRect){ 0, 0, 100, 320};
     
@@ -175,6 +176,8 @@
         CGAffineTransform rotateImage = CGAffineTransformMakeRotation(M_PI_2);
         imageView.transform = rotateImage;
         imageView.tag = 7;
+//        imageView.layer.masksToBounds = YES;
+//        imageView.layer.cornerRadius = 5.0;
         [cell addSubview:imageView];
     }
     if (needsText)
@@ -238,8 +241,20 @@
     }
 }
 
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([[segue identifier] isEqualToString:@"showDetail"]) {
+        NSIndexPath *indexPath = [self.horizontalTableView indexPathForSelectedRow];
+        CRSSItem *object = rssFeed.features[indexPath.row];
+        [[segue destinationViewController] setDetailItem:object];
+    }
+}
+
 - (void)setFrame:(CGRect)frame
 {
+    CGRect oldFrame = self.horizontalTableView.frame;
+    
     [super setFrame:frame];
 //    [horizontalTableView setFrame:self.bounds];
     
@@ -247,9 +262,11 @@
 
     
     NSLog(@"setFrame:%@", NSStringFromCGRect(self.horizontalTableView.frame));
+    NSLog(@"oldFrame:%@", NSStringFromCGRect(oldFrame));
+    NSLog(@"newFrame:%@", NSStringFromCGRect(frame));
     NSLog(@"%@", NSStringFromCGRect(self.bounds));
     
-    self.horizontalTableView.frame = (CGRect){ 0, 0, 320, 150};
+    self.horizontalTableView.frame = (CGRect){ 0, 0, frame.size.width, frame.size.height};
 //    self.horizontalTableView.frame = (CGRect){ 0, 0, 100, 320};
 }
 
