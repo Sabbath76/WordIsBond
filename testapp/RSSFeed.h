@@ -14,5 +14,6 @@
 @property (nonatomic, retain) NSMutableArray *features;
 
 - (void)handleLoadedApps:(NSArray *)loadedApps;
++ (RSSFeed *) getInstance;
 
 @end

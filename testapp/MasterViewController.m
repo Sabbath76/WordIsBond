@@ -14,11 +14,14 @@
 #import "RSSFeed.h"
 
 #import "FeatureCell.h"
+#import "UIToolbarDragger.h"
 
 #import "FeatureViewController.h"
 
 
 #import <MediaPlayer/MediaPlayer.h>
+
+
 
 @interface MasterViewController ()
 {
@@ -49,7 +52,7 @@ player.view.hidden = YES;
 
 @implementation MasterViewController
 
-@synthesize imageDownloadsInProgress;
+@synthesize imageDownloadsInProgress, toolbar;
 
 //- (void)viewDidLoad
 //{
@@ -69,7 +72,7 @@ player.view.hidden = YES;
     m_parser = [RSSParser alloc];
     self.imageDownloadsInProgress = [NSMutableDictionary dictionary];
     
-    _feed = [RSSFeed alloc];
+    _feed = [RSSFeed getInstance];
     
 //    m_featureCell = [FeatureCell alloc];
 //    m_featureCell.rssFeed = _feed;
@@ -149,6 +152,10 @@ player.view.hidden = YES;
     
     //FeatureCell *cell = [self.tableView cellForRowAtIndexPath:[iconDownloader.indexPathInTableView];
     [m_featureCell setNeedsDisplay];
+    
+    [[NSNotificationCenter defaultCenter]
+     postNotificationName:@"NewRSSFeed"
+     object:self];
 
 }
 
@@ -162,6 +169,7 @@ player.view.hidden = YES;
 //    self.navigationItem.rightBarButtonItem = addButton;
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
     
+    [self createToolbar];
  //   self.tableView.transform = CGAffineTransformMakeRotation(M_PI / -2.0); //Convert 90 degrees to radians
  //   self.tableView.frame = (CGRect){ 0, 0, 320, 200};
 
@@ -276,6 +284,26 @@ player.view.hidden = YES;
 
         return cell;
     }
+}
+
+- (void)createToolbar
+{
+    // Initialization code
+    UIBarButtonItem *spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
+    
+    UIToolbarDragger *EmailBtn = [[UIToolbarDragger alloc] initWithFrame:CGRectMake(0.0, 0.0, 44.0, 44.0)];
+    [EmailBtn setBackgroundImage:[UIImage imageNamed:@"audioplaying.png"] forState:UIControlStateNormal];
+    EmailBtn.showsTouchWhenHighlighted = YES;
+    
+    UIBarButtonItem *EmailBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:EmailBtn];
+    NSArray *buttons = [NSArray arrayWithObjects:spacer, EmailBarButtonItem, spacer, nil];
+    [self setToolbarItems:buttons];
+
+//    UIBarButtonItem *playItem = [[UIBarButtonItem alloc] initWithTitle:@"Play" style:UIBarButtonItemStyleBordered target:self action:@selector(goToChangeCategory:)];
+//    UIBarButtonItem *spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
+    
+//    NSArray *buttonItems = [NSArray arrayWithObjects:spacer, playItem, spacer, nil];
+//    [self setToolbarItems:buttonItems];
 }
 
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath

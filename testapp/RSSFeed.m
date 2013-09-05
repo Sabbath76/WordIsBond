@@ -29,4 +29,16 @@
     }
 }
 
++ (RSSFeed *) getInstance
+{
+    static RSSFeed *s_RSSFeed = NULL;
+    if (s_RSSFeed == NULL)
+    {
+        s_RSSFeed = [RSSFeed alloc];
+    }
+    
+    return s_RSSFeed;
+}
+
+
 @end

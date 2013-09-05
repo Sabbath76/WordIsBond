@@ -20,7 +20,7 @@
     // Set the background image for *all* UINavigationBars
     [[UINavigationBar appearance] setBackgroundImage:navBarImage
                                        forBarMetrics:UIBarMetricsDefault];
-
+    
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
