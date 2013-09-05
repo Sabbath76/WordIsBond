@@ -12,6 +12,9 @@
 		0E67D74517D5FBB300CFB7C5 /* WIBNavBar.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0E67D74417D5FBB300CFB7C5 /* WIBNavBar.jpg */; };
 		0E67D74717D600B800CFB7C5 /* WIBNavBar@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0E67D74617D600B800CFB7C5 /* WIBNavBar@2x.jpg */; };
 		0E67D74917D60BC600CFB7C5 /* featureCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0E67D74817D60BC600CFB7C5 /* featureCell.xib */; };
+		0E67D74C17D61DCE00CFB7C5 /* UIWIBToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E67D74B17D61DCE00CFB7C5 /* UIWIBToolbar.m */; };
+		0E67D74E17D64A0500CFB7C5 /* audioplaying.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E67D74D17D64A0500CFB7C5 /* audioplaying.png */; };
+		0E67D75117D64F2200CFB7C5 /* UIToolbarDragger.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E67D75017D64F2000CFB7C5 /* UIToolbarDragger.m */; };
 		0E98F61E1706E30F006E9857 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E98F61D1706E30F006E9857 /* UIKit.framework */; };
 		0E98F6201706E30F006E9857 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E98F61F1706E30F006E9857 /* Foundation.framework */; };
 		0E98F6221706E30F006E9857 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E98F6211706E30F006E9857 /* CoreGraphics.framework */; };
@@ -30,6 +33,15 @@
 		0E98F64A1706E310006E9857 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E98F61F1706E30F006E9857 /* Foundation.framework */; };
 		0E98F6521706E310006E9857 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0E98F6501706E310006E9857 /* InfoPlist.strings */; };
 		0E98F6551706E310006E9857 /* testappTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E98F6541706E310006E9857 /* testappTests.m */; };
+		0EBEA2A917D886C9001CE110 /* WiB_playMedia.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EBEA2A817D886C9001CE110 /* WiB_playMedia.png */; };
+		0EBEA2AF17D88AA9001CE110 /* WiB_playMedia@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EBEA2AD17D88AA9001CE110 /* WiB_playMedia@2x.png */; };
+		0EBEA2B217D894BC001CE110 /* ViewControllerRoot.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EBEA2B117D894BC001CE110 /* ViewControllerRoot.m */; };
+		0EBEA2B517D89538001CE110 /* ViewControllerMediaPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EBEA2B417D89538001CE110 /* ViewControllerMediaPlayer.m */; };
+		0EBEA2B817D8984B001CE110 /* WIB_mediabar.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EBEA2B617D8984B001CE110 /* WIB_mediabar.png */; };
+		0EBEA2B917D8984B001CE110 /* WIB_mediabar@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EBEA2B717D8984B001CE110 /* WIB_mediabar@2x.png */; };
+		0EBEA2BC17D8AB62001CE110 /* FastForward.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EBEA2BA17D8AB62001CE110 /* FastForward.png */; };
+		0EBEA2BD17D8AB62001CE110 /* Rewind.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EBEA2BB17D8AB62001CE110 /* Rewind.png */; };
+		0EBEA2BF17D8AC09001CE110 /* Banner_Display.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EBEA2BE17D8AC09001CE110 /* Banner_Display.png */; };
 		0ED1D2C317BFED27006FC6D4 /* CRSSItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ED1D2C217BFED27006FC6D4 /* CRSSItem.m */; };
 		0ED1D2CD17BFED3C006FC6D4 /* FeatureCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ED1D2C617BFED3C006FC6D4 /* FeatureCell.m */; };
 		0ED1D2CE17BFED3C006FC6D4 /* FeatureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ED1D2C817BFED3C006FC6D4 /* FeatureViewController.m */; };
@@ -56,6 +68,11 @@
 		0E67D74417D5FBB300CFB7C5 /* WIBNavBar.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = WIBNavBar.jpg; sourceTree = "<group>"; };
 		0E67D74617D600B800CFB7C5 /* WIBNavBar@2x.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "WIBNavBar@2x.jpg"; sourceTree = "<group>"; };
 		0E67D74817D60BC600CFB7C5 /* featureCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = featureCell.xib; sourceTree = "<group>"; };
+		0E67D74A17D61DCE00CFB7C5 /* UIWIBToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIWIBToolbar.h; sourceTree = "<group>"; };
+		0E67D74B17D61DCE00CFB7C5 /* UIWIBToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIWIBToolbar.m; sourceTree = "<group>"; };
+		0E67D74D17D64A0500CFB7C5 /* audioplaying.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = audioplaying.png; sourceTree = "<group>"; };
+		0E67D74F17D64F1E00CFB7C5 /* UIToolbarDragger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIToolbarDragger.h; sourceTree = "<group>"; };
+		0E67D75017D64F2000CFB7C5 /* UIToolbarDragger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIToolbarDragger.m; sourceTree = "<group>"; };
 		0E98F61A1706E30F006E9857 /* testapp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = testapp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E98F61D1706E30F006E9857 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		0E98F61F1706E30F006E9857 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -81,6 +98,17 @@
 		0E98F6511706E310006E9857 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		0E98F6531706E310006E9857 /* testappTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = testappTests.h; sourceTree = "<group>"; };
 		0E98F6541706E310006E9857 /* testappTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = testappTests.m; sourceTree = "<group>"; };
+		0EBEA2A817D886C9001CE110 /* WiB_playMedia.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = WiB_playMedia.png; sourceTree = "<group>"; };
+		0EBEA2AD17D88AA9001CE110 /* WiB_playMedia@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "WiB_playMedia@2x.png"; sourceTree = "<group>"; };
+		0EBEA2B017D894BC001CE110 /* ViewControllerRoot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewControllerRoot.h; sourceTree = "<group>"; };
+		0EBEA2B117D894BC001CE110 /* ViewControllerRoot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewControllerRoot.m; sourceTree = "<group>"; };
+		0EBEA2B317D89538001CE110 /* ViewControllerMediaPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewControllerMediaPlayer.h; sourceTree = "<group>"; };
+		0EBEA2B417D89538001CE110 /* ViewControllerMediaPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewControllerMediaPlayer.m; sourceTree = "<group>"; };
+		0EBEA2B617D8984B001CE110 /* WIB_mediabar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = WIB_mediabar.png; sourceTree = "<group>"; };
+		0EBEA2B717D8984B001CE110 /* WIB_mediabar@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "WIB_mediabar@2x.png"; sourceTree = "<group>"; };
+		0EBEA2BA17D8AB62001CE110 /* FastForward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FastForward.png; sourceTree = "<group>"; };
+		0EBEA2BB17D8AB62001CE110 /* Rewind.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Rewind.png; sourceTree = "<group>"; };
+		0EBEA2BE17D8AC09001CE110 /* Banner_Display.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Banner_Display.png; sourceTree = "<group>"; };
 		0ED1D2C217BFED27006FC6D4 /* CRSSItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRSSItem.m; sourceTree = "<group>"; };
 		0ED1D2C417BFED30006FC6D4 /* CRSSItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRSSItem.h; sourceTree = "<group>"; };
 		0ED1D2C517BFED3C006FC6D4 /* FeatureCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeatureCell.h; sourceTree = "<group>"; };
@@ -180,6 +208,14 @@
 				0E98F63E1706E30F006E9857 /* DetailViewController.h */,
 				0E98F63F1706E30F006E9857 /* DetailViewController.m */,
 				0E98F6241706E30F006E9857 /* Supporting Files */,
+				0E67D74A17D61DCE00CFB7C5 /* UIWIBToolbar.h */,
+				0E67D74B17D61DCE00CFB7C5 /* UIWIBToolbar.m */,
+				0E67D74F17D64F1E00CFB7C5 /* UIToolbarDragger.h */,
+				0E67D75017D64F2000CFB7C5 /* UIToolbarDragger.m */,
+				0EBEA2B017D894BC001CE110 /* ViewControllerRoot.h */,
+				0EBEA2B117D894BC001CE110 /* ViewControllerRoot.m */,
+				0EBEA2B317D89538001CE110 /* ViewControllerMediaPlayer.h */,
+				0EBEA2B417D89538001CE110 /* ViewControllerMediaPlayer.m */,
 			);
 			path = testapp;
 			sourceTree = "<group>";
@@ -187,6 +223,14 @@
 		0E98F6241706E30F006E9857 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				0EBEA2BE17D8AC09001CE110 /* Banner_Display.png */,
+				0EBEA2BA17D8AB62001CE110 /* FastForward.png */,
+				0EBEA2BB17D8AB62001CE110 /* Rewind.png */,
+				0EBEA2B617D8984B001CE110 /* WIB_mediabar.png */,
+				0EBEA2B717D8984B001CE110 /* WIB_mediabar@2x.png */,
+				0EBEA2AD17D88AA9001CE110 /* WiB_playMedia@2x.png */,
+				0EBEA2A817D886C9001CE110 /* WiB_playMedia.png */,
+				0E67D74D17D64A0500CFB7C5 /* audioplaying.png */,
 				0E67D74617D600B800CFB7C5 /* WIBNavBar@2x.jpg */,
 				0E67D74417D5FBB300CFB7C5 /* WIBNavBar.jpg */,
 				0E6241DF17D12C2A0038A9F6 /* cutaway.png */,
@@ -304,6 +348,14 @@
 				0E67D74517D5FBB300CFB7C5 /* WIBNavBar.jpg in Resources */,
 				0E67D74717D600B800CFB7C5 /* WIBNavBar@2x.jpg in Resources */,
 				0E67D74917D60BC600CFB7C5 /* featureCell.xib in Resources */,
+				0E67D74E17D64A0500CFB7C5 /* audioplaying.png in Resources */,
+				0EBEA2A917D886C9001CE110 /* WiB_playMedia.png in Resources */,
+				0EBEA2AF17D88AA9001CE110 /* WiB_playMedia@2x.png in Resources */,
+				0EBEA2B817D8984B001CE110 /* WIB_mediabar.png in Resources */,
+				0EBEA2B917D8984B001CE110 /* WIB_mediabar@2x.png in Resources */,
+				0EBEA2BC17D8AB62001CE110 /* FastForward.png in Resources */,
+				0EBEA2BD17D8AB62001CE110 /* Rewind.png in Resources */,
+				0EBEA2BF17D8AC09001CE110 /* Banner_Display.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -349,6 +401,10 @@
 				0ED1D2D017BFED3C006FC6D4 /* ItemCell.m in Sources */,
 				0ED1D2D717BFED4E006FC6D4 /* RSSFeed.m in Sources */,
 				0ED1D2D817BFED4E006FC6D4 /* RSSParser.m in Sources */,
+				0E67D74C17D61DCE00CFB7C5 /* UIWIBToolbar.m in Sources */,
+				0E67D75117D64F2200CFB7C5 /* UIToolbarDragger.m in Sources */,
+				0EBEA2B217D894BC001CE110 /* ViewControllerRoot.m in Sources */,
+				0EBEA2B517D89538001CE110 /* ViewControllerMediaPlayer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
