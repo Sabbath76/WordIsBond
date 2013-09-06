@@ -15,6 +15,9 @@
 		0E67D74C17D61DCE00CFB7C5 /* UIWIBToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E67D74B17D61DCE00CFB7C5 /* UIWIBToolbar.m */; };
 		0E67D74E17D64A0500CFB7C5 /* audioplaying.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E67D74D17D64A0500CFB7C5 /* audioplaying.png */; };
 		0E67D75117D64F2200CFB7C5 /* UIToolbarDragger.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E67D75017D64F2000CFB7C5 /* UIToolbarDragger.m */; };
+		0E73727517D9D15B00E7226E /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E73727417D9D15B00E7226E /* AVFoundation.framework */; };
+		0E73727717D9E36700E7226E /* MEDIUM_WIB_Loader.gif in Resources */ = {isa = PBXBuildFile; fileRef = 0E73727617D9E36700E7226E /* MEDIUM_WIB_Loader.gif */; };
+		0E73727917D9E83A00E7226E /* streaming.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E73727817D9E83A00E7226E /* streaming.png */; };
 		0E98F61E1706E30F006E9857 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E98F61D1706E30F006E9857 /* UIKit.framework */; };
 		0E98F6201706E30F006E9857 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E98F61F1706E30F006E9857 /* Foundation.framework */; };
 		0E98F6221706E30F006E9857 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E98F6211706E30F006E9857 /* CoreGraphics.framework */; };
@@ -73,6 +76,9 @@
 		0E67D74D17D64A0500CFB7C5 /* audioplaying.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = audioplaying.png; sourceTree = "<group>"; };
 		0E67D74F17D64F1E00CFB7C5 /* UIToolbarDragger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIToolbarDragger.h; sourceTree = "<group>"; };
 		0E67D75017D64F2000CFB7C5 /* UIToolbarDragger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIToolbarDragger.m; sourceTree = "<group>"; };
+		0E73727417D9D15B00E7226E /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		0E73727617D9E36700E7226E /* MEDIUM_WIB_Loader.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = MEDIUM_WIB_Loader.gif; sourceTree = "<group>"; };
+		0E73727817D9E83A00E7226E /* streaming.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = streaming.png; sourceTree = "<group>"; };
 		0E98F61A1706E30F006E9857 /* testapp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = testapp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E98F61D1706E30F006E9857 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		0E98F61F1706E30F006E9857 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -131,6 +137,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E73727517D9D15B00E7226E /* AVFoundation.framework in Frameworks */,
 				0E98F61E1706E30F006E9857 /* UIKit.framework in Frameworks */,
 				0E98F6201706E30F006E9857 /* Foundation.framework in Frameworks */,
 				0E98F6221706E30F006E9857 /* CoreGraphics.framework in Frameworks */,
@@ -153,6 +160,7 @@
 		0E98F6111706E30F006E9857 = {
 			isa = PBXGroup;
 			children = (
+				0E73727417D9D15B00E7226E /* AVFoundation.framework */,
 				0E98F6231706E30F006E9857 /* testapp */,
 				0E98F64D1706E310006E9857 /* testappTests */,
 				0E98F61C1706E30F006E9857 /* Frameworks */,
@@ -223,6 +231,8 @@
 		0E98F6241706E30F006E9857 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				0E73727817D9E83A00E7226E /* streaming.png */,
+				0E73727617D9E36700E7226E /* MEDIUM_WIB_Loader.gif */,
 				0EBEA2BE17D8AC09001CE110 /* Banner_Display.png */,
 				0EBEA2BA17D8AB62001CE110 /* FastForward.png */,
 				0EBEA2BB17D8AB62001CE110 /* Rewind.png */,
@@ -356,6 +366,8 @@
 				0EBEA2BC17D8AB62001CE110 /* FastForward.png in Resources */,
 				0EBEA2BD17D8AB62001CE110 /* Rewind.png in Resources */,
 				0EBEA2BF17D8AC09001CE110 /* Banner_Display.png in Resources */,
+				0E73727717D9E36700E7226E /* MEDIUM_WIB_Loader.gif in Resources */,
+				0E73727917D9E83A00E7226E /* streaming.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

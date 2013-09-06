@@ -11,6 +11,7 @@
 @implementation UIToolbarDragger
 {
     int bottomOffset;
+    int midOffset;
 }
 
 @synthesize owningView;
@@ -22,6 +23,7 @@
     if (self) {
         // Initialization code
         self->bottomOffset = 40;
+        self->midOffset = 120;
     }
     return self;
 }
@@ -32,6 +34,7 @@
     if (self) {
         // Initialization code
         self->bottomOffset = 40;
+        self->midOffset = 120;
     }
     return self;
   
@@ -93,6 +96,13 @@
                                         moveView.frame.size.width, moveView.frame.size.height);
             [UIView commitAnimations];
             
+        }
+        else if (moveView.frame.origin.y < (parentFrame.origin.y + (parentFrame.size.height * 0.75)))
+        {
+            [UIView beginAnimations:@"Dragging A DraggableView" context:nil];
+            moveView.frame = CGRectMake(moveView.frame.origin.x, parentFrame.size.height - midOffset,
+                                        moveView.frame.size.width, moveView.frame.size.height);
+            [UIView commitAnimations];
         }
         else
         {

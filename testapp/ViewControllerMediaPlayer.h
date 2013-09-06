@@ -9,9 +9,10 @@
 #import <UIKit/UIKit.h>
 
 #import "UIToolbarDragger.h"
+#import <AVFoundation/AVFoundation.h>
 
 
-@interface ViewControllerMediaPlayer : UIViewController
+@interface ViewControllerMediaPlayer : UIViewController <AVAudioPlayerDelegate>	
 
 @property (weak, nonatomic) IBOutlet UIToolbarDragger *toolbarDragger;
 @property (weak, nonatomic) IBOutlet UIImageView *currentImage;

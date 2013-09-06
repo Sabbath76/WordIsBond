@@ -52,6 +52,7 @@
     
     if (media)
     {
+//        https://api.soundcloud.com/tracks/3100297/stream?client_id=YOUR_CLIENT_ID
         NSRange rangeOuter = [media rangeOfString:@"soundcloud"];
         if (rangeOuter.location != NSNotFound)
         {
@@ -62,6 +63,7 @@
                 mediaURLString = [media substringFromIndex:range.location+4];
                 mediaURLString = [mediaURLString stringByReplacingOccurrencesOfString:@"%3A" withString:@":"];
                 mediaURLString = [mediaURLString stringByReplacingOccurrencesOfString:@"%2F" withString:@"/"];
+                mediaURLString = [mediaURLString stringByAppendingString:@"/stream?client_id=YOUR_CLIENT_ID"];
             }
         }
     }

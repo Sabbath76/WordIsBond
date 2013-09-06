@@ -293,6 +293,11 @@
                                     <constraint firstAttribute="height" constant="40" type="user" id="klb-aj-eI8"/>
                                 </constraints>
                             </imageView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" image="Default.png" translatesAutoresizingMaskIntoConstraints="NO" id="u1G-Uj-Och">
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="9kh-VO-0wb"/>
+                                </constraints>
+                            </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wae-Xn-452" customClass="UIToolbarDragger">
                                 <constraints>
                                     <constraint firstAttribute="width" constant="40" id="W3W-aX-ScK"/>
@@ -302,22 +307,21 @@
                                     <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <state key="selected" image="MEDIUM_WIB_Loader.gif"/>
                                 <state key="highlighted">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="togglePlay:" destination="jaJ-hr-n2n" eventType="touchUpInside" id="GHq-eE-kuC"/>
+                                </connections>
                             </button>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" image="Default.png" translatesAutoresizingMaskIntoConstraints="NO" id="u1G-Uj-Och">
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="100" id="9kh-VO-0wb"/>
-                                </constraints>
-                            </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IFB-zM-bsE">
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="fPN-CZ-9id"/>
                                     <constraint firstAttribute="width" constant="43" id="pxW-Xb-rv4"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                <state key="normal" title="Prev" image="Rewind.png">
+                                <state key="normal" image="Rewind.png">
                                     <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
@@ -333,7 +337,7 @@
                                     <constraint firstAttribute="width" constant="43" id="ul0-7J-2zl"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                <state key="normal" title="Next" image="FastForward.png">
+                                <state key="normal" image="FastForward.png">
                                     <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
@@ -344,17 +348,36 @@
                                     <action selector="onNext:" destination="jaJ-hr-n2n" eventType="touchUpInside" id="1b3-N4-Rbw"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LqT-Dd-gRg">
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="32" id="Df2-CO-lQ4"/>
+                                    <constraint firstAttribute="height" constant="32" id="hDY-5g-Dqs"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                <state key="normal" title="Button" image="streaming.png">
+                                    <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <state key="highlighted">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="toggleAutoPlay:" destination="jaJ-hr-n2n" eventType="touchUpInside" id="JMd-dc-uBj"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="IFB-zM-bsE" firstAttribute="centerY" secondItem="u1G-Uj-Och" secondAttribute="centerY" type="default" id="4Re-4y-mwP"/>
-                            <constraint firstItem="IFB-zM-bsE" firstAttribute="top" secondItem="Qtl-IF-989" secondAttribute="top" type="default" id="68k-dz-ngL"/>
+                            <constraint firstItem="Qtl-IF-989" firstAttribute="top" secondItem="9Ws-hf-gjA" secondAttribute="bottom" constant="8" symbolic="YES" type="default" id="21e-Xt-Nos"/>
+                            <constraint firstItem="LqT-Dd-gRg" firstAttribute="bottom" secondItem="u1G-Uj-Och" secondAttribute="bottom" type="default" id="21r-yr-U7W"/>
                             <constraint firstItem="jVv-f7-RqY" firstAttribute="bottom" secondItem="5m5-aF-d3p" secondAttribute="bottom" type="default" id="6T2-Eh-0Hj"/>
-                            <constraint firstItem="Qtl-IF-989" firstAttribute="bottom" secondItem="IFB-zM-bsE" secondAttribute="bottom" type="default" id="BQl-oP-3VJ"/>
+                            <constraint firstItem="IFB-zM-bsE" firstAttribute="top" secondItem="9Ws-hf-gjA" secondAttribute="bottom" constant="8" symbolic="YES" type="default" id="7vz-s3-Vg6"/>
                             <constraint firstItem="9Ws-hf-gjA" firstAttribute="top" secondItem="5m5-aF-d3p" secondAttribute="top" type="user" id="C8I-Hh-avL"/>
                             <constraint firstItem="9Ws-hf-gjA" firstAttribute="bottom" secondItem="Wae-Xn-452" secondAttribute="bottom" type="user" id="IVf-eh-Tij"/>
                             <constraint firstItem="9Ws-hf-gjA" firstAttribute="trailing" secondItem="5m5-aF-d3p" secondAttribute="trailing" type="user" id="MRv-ez-HPw"/>
+                            <constraint firstItem="IFB-zM-bsE" firstAttribute="bottom" secondItem="Qtl-IF-989" secondAttribute="bottom" type="default" id="SOW-z9-Pdq"/>
                             <constraint firstItem="9Ws-hf-gjA" firstAttribute="leading" secondItem="5m5-aF-d3p" secondAttribute="leading" type="user" id="VWn-MY-CvH"/>
+                            <constraint firstItem="LqT-Dd-gRg" firstAttribute="trailing" secondItem="5m5-aF-d3p" secondAttribute="trailing" type="default" id="daN-4q-xug"/>
                             <constraint firstItem="jVv-f7-RqY" firstAttribute="leading" secondItem="5m5-aF-d3p" secondAttribute="leading" type="default" id="eAe-pw-tJ6"/>
                             <constraint firstItem="u1G-Uj-Och" firstAttribute="leading" secondItem="5m5-aF-d3p" secondAttribute="leading" type="default" id="g5H-3N-I7H"/>
                             <constraint firstItem="jVv-f7-RqY" firstAttribute="trailing" secondItem="5m5-aF-d3p" secondAttribute="trailing" type="default" id="owp-1u-owZ"/>
@@ -379,12 +402,14 @@
     <resources>
         <image name="Default.png" width="320" height="480"/>
         <image name="FastForward.png" width="40" height="39"/>
+        <image name="MEDIUM_WIB_Loader.gif" width="52" height="52"/>
         <image name="Rewind.png" width="40" height="40"/>
         <image name="WIB_mediabar.png" width="320" height="38"/>
         <image name="WiB_playMedia.png" width="40" height="40"/>
         <image name="cutaway.png" width="58" height="92"/>
         <image name="ic_launcher.png" width="72" height="72"/>
         <image name="play_icon.png" width="65" height="68"/>
+        <image name="streaming.png" width="42" height="42"/>
     </resources>
     <classes>
         <class className="DetailViewController" superclassName="UIViewController">
@@ -422,7 +447,7 @@
             <source key="sourceIdentifier" type="project" relativePath="./Classes/ViewControllerMediaPlayer.h"/>
             <relationships>
                 <relationship kind="action" name="onNext:"/>
-                <relationship kind="action" name="onPrev:"/>
+                <relationship kind="action" name="toggleAutoPlay:"/>
                 <relationship kind="outlet" name="currentImage" candidateClass="UIImageView"/>
                 <relationship kind="outlet" name="toolbarDragger" candidateClass="UIToolbarDragger"/>
             </relationships>
