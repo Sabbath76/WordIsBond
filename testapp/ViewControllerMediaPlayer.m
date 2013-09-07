@@ -61,6 +61,10 @@
                                              selector:@selector(receiveNewRSSFeed:)
                                                  name:@"NewRSSFeed"
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(onIconLoaded:)
+                                                 name:@"IconLoaded"
+                                               object:nil];
     m_audioItems = [[NSMutableArray alloc] init];
 }
 
@@ -123,8 +127,21 @@
         currentImage.image = rssItem.appIcon;
         [self prepareMusic];
     }
-
 }
+
+
+- (void) onIconLoaded:(NSNotification *) notification
+{
+    CRSSItem *item = [[notification userInfo] valueForKey:@"item"];
+    if (m_audioItems.count > 0)
+    {
+        if (m_audioItems[currentItem] == item)
+        {
+            currentImage.image = item.appIcon;
+        }
+    }
+}
+
 - (IBAction)toggleAutoPlay:(id)sender
 {
     m_autoPlay = !m_autoPlay;
@@ -170,19 +187,22 @@
 
 - (IBAction)togglePlay:(id)sender
 {
-    if (m_audioPlayer)
+    if (toolbarDragger.isDragging == false)
     {
-        if ([m_audioPlayer isPlaying])
+        if (m_audioPlayer)
         {
-            [m_audioPlayer pause];
-            [toolbarDragger setSelected:FALSE];
-            m_isPlaying = false;
-        }
-        else
-        {
-            [m_audioPlayer play];
-            [toolbarDragger setSelected:TRUE];
-            m_isPlaying = true;
+            if ([m_audioPlayer isPlaying])
+            {
+                [m_audioPlayer pause];
+                [toolbarDragger setSelected:FALSE];
+                m_isPlaying = false;
+            }
+            else
+            {
+                [m_audioPlayer play];
+                [toolbarDragger setSelected:TRUE];
+                m_isPlaying = true;
+            }
         }
     }
 }

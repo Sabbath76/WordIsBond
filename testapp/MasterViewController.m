@@ -112,9 +112,8 @@ player.view.hidden = YES;
 }
 
 // called by our ImageDownloader when an icon is ready to be displayed
-- (void)appImageDidLoad:(NSIndexPath *)indexPath
+- (void)appImageDidLoad:(IconDownloader *)iconDownloader
 {
-    IconDownloader *iconDownloader = [imageDownloadsInProgress objectForKey:indexPath];
     if (iconDownloader != nil)
     {
         UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:iconDownloader.indexPathInTableView];
@@ -123,11 +122,12 @@ player.view.hidden = YES;
         UIImageView *imgView = (UIImageView *)[cell viewWithTag:2];
         imgView.image = iconDownloader.appRecord.appIcon;
 //        cell.imageView.image = iconDownloader.appRecord.appIcon;
-    }
+//    }
     
     // Remove the IconDownloader from the in progress list.
     // This will result in it being deallocated.
-    [imageDownloadsInProgress removeObjectForKey:indexPath];
+    [imageDownloadsInProgress removeObjectForKey:iconDownloader.indexPathInTableView];
+    }
 }
 
 // -------------------------------------------------------------------------------

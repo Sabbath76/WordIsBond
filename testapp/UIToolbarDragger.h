@@ -12,4 +12,6 @@
 
 @property (nonatomic, retain) UIView *owningView;
 
+- (bool)isDragging;
+
 @end

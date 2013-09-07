@@ -30,11 +30,13 @@
 
 - (void)startDownload;
 - (void)cancelDownload;
++ (bool)download:(CRSSItem *)item indexPath:(NSIndexPath *)indexPathInTableView delegate:(id<IconDownloaderDelegate>)delegate;
++ (void) removeDownload:(NSIndexPath *)indexPathInTableView;
 
 @end
 
 @protocol IconDownloaderDelegate
 
-- (void)appImageDidLoad:(NSIndexPath *)indexPath;
+- (void)appImageDidLoad:(IconDownloader *)iconDownloader;
 
 @end

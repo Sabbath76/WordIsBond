@@ -14,6 +14,10 @@
 
 
 @implementation IconDownloader
+{
+};
+
+static NSMutableDictionary *s_downloadingImages;
 
 @synthesize appRecord;
 @synthesize indexPathInTableView;
@@ -98,7 +102,42 @@
     self.imageConnection = nil;
     
     // call our delegate and tell it that our icon is ready for display
-    [delegate appImageDidLoad:self.indexPathInTableView];
+    [delegate appImageDidLoad:self];
+    
+    NSDictionary *userInfo = [NSDictionary dictionaryWithObject:self.appRecord forKey:@"item"];
+
+    [[NSNotificationCenter defaultCenter]
+     postNotificationName:@"IconLoaded"
+     object:self
+     userInfo:userInfo];
+
 }
+
++ (bool)download:(CRSSItem *)item indexPath:(NSIndexPath *)indexPathInTableView delegate:(id<IconDownloaderDelegate>)delegate
+{
+    if ( s_downloadingImages == NULL)
+    {
+        s_downloadingImages = [NSMutableDictionary alloc];
+    }
+    
+    IconDownloader *iconDownloader = [s_downloadingImages objectForKey:indexPathInTableView];
+    if (iconDownloader == nil)
+    {
+        iconDownloader = [[IconDownloader alloc] init];
+        iconDownloader.appRecord = item;
+        iconDownloader.indexPathInTableView = indexPathInTableView;
+        iconDownloader.delegate = delegate;
+        [s_downloadingImages setObject:iconDownloader forKey:indexPathInTableView];
+        [iconDownloader startDownload];
+    }
+
+    return true;
+}
+
++ (void) removeDownload:(NSIndexPath *)indexPathInTableView
+{
+    [s_downloadingImages removeObjectForKey:indexPathInTableView];
+}
+
 
 @end

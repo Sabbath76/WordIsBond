@@ -8,10 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import "RSSFeed.h"
+#import "IconDownloader.h"
 
 @class DetailViewController;
 
-@interface FeatureCell : UITableViewCell <UITableViewDataSource, UITableViewDelegate>
+@interface FeatureCell : UITableViewCell <UITableViewDataSource, UITableViewDelegate, IconDownloaderDelegate>
 {
     int leftMostFeature;
 }

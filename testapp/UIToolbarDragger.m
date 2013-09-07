@@ -12,6 +12,7 @@
 {
     int bottomOffset;
     int midOffset;
+    bool isDragging;
 }
 
 @synthesize owningView;
@@ -22,8 +23,9 @@
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
-        self->bottomOffset = 40;
-        self->midOffset = 120;
+        self->bottomOffset = 39;
+        self->midOffset = 139;
+        self->isDragging = false;
     }
     return self;
 }
@@ -33,8 +35,9 @@
     self = [super initWithCoder:aDecoder];
     if (self) {
         // Initialization code
-        self->bottomOffset = 40;
-        self->midOffset = 120;
+        self->bottomOffset = 39;
+        self->midOffset = 139;
+        self->isDragging = false;
     }
     return self;
   
@@ -48,6 +51,11 @@
     // Drawing code
 }
 */
+
+- (bool)isDragging
+{
+    return isDragging;
+}
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
@@ -76,6 +84,11 @@
 //        self.frame = CGRectMake(self.frame.origin.x, location.y,
 //                                self.frame.size.width, self.frame.size.height);
 //        [UIView commitAnimations];
+        
+        if (location.y != prevLocation.y)
+        {
+            isDragging = true;
+        }
     }
    
 }
@@ -83,7 +96,9 @@
 - (void) touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
     [super touchesEnded:touches withEvent:event];
-    
+
+    isDragging = false;
+
     UIView *moveView = self.superview.superview;
     if (moveView)
     {

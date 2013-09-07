@@ -8,6 +8,7 @@
 
 #import "FeatureCell.h"
 #import "CRSSItem.h"
+#import "IconDownloader.h"
 
 #import "DetailViewController.h"
 #import <QuartzCore/QuartzCore.h>
@@ -41,6 +42,12 @@
 //    self.horizontalTableView.frame = (CGRect){ 0, 0, 100, 320};
     
 ///    [self setTranslatesAutoresizingMaskIntoConstraints:FALSE];
+    
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(onIconLoaded:)
+//                                                 name:@"IconLoaded"
+//                                               object:nil];
+
 }
 
 //- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
@@ -176,6 +183,10 @@
         CGAffineTransform rotateImage = CGAffineTransformMakeRotation(M_PI_2);
         imageView.transform = rotateImage;
         imageView.tag = 7;
+        if (rssItem.appIcon == NULL)
+        {
+            [IconDownloader download:rssItem indexPath:indexPath delegate:self];
+        }
 //        imageView.layer.masksToBounds = YES;
 //        imageView.layer.cornerRadius = 5.0;
         [cell addSubview:imageView];
@@ -275,6 +286,26 @@
     // Update the view.
     [horizontalTableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
 //    [horizontalTableView reloadData];
+}
+
+// called by our ImageDownloader when an icon is ready to be displayed
+- (void)appImageDidLoad:(IconDownloader *)iconDownloader
+{
+    if (iconDownloader != nil)
+    {
+        UITableViewCell *cell = [self.horizontalTableView cellForRowAtIndexPath:iconDownloader.indexPathInTableView];
+        
+        // Display the newly loaded image
+        UIImageView *imgView = (UIImageView *)[cell viewWithTag:2];
+        imgView.image = iconDownloader.appRecord.appIcon;
+        //        cell.imageView.image = iconDownloader.appRecord.appIcon;
+
+        [IconDownloader removeDownload:iconDownloader.indexPathInTableView];
+    }
+    
+    // Remove the IconDownloader from the in progress list.
+    // This will result in it being deallocated.
+//    [imageDownloadsInProgress removeObjectForKey:indexPath];
 }
 
 @end
