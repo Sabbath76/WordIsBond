@@ -105,6 +105,7 @@ player.view.hidden = YES;
         iconDownloader.appRecord = appRecord;
         iconDownloader.indexPathInTableView = indexPath;
         iconDownloader.delegate = self;
+        iconDownloader.isItem = true;
         [imageDownloadsInProgress setObject:iconDownloader forKey:indexPath];
         [iconDownloader startDownload];
 //        [iconDownloader release];
@@ -114,7 +115,7 @@ player.view.hidden = YES;
 // called by our ImageDownloader when an icon is ready to be displayed
 - (void)appImageDidLoad:(IconDownloader *)iconDownloader
 {
-    if (iconDownloader != nil)
+    if ((iconDownloader != nil) && iconDownloader.isItem)
     {
         UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:iconDownloader.indexPathInTableView];
         
@@ -221,7 +222,7 @@ player.view.hidden = YES;
 {
     if (indexPath.section == 0)
     {
-        FeatureCell *cell = [tableView dequeueReusableCellWithIdentifier:@"FeatureCell" forIndexPath:indexPath];
+        FeatureCell *cell = [tableView dequeueReusableCellWithIdentifier:@"FeatureCellScroll" forIndexPath:indexPath];
 
 //        if (m_featureCell == NULL)
 //        {
@@ -254,6 +255,8 @@ player.view.hidden = YES;
         
         [cell setNeedsDisplay];
         
+        [cell updateFeed];
+        
         m_featureCell = cell;
         
         return cell;
@@ -267,7 +270,7 @@ player.view.hidden = YES;
         UILabel *label = (UILabel *)[cell viewWithTag:1];
         label.text = [object title];
         //cell.textLabel.text = [object title];
-        if (object.appIcon)
+//        if (object.appIcon)
         {
             UIImageView *imgView = (UIImageView *)[cell viewWithTag:2];
             imgView.image = object.appIcon;
@@ -310,7 +313,7 @@ player.view.hidden = YES;
 {
     if (indexPath.section == 0)
     {
-        return 160;
+        return 140;
     }
     else
     {
@@ -359,11 +362,14 @@ player.view.hidden = YES;
         NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
         for (NSIndexPath *indexPath in visiblePaths)
         {
-            CRSSItem *appRecord = _feed.items[indexPath.row];
-            
-            if (!appRecord.appIcon) // avoid the app icon download if the app already has an icon
+            if (indexPath.section == 1)
             {
-                [self startIconDownload:appRecord forIndexPath:indexPath];
+                CRSSItem *appRecord = _feed.items[indexPath.row];
+            
+                if (!appRecord.appIcon) // avoid the app icon download if the app already has an icon
+                {
+                    [self startIconDownload:appRecord forIndexPath:indexPath];
+                }
             }
         }
     }

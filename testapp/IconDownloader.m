@@ -21,6 +21,7 @@ static NSMutableDictionary *s_downloadingImages;
 
 @synthesize appRecord;
 @synthesize indexPathInTableView;
+@synthesize isItem;
 @synthesize delegate;
 @synthesize activeDownload;
 @synthesize imageConnection;
@@ -113,7 +114,7 @@ static NSMutableDictionary *s_downloadingImages;
 
 }
 
-+ (bool)download:(CRSSItem *)item indexPath:(NSIndexPath *)indexPathInTableView delegate:(id<IconDownloaderDelegate>)delegate
++ (bool)download:(CRSSItem *)item indexPath:(NSIndexPath *)indexPathInTableView delegate:(id<IconDownloaderDelegate>)delegate isItem:(Boolean)isItem
 {
     if ( s_downloadingImages == NULL)
     {
@@ -127,6 +128,7 @@ static NSMutableDictionary *s_downloadingImages;
         iconDownloader.appRecord = item;
         iconDownloader.indexPathInTableView = indexPathInTableView;
         iconDownloader.delegate = delegate;
+        iconDownloader.isItem = isItem;
         [s_downloadingImages setObject:iconDownloader forKey:indexPathInTableView];
         [iconDownloader startDownload];
     }

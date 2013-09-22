@@ -14,12 +14,14 @@
 {
 //    UINavigationController *navigationController = (UINavigationController *)self.window.rootViewController; // this line is probably already there for you
 //    [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"WIBNavBar.jpg"] forBarMetrics:UIBarMetricsDefault]; //this adds the image
-    UIImage *navBarImage = [[UIImage imageNamed:@"WIBNavBar.jpg"]
-                                resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
+//    UIImage *navBarImage = [[UIImage imageNamed:@"WIBNavBar.jpg"]
+//                                resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 20, 0)];
   
     // Set the background image for *all* UINavigationBars
-    [[UINavigationBar appearance] setBackgroundImage:navBarImage
-                                       forBarMetrics:UIBarMetricsDefault];
+//    [[UINavigationBar appearance] setBackgroundImage:navBarImage
+//                                       forBarMetrics:UIBarMetricsDefault];
+//    [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"WIBNavBar.jpg"]
+//                                           forBarMetrics:UIBarMetricsDefault];
     
 }
 

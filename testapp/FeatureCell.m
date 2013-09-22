@@ -11,11 +11,12 @@
 #import "IconDownloader.h"
 
 #import "DetailViewController.h"
+#import "FeatureController.h"
 #import <QuartzCore/QuartzCore.h>
 
 @implementation FeatureCell
 
-@synthesize horizontalTableView, rssFeed, detailViewController;
+@synthesize horizontalTableView, scrollView, rssFeed, detailViewController;
 @synthesize imageView1, imageView2, imageView3, imageView4;
 
 //- (void)viewDidLoad
@@ -29,6 +30,12 @@
 - (void)awakeFromNib
 {
     // Initialization code
+    CGRect oldFrameSelf = self.frame;
+    // Initialization code
+    CGRect oldFrameScroll = self.scrollView.frame;
+
+    // Initialization code
+/*
     CGRect oldFrame = self.horizontalTableView.frame;
     self.horizontalTableView.transform = CGAffineTransformMakeRotation(M_PI/-2);
    
@@ -37,8 +44,23 @@
     
 //    self.horizontalTableView.frame = oldFrame;
     horizontalTableView.frame = CGRectMake(0, 500,horizontalTableView.frame.size.width, horizontalTableView.frame.size.height);
-///    self.horizontalTableView.frame = (CGRect){ 0, 100, 320, 200};
+*/
+    ///    self.horizontalTableView.frame = (CGRect){ 0, 100, 320, 200};
     leftMostFeature = 0;
+    
+    scrollView.delegate = self;
+    
+    currentPage = [[FeatureController alloc] initWithNibName:@"featureCell" bundle:nil];
+	nextPage = [[FeatureController alloc] initWithNibName:@"featureCell" bundle:nil];
+
+	[scrollView addSubview:currentPage.view];
+	[scrollView addSubview:nextPage.view];
+    
+    rssFeed = [RSSFeed getInstance];
+    [self layoutIfNeeded];
+    [self updateFeed];
+
+    
 //    self.horizontalTableView.frame = (CGRect){ 0, 0, 100, 320};
     
 ///    [self setTranslatesAutoresizingMaskIntoConstraints:FALSE];
@@ -49,6 +71,15 @@
 //                                               object:nil];
 
 }
+
+- (void) viewDidAppear
+{
+    [self updateFeed];
+ 
+}
+
+
+
 
 //- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 //{
@@ -113,6 +144,7 @@
 
     return rssFeed.features.count;
 }
+
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"Cell";
@@ -185,7 +217,7 @@
         imageView.tag = 7;
         if (rssItem.appIcon == NULL)
         {
-            [IconDownloader download:rssItem indexPath:indexPath delegate:self];
+            [IconDownloader download:rssItem indexPath:indexPath delegate:self isItem:false];
         }
 //        imageView.layer.masksToBounds = YES;
 //        imageView.layer.cornerRadius = 5.0;
@@ -220,22 +252,22 @@
         if (self.imageView1 != NULL)
         {
             CRSSItem *rssItem1 = rssFeed.features[leftMostFeature];
-            self.imageView1.image = rssItem1.appIcon;
+            [imageView1 setImage:rssItem1.appIcon forState:UIControlStateNormal];
         }
         if (self.imageView2 != NULL)
         {
             CRSSItem *rssItem2 = rssFeed.features[leftMostFeature+1];
-            self.imageView2.image = rssItem2.appIcon;
+            [imageView2 setImage:rssItem2.appIcon forState:UIControlStateNormal];
         }
         if (self.imageView3 != NULL)
         {
             CRSSItem *rssItem3 = rssFeed.features[leftMostFeature+2];
-            self.imageView3.image = rssItem3.appIcon;
+            [imageView3 setImage:rssItem3.appIcon forState:UIControlStateNormal];
         }
         if (self.imageView4 != NULL)
         {
             CRSSItem *rssItem4 = rssFeed.features[leftMostFeature+3];
-            self.imageView4.image = rssItem4.appIcon;
+            [imageView4 setImage:rssItem4.appIcon forState:UIControlStateNormal];
         }
     }
     
@@ -252,6 +284,16 @@
     }
 }
 
+- (IBAction)onFeature:(id)sender
+{
+    int index = leftMostFeature+[sender tag];
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+    [horizontalTableView scrollToRowAtIndexPath:indexPath
+                          atScrollPosition:UITableViewScrollPositionTop
+                                  animated:YES];
+    
+    [scrollView scrollRectToVisible:CGRectMake(scrollView.frame.size.width*index, 0, scrollView.frame.size.width , scrollView.frame.size.height) animated:YES];
+}
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
@@ -262,7 +304,7 @@
     }
 }
 
-- (void)setFrame:(CGRect)frame
+/*- (void)setFrame:(CGRect)frame
 {
     CGRect oldFrame = self.horizontalTableView.frame;
     
@@ -279,19 +321,90 @@
     
     self.horizontalTableView.frame = (CGRect){ 0, 0, frame.size.width, frame.size.height};
 //    self.horizontalTableView.frame = (CGRect){ 0, 0, 100, 320};
-}
+ }*/
 
 - (void)updateFeed
 {
     // Update the view.
     [horizontalTableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
 //    [horizontalTableView reloadData];
+
+    scrollView.contentSize =
+    CGSizeMake(
+               scrollView.frame.size.width * rssFeed.features.count,
+               scrollView.frame.size.height);
+	scrollView.contentOffset = CGPointMake(0, 0);
+    
+	[self applyNewIndex:0 pageController:currentPage];
+	[self applyNewIndex:1 pageController:nextPage];
 }
+
+
+- (void)applyNewIndex:(NSInteger)newIndex pageController:(FeatureController *)pageController
+{
+	NSInteger pageCount = rssFeed.features.count;
+	BOOL outOfBounds = newIndex >= pageCount || newIndex < 0;
+    
+	if (!outOfBounds)
+	{
+		CGRect pageFrame = pageController.view.frame;
+		pageFrame.origin.y = 0;
+		pageFrame.origin.x = scrollView.frame.size.width * newIndex;
+		pageController.view.frame = pageFrame;
+	}
+	else
+	{
+		CGRect pageFrame = pageController.view.frame;
+		pageFrame.origin.y = scrollView.frame.size.height;
+		pageController.view.frame = pageFrame;
+	}
+    
+	pageController.pageIndex = newIndex;
+        
+    int maxFeatures = rssFeed.features.count;
+    int newleftmost = leftMostFeature;
+    if (leftMostFeature <= newIndex)
+    {
+        newleftmost = MAX(newIndex-1, 0);
+        newleftmost = MIN(maxFeatures - 4, newleftmost);
+    }
+    else if (leftMostFeature >= newIndex)
+    {
+        newleftmost = MAX(newIndex-2, 0);
+        newleftmost = MIN(maxFeatures - 4, newleftmost);
+    }
+    if (newleftmost != leftMostFeature)
+    {
+        leftMostFeature = newleftmost;
+        if (self.imageView1 != NULL)
+        {
+            CRSSItem *rssItem1 = rssFeed.features[leftMostFeature];
+            [imageView1 setImage:rssItem1.appIcon forState:UIControlStateNormal];
+        }
+        if (self.imageView2 != NULL)
+        {
+            CRSSItem *rssItem2 = rssFeed.features[leftMostFeature+1];
+            [imageView2 setImage:rssItem2.appIcon forState:UIControlStateNormal];
+        }
+        if (self.imageView3 != NULL)
+        {
+            CRSSItem *rssItem3 = rssFeed.features[leftMostFeature+2];
+            [imageView3 setImage:rssItem3.appIcon forState:UIControlStateNormal];
+        }
+        if (self.imageView4 != NULL)
+        {
+            CRSSItem *rssItem4 = rssFeed.features[leftMostFeature+3];
+            [imageView4 setImage:rssItem4.appIcon forState:UIControlStateNormal];
+        }
+    }
+
+}
+
 
 // called by our ImageDownloader when an icon is ready to be displayed
 - (void)appImageDidLoad:(IconDownloader *)iconDownloader
 {
-    if (iconDownloader != nil)
+    if ((iconDownloader != nil) && !iconDownloader.isItem)
     {
         UITableViewCell *cell = [self.horizontalTableView cellForRowAtIndexPath:iconDownloader.indexPathInTableView];
         
@@ -306,6 +419,71 @@
     // Remove the IconDownloader from the in progress list.
     // This will result in it being deallocated.
 //    [imageDownloadsInProgress removeObjectForKey:indexPath];
+}
+
+
+- (void)scrollViewDidScroll:(UIScrollView *)sender
+{
+    CGFloat pageWidth = scrollView.frame.size.width;
+    float fractionalPage = scrollView.contentOffset.x / pageWidth;
+	
+	NSInteger lowerNumber = floor(fractionalPage);
+	NSInteger upperNumber = lowerNumber + 1;
+	
+	if (lowerNumber == currentPage.pageIndex)
+	{
+		if (upperNumber != nextPage.pageIndex)
+		{
+			[self applyNewIndex:upperNumber pageController:nextPage];
+		}
+	}
+	else if (upperNumber == currentPage.pageIndex)
+	{
+		if (lowerNumber != nextPage.pageIndex)
+		{
+			[self applyNewIndex:lowerNumber pageController:nextPage];
+		}
+	}
+	else
+	{
+		if (lowerNumber == nextPage.pageIndex)
+		{
+			[self applyNewIndex:upperNumber pageController:currentPage];
+		}
+		else if (upperNumber == nextPage.pageIndex)
+		{
+			[self applyNewIndex:lowerNumber pageController:currentPage];
+		}
+		else
+		{
+			[self applyNewIndex:lowerNumber pageController:currentPage];
+			[self applyNewIndex:upperNumber pageController:nextPage];
+		}
+	}
+	
+	[currentPage updateTextViews:NO];
+	[nextPage updateTextViews:NO];
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)newScrollView
+{
+    CGFloat pageWidth = scrollView.frame.size.width;
+    float fractionalPage = scrollView.contentOffset.x / pageWidth;
+	NSInteger nearestNumber = lround(fractionalPage);
+    
+	if (currentPage.pageIndex != nearestNumber)
+	{
+		FeatureController *swapController = currentPage;
+		currentPage = nextPage;
+		nextPage = swapController;
+	}
+    
+	[currentPage updateTextViews:YES];
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)newScrollView
+{
+	[self scrollViewDidEndScrollingAnimation:newScrollView];
 }
 
 @end

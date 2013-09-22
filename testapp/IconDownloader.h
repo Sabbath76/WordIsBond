@@ -16,6 +16,7 @@
     CRSSItem *appRecord;
     NSIndexPath *indexPathInTableView;
     id <IconDownloaderDelegate> delegate;
+    Boolean isItem;
     
     NSMutableData *activeDownload;
     NSURLConnection *imageConnection;
@@ -23,6 +24,7 @@
 
 @property (nonatomic, retain) CRSSItem *appRecord;
 @property (nonatomic, retain) NSIndexPath *indexPathInTableView;
+@property (nonatomic, readwrite) Boolean isItem;
 @property (nonatomic, retain) id <IconDownloaderDelegate> delegate;
 
 @property (nonatomic, retain) NSMutableData *activeDownload;
@@ -30,7 +32,7 @@
 
 - (void)startDownload;
 - (void)cancelDownload;
-+ (bool)download:(CRSSItem *)item indexPath:(NSIndexPath *)indexPathInTableView delegate:(id<IconDownloaderDelegate>)delegate;
++ (bool)download:(CRSSItem *)item indexPath:(NSIndexPath *)indexPathInTableView delegate:(id<IconDownloaderDelegate>)delegate isItem:(Boolean)isItem;
 + (void) removeDownload:(NSIndexPath *)indexPathInTableView;
 
 @end

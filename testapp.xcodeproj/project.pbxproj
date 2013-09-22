@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0E0A673117EEEFD700E5918A /* WIBNavBarMenu.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E0A672F17EEEFD700E5918A /* WIBNavBarMenu.png */; };
+		0E0A673217EEEFD700E5918A /* WIBNavBarMenu@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E0A673017EEEFD700E5918A /* WIBNavBarMenu@2x.png */; };
+		0E0A673417EEF9C400E5918A /* Bond_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E0A673317EEF9C400E5918A /* Bond_logo.png */; };
+		0E0A673617EEFABD00E5918A /* Bond_logo132.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E0A673517EEFABD00E5918A /* Bond_logo132.png */; };
+		0E0A673817EEFBD800E5918A /* Bond_logo132@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E0A673717EEFBD800E5918A /* Bond_logo132@2x.png */; };
+		0E0A673B17EF010400E5918A /* postIconText.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E0A673917EF010400E5918A /* postIconText.png */; };
+		0E0A673C17EF010400E5918A /* postIconText@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E0A673A17EF010400E5918A /* postIconText@2x.png */; };
 		0E6241DE17D12AAF0038A9F6 /* yellowButton@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E6241DD17D12AAF0038A9F6 /* yellowButton@2x.png */; };
 		0E6241E017D12C2A0038A9F6 /* cutaway.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E6241DF17D12C2A0038A9F6 /* cutaway.png */; };
 		0E67D74517D5FBB300CFB7C5 /* WIBNavBar.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0E67D74417D5FBB300CFB7C5 /* WIBNavBar.jpg */; };
@@ -54,6 +61,7 @@
 		0ED1D2D717BFED4E006FC6D4 /* RSSFeed.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ED1D2D317BFED4E006FC6D4 /* RSSFeed.m */; };
 		0ED1D2D817BFED4E006FC6D4 /* RSSParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ED1D2D517BFED4E006FC6D4 /* RSSParser.m */; };
 		0ED77FC317DB855C001923B2 /* Plus_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 0ED77FC217DB855C001923B2 /* Plus_button.png */; };
+		0EE620D417EB89B000D11B3B /* FeatureController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EE620D317EB89B000D11B3B /* FeatureController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +75,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0E0A672F17EEEFD700E5918A /* WIBNavBarMenu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = WIBNavBarMenu.png; sourceTree = "<group>"; };
+		0E0A673017EEEFD700E5918A /* WIBNavBarMenu@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "WIBNavBarMenu@2x.png"; sourceTree = "<group>"; };
+		0E0A673317EEF9C400E5918A /* Bond_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Bond_logo.png; sourceTree = "<group>"; };
+		0E0A673517EEFABD00E5918A /* Bond_logo132.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Bond_logo132.png; sourceTree = "<group>"; };
+		0E0A673717EEFBD800E5918A /* Bond_logo132@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Bond_logo132@2x.png"; sourceTree = "<group>"; };
+		0E0A673917EF010400E5918A /* postIconText.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = postIconText.png; sourceTree = "<group>"; };
+		0E0A673A17EF010400E5918A /* postIconText@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "postIconText@2x.png"; sourceTree = "<group>"; };
 		0E6241DD17D12AAF0038A9F6 /* yellowButton@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "yellowButton@2x.png"; sourceTree = "<group>"; };
 		0E6241DF17D12C2A0038A9F6 /* cutaway.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cutaway.png; sourceTree = "<group>"; };
 		0E67D74417D5FBB300CFB7C5 /* WIBNavBar.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = WIBNavBar.jpg; sourceTree = "<group>"; };
@@ -132,6 +147,8 @@
 		0ED1D2D417BFED4E006FC6D4 /* RSSParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RSSParser.h; sourceTree = "<group>"; };
 		0ED1D2D517BFED4E006FC6D4 /* RSSParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RSSParser.m; sourceTree = "<group>"; };
 		0ED77FC217DB855C001923B2 /* Plus_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Plus_button.png; sourceTree = "<group>"; };
+		0EE620D217EB89B000D11B3B /* FeatureController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeatureController.h; sourceTree = "<group>"; };
+		0EE620D317EB89B000D11B3B /* FeatureController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeatureController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -193,6 +210,8 @@
 		0E98F6231706E30F006E9857 /* testapp */ = {
 			isa = PBXGroup;
 			children = (
+				0EE620D217EB89B000D11B3B /* FeatureController.h */,
+				0EE620D317EB89B000D11B3B /* FeatureController.m */,
 				0ED1D2D117BFED4E006FC6D4 /* play_icon.png */,
 				0ED1D2D217BFED4E006FC6D4 /* RSSFeed.h */,
 				0ED1D2D317BFED4E006FC6D4 /* RSSFeed.m */,
@@ -233,6 +252,13 @@
 		0E98F6241706E30F006E9857 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				0E0A673917EF010400E5918A /* postIconText.png */,
+				0E0A673A17EF010400E5918A /* postIconText@2x.png */,
+				0E0A673717EEFBD800E5918A /* Bond_logo132@2x.png */,
+				0E0A673517EEFABD00E5918A /* Bond_logo132.png */,
+				0E0A673317EEF9C400E5918A /* Bond_logo.png */,
+				0E0A672F17EEEFD700E5918A /* WIBNavBarMenu.png */,
+				0E0A673017EEEFD700E5918A /* WIBNavBarMenu@2x.png */,
 				0ED77FC217DB855C001923B2 /* Plus_button.png */,
 				0E73727817D9E83A00E7226E /* streaming.png */,
 				0E73727617D9E36700E7226E /* MEDIUM_WIB_Loader.gif */,
@@ -349,23 +375,30 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E0A673617EEFABD00E5918A /* Bond_logo132.png in Resources */,
 				0E98F6281706E30F006E9857 /* InfoPlist.strings in Resources */,
 				0E98F6301706E30F006E9857 /* Default.png in Resources */,
+				0E0A673B17EF010400E5918A /* postIconText.png in Resources */,
 				0E98F6321706E30F006E9857 /* Default@2x.png in Resources */,
+				0E0A673417EEF9C400E5918A /* Bond_logo.png in Resources */,
 				0E98F6341706E30F006E9857 /* Default-568h@2x.png in Resources */,
 				0E98F6371706E30F006E9857 /* MainStoryboard_iPhone.storyboard in Resources */,
+				0E0A673117EEEFD700E5918A /* WIBNavBarMenu.png in Resources */,
 				0E98F63A1706E30F006E9857 /* MainStoryboard_iPad.storyboard in Resources */,
 				0ED1D2D617BFED4E006FC6D4 /* play_icon.png in Resources */,
 				0E6241DE17D12AAF0038A9F6 /* yellowButton@2x.png in Resources */,
 				0E6241E017D12C2A0038A9F6 /* cutaway.png in Resources */,
 				0E67D74517D5FBB300CFB7C5 /* WIBNavBar.jpg in Resources */,
+				0E0A673817EEFBD800E5918A /* Bond_logo132@2x.png in Resources */,
 				0E67D74717D600B800CFB7C5 /* WIBNavBar@2x.jpg in Resources */,
 				0E67D74917D60BC600CFB7C5 /* featureCell.xib in Resources */,
 				0E67D74E17D64A0500CFB7C5 /* audioplaying.png in Resources */,
+				0E0A673C17EF010400E5918A /* postIconText@2x.png in Resources */,
 				0EBEA2A917D886C9001CE110 /* WiB_playMedia.png in Resources */,
 				0EBEA2AF17D88AA9001CE110 /* WiB_playMedia@2x.png in Resources */,
 				0EBEA2B817D8984B001CE110 /* WIB_mediabar.png in Resources */,
 				0EBEA2B917D8984B001CE110 /* WIB_mediabar@2x.png in Resources */,
+				0E0A673217EEEFD700E5918A /* WIBNavBarMenu@2x.png in Resources */,
 				0EBEA2BC17D8AB62001CE110 /* FastForward.png in Resources */,
 				0EBEA2BD17D8AB62001CE110 /* Rewind.png in Resources */,
 				0EBEA2BF17D8AC09001CE110 /* Banner_Display.png in Resources */,
@@ -421,6 +454,7 @@
 				0E67D75117D64F2200CFB7C5 /* UIToolbarDragger.m in Sources */,
 				0EBEA2B217D894BC001CE110 /* ViewControllerRoot.m in Sources */,
 				0EBEA2B517D89538001CE110 /* ViewControllerMediaPlayer.m in Sources */,
+				0EE620D417EB89B000D11B3B /* FeatureController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -542,6 +576,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "testapp/testapp-Prefix.pch";
 				INFOPLIST_FILE = "testapp/testapp-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -553,6 +588,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "testapp/testapp-Prefix.pch";
 				INFOPLIST_FILE = "testapp/testapp-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
