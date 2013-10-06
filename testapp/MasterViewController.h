@@ -16,5 +16,6 @@
 @property (strong, nonatomic) DetailViewController *detailViewController;
 @property (nonatomic, retain) NSMutableDictionary *imageDownloadsInProgress;
 @property (weak, nonatomic) IBOutlet UIToolbar *toolbar;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *btnMenu;
 
 @end

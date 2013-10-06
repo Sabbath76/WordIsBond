@@ -32,7 +32,22 @@ const CGFloat TEXT_VIEW_PADDING = 50.0;
 	if (pageIndex >= 0 && pageIndex < feed.features.count)
 	{
         CRSSItem *rssItem = feed.features[pageIndex];
+        
+//        UIImage *mask = [UIImage imageNamed:@"banner_mask"];
+//        CGImageRef imgRef = [rssItem.appIcon CGImage];
+//        CGImageRef maskRef = [mask CGImage];
+//        CGImageRef actualMask = CGImageMaskCreate(CGImageGetWidth(maskRef),
+//                                                  CGImageGetHeight(maskRef),
+//                                                  CGImageGetBitsPerComponent(maskRef),
+//                                                  CGImageGetBitsPerPixel(maskRef),
+//                                                  CGImageGetBytesPerRow(maskRef),
+//                                                  CGImageGetDataProvider(maskRef), NULL, false);
+//        CGImageRef masked = CGImageCreateWithMask(imgRef, actualMask);
+        
+//        imageView.image = [UIImage imageWithCGImage:masked];
+        
         imageView.image = rssItem.appIcon;
+        label.text = rssItem.title;
 /*		NSDictionary *pageData =
 			[[DataSource sharedDataSource] dataForPage:pageIndex];
 		label.text = [pageData objectForKey:@"pageName"];

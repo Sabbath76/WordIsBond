@@ -43,6 +43,15 @@
     return self;
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    CGRect rect = self.view.superview.frame;
+    rect.origin.y = rect.size.height - 39;
+    self.view.superview.frame = rect;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -66,6 +75,10 @@
                                                  name:@"IconLoaded"
                                                object:nil];
     m_audioItems = [[NSMutableArray alloc] init];
+    
+//    CGRect rect = self.view.superview.frame;
+//    rect.origin.y = rect.size.height - 39;
+//    self.view.superview.frame = rect;
 }
 
 - (void)didReceiveMemoryWarning

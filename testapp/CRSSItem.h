@@ -8,6 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
+typedef enum
+{
+    Text, Audio, Video
+} PostType;
+
 @interface CRSSItem : NSObject
 
 //This method kicks off a parse of a URL at a specified string
@@ -18,5 +23,6 @@
 @property (nonatomic, retain) NSString *imageURLString;
 @property (nonatomic, retain) NSString *mediaURLString;
 @property (nonatomic, retain) UIImage *appIcon;
+@property (nonatomic, readonly) PostType type;
 
 @end

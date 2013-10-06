@@ -62,6 +62,29 @@ player.view.hidden = YES;
 //    self.tableView.rowHeight = kCustomRowHeight;
 //}
 
+
+- (IBAction)onMenu:(id)sender
+{
+    CGRect destination = self.navigationController.view.superview.superview.frame;
+
+    if (destination.origin.x > 0)
+    {
+        destination.origin.x = 0;
+        _btnMenu.tintColor = [UIColor blackColor];
+        
+    }
+    else
+    {
+        destination.origin.x = destination.size.width - 50;
+        _btnMenu.tintColor = [UIColor whiteColor];
+    }
+    
+    [UIView beginAnimations:@"Bringing up menu" context:nil];
+    self.navigationController.view.superview.superview.frame = destination;
+    [UIView commitAnimations];
+ 
+}
+
 - (void)awakeFromNib
 {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
@@ -82,6 +105,7 @@ player.view.hidden = YES;
     // create the queue to run our ParseOperation
 //    self.m_queue = [[[NSOperationQueue alloc] init] autorelease];
     
+//    NSString *url = @"http://www.thewordisbond.com/feed/mobile/?format=xml";
     NSString *url = @"http://www.thewordisbond.com/feed/tablet/?format=xml";
     [m_parser startParse:url completionHandler:^(NSArray *appList) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -93,7 +117,13 @@ player.view.hidden = YES;
 //        self.m_queue = nil;   // we are finished with the queue and our ParseOperation
     }];
     
+    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bond_logo132"]];
+    
     [super awakeFromNib];
+    
+    self.navigationController.view.layer.shadowOffset = CGSizeMake(-15, 10);
+    self.navigationController.view.layer.shadowRadius = 5;
+    self.navigationController.view.layer.shadowOpacity = 0.5;
 }
 
 - (void)startIconDownload:(CRSSItem *)appRecord forIndexPath:(NSIndexPath *)indexPath
@@ -170,7 +200,7 @@ player.view.hidden = YES;
 //    self.navigationItem.rightBarButtonItem = addButton;
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
     
-    [self createToolbar];
+///    [self createToolbar];
  //   self.tableView.transform = CGAffineTransformMakeRotation(M_PI / -2.0); //Convert 90 degrees to radians
  //   self.tableView.frame = (CGRect){ 0, 0, 320, 200};
 
@@ -235,6 +265,16 @@ player.view.hidden = YES;
         cell.horizontalTableView.delegate = cell;
         cell.horizontalTableView.dataSource = cell;
         
+        CALayer *_maskingLayer = [CALayer layer];
+        _maskingLayer.frame = cell.bounds;
+        UIImage *stretchableImage = (id)[UIImage imageNamed:@"corner"];
+        
+        _maskingLayer.contents = (id)stretchableImage.CGImage;
+        _maskingLayer.contentsScale = [UIScreen mainScreen].scale; //<-needed for the retina display, otherwise our image will not be scaled properly
+        _maskingLayer.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
+
+        [cell.layer setMask:_maskingLayer];
+        
 //        printf cell.frame.size
         
 //        UITableView *featureTable = (UITableView *)[m_featureCell viewWithTag:1];
@@ -267,19 +307,57 @@ player.view.hidden = YES;
         
         CRSSItem *object = _feed.items[indexPath.row];
         
+        CALayer *_maskingLayer = [CALayer layer];
+        _maskingLayer.frame = cell.bounds;
+        UIImage *stretchableImage = (id)[UIImage imageNamed:@"corner"];
+        
+        _maskingLayer.contents = (id)stretchableImage.CGImage;
+        _maskingLayer.contentsScale = [UIScreen mainScreen].scale; //<-needed for the retina display, otherwise our image will not be scaled properly
+        _maskingLayer.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
+        
+        [cell.layer setMask:_maskingLayer];
+
         UILabel *label = (UILabel *)[cell viewWithTag:1];
         label.text = [object title];
         //cell.textLabel.text = [object title];
 //        if (object.appIcon)
         {
             UIImageView *imgView = (UIImageView *)[cell viewWithTag:2];
+            UIImageView *imgIcon = (UIImageView *)[cell viewWithTag:3];
+/*            CGRect frame = cell.frame;
+ 
+            UIImage *mask = [UIImage imageNamed:@"post_mask"];
+            CGImageRef imgRef = [object.appIcon CGImage];
+            CGImageRef maskRef = [mask CGImage];
+            CGImageRef actualMask = CGImageMaskCreate(CGImageGetWidth(maskRef),
+                                                      CGImageGetHeight(maskRef),
+                                                      CGImageGetBitsPerComponent(maskRef),
+                                                      CGImageGetBitsPerPixel(maskRef),
+                                                      CGImageGetBytesPerRow(maskRef),
+                                                      CGImageGetDataProvider(maskRef), NULL, false);
+            CGImageRef masked = CGImageCreateWithMask(imgRef, actualMask);
+
+            imgView.image = [UIImage imageWithCGImage:masked];//object.appIcon;*/
             imgView.image = object.appIcon;
+
+            switch (object.type)
+            {
+                case Audio:
+                    imgIcon.image = [UIImage imageNamed:@"post_type_aud"];
+                    break;
+                case Video:
+                    imgIcon.image = [UIImage imageNamed:@"post_type_vid"];
+                    break;
+                case Text:
+                    imgIcon.image = [UIImage imageNamed:@"post_type_text"];
+                    break;
+            }
         }
-        UIButton *mediaButton = (UIButton *)[cell viewWithTag:3];
-        if (mediaButton)
-        {
-            [mediaButton setHidden:(object.mediaURLString == NULL)];
-        }
+//        UIButton *mediaButton = (UIButton *)[cell viewWithTag:3];
+//        if (mediaButton)
+//        {
+//            [mediaButton setHidden:(object.mediaURLString == NULL)];
+//        }
         
  ///       cell.transform = CGAffineTransformMakeRotation(-M_PI / -2.0); //Convert 90 degrees to radians
 //        cell.frame = (CGRect){ 0, 0, 320, 200};
@@ -313,7 +391,7 @@ player.view.hidden = YES;
 {
     if (indexPath.section == 0)
     {
-        return 140;
+        return 183;
     }
     else
     {

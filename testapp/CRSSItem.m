@@ -12,14 +12,6 @@
 
 @synthesize title, description, imageURLString, appIcon, mediaURLString;
 
-//- (void)dealloc
-//{
-//    [title release];
-//    [description release];
-    
-//    [super dealloc];
-//}
-
 - (NSString*) findProperty: (NSString *)search
 {
     NSRange rangeOuter = [description rangeOfString:search];
@@ -64,7 +56,13 @@
                 mediaURLString = [mediaURLString stringByReplacingOccurrencesOfString:@"%3A" withString:@":"];
                 mediaURLString = [mediaURLString stringByReplacingOccurrencesOfString:@"%2F" withString:@"/"];
                 mediaURLString = [mediaURLString stringByAppendingString:@"/stream?client_id=YOUR_CLIENT_ID"];
+                
+                _type = Audio;
             }
+        }
+        else if ([media rangeOfString:@"youtube"].location != NSNotFound)
+        {
+            _type = Video;
         }
     }
 

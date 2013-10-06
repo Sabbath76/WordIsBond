@@ -60,6 +60,36 @@
     [self layoutIfNeeded];
     [self updateFeed];
 
+    UIImage *stretchableImage = (id)[UIImage imageNamed:@"cornerfull"];
+
+    CALayer *_maskingLayer1 = [CALayer layer];
+    CALayer *_maskingLayer2 = [CALayer layer];
+    CALayer *_maskingLayer3 = [CALayer layer];
+    CALayer *_maskingLayer4 = [CALayer layer];
+    
+    _maskingLayer1.frame = imageView1.bounds;
+    _maskingLayer1.contents = (id)stretchableImage.CGImage;
+    _maskingLayer1.contentsScale = [UIScreen mainScreen].scale; //<-needed for the retina display, otherwise our image will not be scaled properly
+    _maskingLayer1.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
+
+    _maskingLayer2.frame = imageView2.bounds;
+    _maskingLayer2.contents = (id)stretchableImage.CGImage;
+    _maskingLayer2.contentsScale = [UIScreen mainScreen].scale; //<-needed for the retina display, otherwise our image will not be scaled properly
+    _maskingLayer2.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
+    _maskingLayer3.frame = imageView3.bounds;
+    _maskingLayer3.contents = (id)stretchableImage.CGImage;
+    _maskingLayer3.contentsScale = [UIScreen mainScreen].scale; //<-needed for the retina display, otherwise our image will not be scaled properly
+    _maskingLayer3.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
+    _maskingLayer4.frame = imageView4.bounds;
+    _maskingLayer4.contents = (id)stretchableImage.CGImage;
+    _maskingLayer4.contentsScale = [UIScreen mainScreen].scale; //<-needed for the retina display, otherwise our image will not be scaled properly
+    _maskingLayer4.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
+
+    [imageView1.layer setMask:_maskingLayer1];
+    [imageView2.layer setMask:_maskingLayer2];
+    [imageView3.layer setMask:_maskingLayer3];
+    [imageView4.layer setMask:_maskingLayer4];
+
     
 //    self.horizontalTableView.frame = (CGRect){ 0, 0, 100, 320};
     
