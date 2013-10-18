@@ -42,6 +42,10 @@
         self.title = [self.detailItem title];
         
         
+        if ([self.detailItem requiresDownload])
+        {
+            [self.detailItem requestFullFeed:self];
+        }
         if (_webView)
         {
             [_webView loadHTMLString:[self.detailItem description] baseURL:nil];
@@ -77,5 +81,17 @@
     [self.navigationItem setLeftBarButtonItem:nil animated:YES];
     self.masterPopoverController = nil;
 }
+
+- (void)fullPostDidLoad:(CRSSItem *)post
+{
+    if (post == self.detailItem)
+    {
+        if (_webView)
+        {
+            [_webView loadHTMLString:[self.detailItem description] baseURL:nil];
+        }
+    }
+}
+
 
 @end

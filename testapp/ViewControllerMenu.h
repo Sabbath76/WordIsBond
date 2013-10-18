@@ -8,6 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewControllerMenu : UIViewController
+@interface ViewControllerMenu : UIViewController <UISearchBarDelegate>
+
+@property (weak, nonatomic) IBOutlet UISwitch *filterAudio;
+@property (weak, nonatomic) IBOutlet UISwitch *filterVideo;
+@property (weak, nonatomic) IBOutlet UISwitch *filterText;
 
 @end

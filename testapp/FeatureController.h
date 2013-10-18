@@ -13,17 +13,19 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "IconDownloader.h"
 
-@interface FeatureController : UIViewController
+@interface FeatureController : UIViewController <IconDownloaderDelegate>
 {
 	NSInteger pageIndex;
 	BOOL textViewNeedsUpdate;
 	IBOutlet UILabel *label;
 	IBOutlet UITextView *textView;
-    IBOutlet UIImageView *imageView;
+//    IBOutlet UIImageView *imageView;
 }
 
 @property NSInteger pageIndex;
+@property (weak, nonatomic) IBOutlet UIImageView *imageView;
 
 - (void)updateTextViews:(BOOL)force;
 

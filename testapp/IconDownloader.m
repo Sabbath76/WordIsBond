@@ -15,14 +15,17 @@
 
 @implementation IconDownloader
 {
+    NSMutableArray *delegateList;
 };
 
-static NSMutableDictionary *s_downloadingImages;
+static NSMutableDictionary *s_downloadingImages = NULL;
+static NSMutableDictionary *s_downloadingImagesByID = NULL;
 
 @synthesize appRecord;
 @synthesize indexPathInTableView;
 @synthesize isItem;
-@synthesize delegate;
+@synthesize postID;
+//@synthesize delegate;
 @synthesize activeDownload;
 @synthesize imageConnection;
 
@@ -101,16 +104,22 @@ static NSMutableDictionary *s_downloadingImages;
     
     // Release the connection now that it's finished
     self.imageConnection = nil;
-    
-    // call our delegate and tell it that our icon is ready for display
-    [delegate appImageDidLoad:self];
-    
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObject:self.appRecord forKey:@"item"];
 
-    [[NSNotificationCenter defaultCenter]
-     postNotificationName:@"IconLoaded"
-     object:self
-     userInfo:userInfo];
+    for (id <IconDownloaderDelegate> delegateItem in delegateList)
+    {
+        [delegateItem appImageDidLoad:self];
+    }
+//    @property (nonatomic, retain) id <IconDownloaderDelegate> delegate;
+
+    // call our delegate and tell it that our icon is ready for display
+//    [delegate appImageDidLoad:self];
+    
+//    NSDictionary *userInfo = [NSDictionary dictionaryWithObject:self.appRecord forKey:@"item"];
+
+//    [[NSNotificationCenter defaultCenter]
+//     postNotificationName:@"IconLoaded"
+//     object:self
+//     userInfo:userInfo];
 
 }
 
@@ -127,12 +136,45 @@ static NSMutableDictionary *s_downloadingImages;
         iconDownloader = [[IconDownloader alloc] init];
         iconDownloader.appRecord = item;
         iconDownloader.indexPathInTableView = indexPathInTableView;
-        iconDownloader.delegate = delegate;
+        iconDownloader->delegateList = [[NSMutableArray alloc] init];
+        [iconDownloader->delegateList addObject:delegate];
         iconDownloader.isItem = isItem;
         [s_downloadingImages setObject:iconDownloader forKey:indexPathInTableView];
         [iconDownloader startDownload];
     }
+    else
+    {
+        [iconDownloader->delegateList addObject:delegate];
+        
+    }
 
+    return true;
+}
+
++ (bool)download:(CRSSItem *)item delegate:(id<IconDownloaderDelegate>)delegate
+{
+    if ( s_downloadingImagesByID == NULL)
+    {
+        s_downloadingImagesByID = [[NSMutableDictionary alloc] init];
+    }
+    
+    NSNumber *numPostID = [NSNumber numberWithInt:item.postID];
+    IconDownloader *iconDownloader = [s_downloadingImagesByID objectForKey:numPostID];
+    if (iconDownloader == nil)
+    {
+        iconDownloader = [[IconDownloader alloc] init];
+        iconDownloader.appRecord = item;
+        iconDownloader->delegateList = [[NSMutableArray alloc] init];
+        [iconDownloader->delegateList addObject:delegate];
+        iconDownloader->postID = item.postID;
+        [s_downloadingImagesByID setObject:iconDownloader forKey:numPostID];
+        [iconDownloader startDownload];
+    }
+    else
+    {
+        [iconDownloader->delegateList addObject:delegate];
+    }
+    
     return true;
 }
 

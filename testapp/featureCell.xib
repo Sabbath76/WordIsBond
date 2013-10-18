@@ -7,7 +7,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="FeatureController">
             <connections>
-                <outlet property="imageView" destination="3" id="13"/>
+                <outlet property="imageView" destination="3" id="TsM-5q-wjN"/>
                 <outlet property="label" destination="3jl-Tj-3TR" id="23s-ar-tyj"/>
                 <outlet property="view" destination="1" id="12"/>
             </connections>

@@ -21,30 +21,31 @@
 
 #import <MediaPlayer/MediaPlayer.h>
 
+typedef enum
+{
+    LoadNewer,
+    Features,
+    Posts,
+    LoadOlder,
+    Total_Sections
+} ESection;
 
+const int SectionSize[Total_Sections] =
+{
+    30, 183, 80, 30
+};
 
 @interface MasterViewController ()
 {
     RSSFeed *_feed;
-//    NSMutableArray *_objects;
+
     RSSParser *m_parser;
     
     FeatureCell *m_featureCell;
     
     FeatureViewController *m_featuresController;
-
-    MPMoviePlayerController *m_player;
-//    NSOperationQueue        *m_queue;
 }
 
-/*
-MPMoviePlayerController *player = [[MPMoviePlayerController alloc] initWithContentURL:    [NSURL URLWithString:@"YOUR URL"]];
-player.movieSourceType = MPMovieSourceTypeStreaming;
-player.view.hidden = YES;
-[self.view addSubview:player.view];
-[player prepareToPlay];
-[player play];
-*/
 
 - (void)startIconDownload:(CRSSItem *)appRecord forIndexPath:(NSIndexPath *)indexPath;    // thequeue to run our "ParseOperation"
 
@@ -53,15 +54,6 @@ player.view.hidden = YES;
 @implementation MasterViewController
 
 @synthesize imageDownloadsInProgress, toolbar;
-
-//- (void)viewDidLoad
-//{
-//    [super viewDidLoad];
-//
-//    self.imageDownloadsInProgress = [NSMutableDictionary dictionary];
-//    self.tableView.rowHeight = kCustomRowHeight;
-//}
-
 
 - (IBAction)onMenu:(id)sender
 {
@@ -104,31 +96,41 @@ player.view.hidden = YES;
     
     // create the queue to run our ParseOperation
 //    self.m_queue = [[[NSOperationQueue alloc] init] autorelease];
+
+    //--- JSON Only
+    [_feed LoadFeed];
     
+    //--- RSS Feed
 //    NSString *url = @"http://www.thewordisbond.com/feed/mobile/?format=xml";
-    NSString *url = @"http://www.thewordisbond.com/feed/tablet/?format=xml";
+/*    NSString *url = @"http://www.thewordisbond.com/feed/tablet/?format=xml";
     [m_parser startParse:url completionHandler:^(NSArray *appList) {
         dispatch_async(dispatch_get_main_queue(), ^{
             
             [self handleLoadedApps:appList];
             
         });
-        
+ 
 //        self.m_queue = nil;   // we are finished with the queue and our ParseOperation
-    }];
+    }];*/
     
-    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bond_logo132"]];
+    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"top_banner_logo"]];
     
     [super awakeFromNib];
     
     self.navigationController.view.layer.shadowOffset = CGSizeMake(-15, 10);
     self.navigationController.view.layer.shadowRadius = 5;
     self.navigationController.view.layer.shadowOpacity = 0.5;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(receiveNewRSSFeed:)
+                                                 name:@"NewRSSFeed"
+                                               object:nil];
 }
 
 - (void)startIconDownload:(CRSSItem *)appRecord forIndexPath:(NSIndexPath *)indexPath
 {
-    IconDownloader *iconDownloader = [imageDownloadsInProgress objectForKey:indexPath];
+    [IconDownloader download:appRecord delegate:self];
+/*    IconDownloader *iconDownloader = [imageDownloadsInProgress objectForKey:indexPath];
     if (iconDownloader == nil)
     {
         iconDownloader = [[IconDownloader alloc] init];
@@ -139,25 +141,40 @@ player.view.hidden = YES;
         [imageDownloadsInProgress setObject:iconDownloader forKey:indexPath];
         [iconDownloader startDownload];
 //        [iconDownloader release];
-    }
+    }*/
 }
 
 // called by our ImageDownloader when an icon is ready to be displayed
 - (void)appImageDidLoad:(IconDownloader *)iconDownloader
 {
-    if ((iconDownloader != nil) && iconDownloader.isItem)
+    if (iconDownloader != nil)
     {
-        UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:iconDownloader.indexPathInTableView];
+        NSArray *visibleRows = [self.tableView indexPathsForVisibleRows];
+        for (NSIndexPath *indexPath in visibleRows)
+        {
+            if (indexPath.section == Posts)
+            {
+            if (((CRSSItem *)_feed.items[indexPath.row]).postID == iconDownloader.postID)
+            {
+                UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+                UIImageView *imgView = (UIImageView *)[cell viewWithTag:2];
+                imgView.image = iconDownloader.appRecord.appIcon;
+
+                break;
+            }
+            }
+        }
+//        UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:iconDownloader.indexPathInTableView];
         
         // Display the newly loaded image
-        UIImageView *imgView = (UIImageView *)[cell viewWithTag:2];
-        imgView.image = iconDownloader.appRecord.appIcon;
+//        UIImageView *imgView = (UIImageView *)[cell viewWithTag:2];
+//        imgView.image = iconDownloader.appRecord.appIcon;
 //        cell.imageView.image = iconDownloader.appRecord.appIcon;
 //    }
     
     // Remove the IconDownloader from the in progress list.
     // This will result in it being deallocated.
-    [imageDownloadsInProgress removeObjectForKey:iconDownloader.indexPathInTableView];
+//    [imageDownloadsInProgress removeObjectForKey:iconDownloader.indexPathInTableView];
     }
 }
 
@@ -166,43 +183,31 @@ player.view.hidden = YES;
 // -------------------------------------------------------------------------------
 - (void)handleLoadedApps:(NSArray *)loadedApps
 {
-//    [self.appRecords addObjectsFromArray:loadedApps];
-    
     [_feed handleLoadedApps:loadedApps];
-//    _objects = [[NSMutableArray alloc] init];
-//    for (CRSSItem *item in loadedApps)
-//    {
-//        [_objects insertObject:item atIndex:0];
-//    }
-    
-    // tell our table view to reload its data, now that parsing has completed
-    [self.tableView reloadData];
-    [self loadImagesForOnscreenRows];
-//    [m_featuresController updateFeed];
-//    [m_featureCell updateFeed];
-    
-    //FeatureCell *cell = [self.tableView cellForRowAtIndexPath:[iconDownloader.indexPathInTableView];
-    [m_featureCell setNeedsDisplay];
     
     [[NSNotificationCenter defaultCenter]
      postNotificationName:@"NewRSSFeed"
      object:self];
 
+
+}
+
+- (void) receiveNewRSSFeed:(NSNotification *) notification
+{
+    // tell our table view to reload its data, now that parsing has completed
+    [self.tableView reloadData];
+    [self loadImagesForOnscreenRows];
+
+    [m_featureCell setNeedsDisplay];
+    [m_featureCell updateFeed];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-//    self.navigationItem.leftBarButtonItem = self.editButtonItem;
 
-//    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemPlay target:self action:@selector(insertNewObject:)];
-//    self.navigationItem.rightBarButtonItem = addButton;
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
-    
-///    [self createToolbar];
- //   self.tableView.transform = CGAffineTransformMakeRotation(M_PI / -2.0); //Convert 90 degrees to radians
- //   self.tableView.frame = (CGRect){ 0, 0, 320, 200};
 
 }
 
@@ -212,139 +217,128 @@ player.view.hidden = YES;
     // Dispose of any resources that can be recreated.
 }
 
-//- (void)insertNewObject:(id)sender
-//{
-//    if (!_objects) {
-//        _objects = [[NSMutableArray alloc] init];
-//    }
-//    [_objects insertObject:[NSDate date] atIndex:0];
-//    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-//    [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-//}
-
 #pragma mark - Table View
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 2;
+    return Total_Sections;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (section == 0)
+    int numPages = [_feed GetNumPages];
+    int page = [_feed GetPage];
+
+    switch (section)
     {
-        if (_feed.features.count > 0)
-        {
-            return 1;
-        }
-        else
-        {
+        case LoadNewer:
+            if (page > 0)
+                return 1;
+            else
+                return 0;
+            break;
+        case Features:
+            if (_feed.features.count > 0)
+                return 1;
+            else
+                return 0;
+            break;
+        case Posts:
+            return _feed.items.count;
+            break;
+        case LoadOlder:
+            if (page+1 < numPages)
+                return 1;
+            else
+                return 0;
+            break;
+        default:
             return 0;
-        }
-    }
-    else
-    {
-        return _feed.items.count;
+            break;
+            
     }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == 0)
+    int numPages = [_feed GetNumPages];
+    int page = [_feed GetPage];
+
+    switch (indexPath.section)
     {
-        FeatureCell *cell = [tableView dequeueReusableCellWithIdentifier:@"FeatureCellScroll" forIndexPath:indexPath];
-
-//        if (m_featureCell == NULL)
-//        {
-//            m_featureCell = [[FeatureCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"FeatureCell"];
-//        }
-
-        cell.rssFeed = _feed;
-        cell.detailViewController = _detailViewController;
-        
-        cell.horizontalTableView.delegate = cell;
-        cell.horizontalTableView.dataSource = cell;
-        
-        CALayer *_maskingLayer = [CALayer layer];
-        _maskingLayer.frame = cell.bounds;
-        UIImage *stretchableImage = (id)[UIImage imageNamed:@"corner"];
-        
-        _maskingLayer.contents = (id)stretchableImage.CGImage;
-        _maskingLayer.contentsScale = [UIScreen mainScreen].scale; //<-needed for the retina display, otherwise our image will not be scaled properly
-        _maskingLayer.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
-
-        [cell.layer setMask:_maskingLayer];
-        
-//        printf cell.frame.size
-        
-//        UITableView *featureTable = (UITableView *)[m_featureCell viewWithTag:1];
-
-//        CGRect frame = cell.horizontalTableView.frame;
-////        cell.horizontalTableView.transform = CGAffineTransformMakeRotation(M_PI / -2.0); //Convert 90 degrees to radians
-/////        cell.horizontalTableView.frame = (CGRect){ 0, 0, 320, 200};
-//        cell.horizontalTableView.frame = frame;
-        
-        NSLog(@"MakeFeatureCell%@", NSStringFromCGRect(cell.frame));
-        NSLog(@"%@", NSStringFromCGRect(cell.horizontalTableView.frame));
-
-//        featureTable.delegate = m_featuresController;
-//        featureTable.dataSource = m_featuresController;
-//        CGRect frame = featureTable.frame;
-//        featureTable.transform = CGAffineTransformRotate(stressTblView.transform, M_PI / 2);
-//        featureTable.frame = frame;
-        
-        [cell setNeedsDisplay];
-        
-        [cell updateFeed];
-        
-        m_featureCell = cell;
-        
-        return cell;
-    }
-    else
-    {
-        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ItemCell" forIndexPath:indexPath];
-        
-        CRSSItem *object = _feed.items[indexPath.row];
-        
-        CALayer *_maskingLayer = [CALayer layer];
-        _maskingLayer.frame = cell.bounds;
-        UIImage *stretchableImage = (id)[UIImage imageNamed:@"corner"];
-        
-        _maskingLayer.contents = (id)stretchableImage.CGImage;
-        _maskingLayer.contentsScale = [UIScreen mainScreen].scale; //<-needed for the retina display, otherwise our image will not be scaled properly
-        _maskingLayer.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
-        
-        [cell.layer setMask:_maskingLayer];
-
-        UILabel *label = (UILabel *)[cell viewWithTag:1];
-        label.text = [object title];
-        //cell.textLabel.text = [object title];
-//        if (object.appIcon)
+        case LoadNewer:
         {
+            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"LoadMoreCell" forIndexPath:indexPath];
+            cell.textLabel.text = [NSString stringWithFormat:@"Load Newer Posts (%d of %d)", page, numPages];
+            return cell;
+        }
+        break;
+                                   
+        case LoadOlder:
+        {
+             UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"LoadMoreCell" forIndexPath:indexPath];
+             cell.textLabel.text = [NSString stringWithFormat:@"Load Older Posts (%d of %d)", page+2, numPages];
+            return cell;
+        }
+        break;
+                                    
+        case Features:
+        {
+            bool newFeatureCell = m_featureCell == NULL;
+            FeatureCell *cell = newFeatureCell ? [tableView dequeueReusableCellWithIdentifier:@"FeatureCellScroll" forIndexPath:indexPath] : m_featureCell;
+
+            cell.rssFeed = _feed;
+            cell.detailViewController = _detailViewController;
+           
+            CALayer *_maskingLayer = [CALayer layer];
+            _maskingLayer.frame = cell.bounds;
+            UIImage *stretchableImage = (id)[UIImage imageNamed:@"corner"];
+            
+            _maskingLayer.contents = (id)stretchableImage.CGImage;
+            _maskingLayer.contentsScale = [UIScreen mainScreen].scale; //<-needed for the retina display, otherwise our image will not be scaled properly
+            _maskingLayer.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
+
+            [cell.layer setMask:_maskingLayer];
+            
+            if (newFeatureCell)
+            {
+                [cell updateFeed];
+            
+                m_featureCell = cell;
+            }
+            
+            return cell;
+        }
+        break;
+            
+        case Posts:
+        {
+            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ItemCell" forIndexPath:indexPath];
+            
+            CRSSItem *object = _feed.items[indexPath.row];
+            
+            CALayer *_maskingLayer = [CALayer layer];
+            _maskingLayer.frame = cell.bounds;
+            UIImage *stretchableImage = (id)[UIImage imageNamed:@"corner"];
+            
+            _maskingLayer.contents = (id)stretchableImage.CGImage;
+            _maskingLayer.contentsScale = [UIScreen mainScreen].scale; //<-needed for the retina display, otherwise our image will not be scaled properly
+            _maskingLayer.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
+            
+            [cell.layer setMask:_maskingLayer];
+
+            UILabel *label = (UILabel *)[cell viewWithTag:1];
+            label.text = [object title];
             UIImageView *imgView = (UIImageView *)[cell viewWithTag:2];
             UIImageView *imgIcon = (UIImageView *)[cell viewWithTag:3];
-/*            CGRect frame = cell.frame;
- 
-            UIImage *mask = [UIImage imageNamed:@"post_mask"];
-            CGImageRef imgRef = [object.appIcon CGImage];
-            CGImageRef maskRef = [mask CGImage];
-            CGImageRef actualMask = CGImageMaskCreate(CGImageGetWidth(maskRef),
-                                                      CGImageGetHeight(maskRef),
-                                                      CGImageGetBitsPerComponent(maskRef),
-                                                      CGImageGetBitsPerPixel(maskRef),
-                                                      CGImageGetBytesPerRow(maskRef),
-                                                      CGImageGetDataProvider(maskRef), NULL, false);
-            CGImageRef masked = CGImageCreateWithMask(imgRef, actualMask);
 
-            imgView.image = [UIImage imageWithCGImage:masked];//object.appIcon;*/
             imgView.image = object.appIcon;
 
             switch (object.type)
             {
                 case Audio:
                     imgIcon.image = [UIImage imageNamed:@"post_type_aud"];
-                    break;
+                   break;
                 case Video:
                     imgIcon.image = [UIImage imageNamed:@"post_type_vid"];
                     break;
@@ -352,51 +346,18 @@ player.view.hidden = YES;
                     imgIcon.image = [UIImage imageNamed:@"post_type_text"];
                     break;
             }
+
+            return cell;
         }
-//        UIButton *mediaButton = (UIButton *)[cell viewWithTag:3];
-//        if (mediaButton)
-//        {
-//            [mediaButton setHidden:(object.mediaURLString == NULL)];
-//        }
-        
- ///       cell.transform = CGAffineTransformMakeRotation(-M_PI / -2.0); //Convert 90 degrees to radians
-//        cell.frame = (CGRect){ 0, 0, 320, 200};
-
-
-        return cell;
+        break;
     }
-}
-
-- (void)createToolbar
-{
-    // Initialization code
-    UIBarButtonItem *spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
     
-    UIToolbarDragger *EmailBtn = [[UIToolbarDragger alloc] initWithFrame:CGRectMake(0.0, 0.0, 44.0, 44.0)];
-    [EmailBtn setBackgroundImage:[UIImage imageNamed:@"audioplaying.png"] forState:UIControlStateNormal];
-    EmailBtn.showsTouchWhenHighlighted = YES;
-    
-    UIBarButtonItem *EmailBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:EmailBtn];
-    NSArray *buttons = [NSArray arrayWithObjects:spacer, EmailBarButtonItem, spacer, nil];
-    [self setToolbarItems:buttons];
-
-//    UIBarButtonItem *playItem = [[UIBarButtonItem alloc] initWithTitle:@"Play" style:UIBarButtonItemStyleBordered target:self action:@selector(goToChangeCategory:)];
-//    UIBarButtonItem *spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
-    
-//    NSArray *buttonItems = [NSArray arrayWithObjects:spacer, playItem, spacer, nil];
-//    [self setToolbarItems:buttonItems];
+    return NULL;
 }
 
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == 0)
-    {
-        return 183;
-    }
-    else
-    {
-        return 80;
-    }
+    return SectionSize[indexPath.section];
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
@@ -404,33 +365,6 @@ player.view.hidden = YES;
     // Return NO if you do not want the specified item to be editable.
     return NO;
 }
-
-//- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-//{
-//    if (editingStyle == UITableViewCellEditingStyleDelete) {
-//        [_objects removeObjectAtIndex:indexPath.row];
-//        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-//    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-//        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
-//    }
-//}
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
 
 // this method is used in case the user scrolled into a set of cells that don't have their app icons yet
 - (void) loadImagesForOnscreenRows
@@ -440,7 +374,7 @@ player.view.hidden = YES;
         NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
         for (NSIndexPath *indexPath in visiblePaths)
         {
-            if (indexPath.section == 1)
+            if (indexPath.section == Posts)
             {
                 CRSSItem *appRecord = _feed.items[indexPath.row];
             
@@ -455,18 +389,38 @@ player.view.hidden = YES;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        CRSSItem *object = _feed.items[indexPath.row];
-        self.detailViewController.detailItem = object;
+    switch (indexPath.section)
+    {
+        case LoadNewer:
+            [_feed LoadPage:[_feed GetPage]-1];
+            break;
+        case LoadOlder:
+            [_feed LoadPage:[_feed GetPage]+1];
+            break;
+        case Posts:
+            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
+            {
+                CRSSItem *object = _feed.items[indexPath.row];
+                self.detailViewController.detailItem = object;
+            }
+            break;
     }
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    if ([[segue identifier] isEqualToString:@"showDetail"]) {
+    if ([[segue identifier] isEqualToString:@"showDetail"])
+    {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
         CRSSItem *object = _feed.items[indexPath.row];
         [[segue destinationViewController] setDetailItem:object];
+    }
+    else if ([[segue identifier] isEqualToString:@"showDetailFeature"])
+    {
+        if (m_featureCell)
+        {
+            [m_featureCell prepareForSegue:segue sender:sender];
+        }
     }
 }
 

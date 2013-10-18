@@ -76,6 +76,13 @@
                                                object:nil];
     m_audioItems = [[NSMutableArray alloc] init];
     
+    _labelTitle.textColor = [UIColor grayColor];
+
+//    _bar.layer.masksToBounds = false;
+//    _bar.layer.shadowOffset = CGSizeMake(0, 15);
+//    _bar.layer.shadowRadius = 8;
+//    _bar.layer.shadowOpacity = 0.5;
+   
 //    CGRect rect = self.view.superview.frame;
 //    rect.origin.y = rect.size.height - 39;
 //    self.view.superview.frame = rect;
@@ -85,6 +92,14 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)setItem:(CRSSItem *) rssItem
+{
+    currentImage.image = [rssItem requestImage:self];
+    _labelTitle.text = rssItem.title;
+    
+    [self prepareMusic];
 }
 
 - (IBAction)onNext:(id)sender
@@ -98,9 +113,7 @@
         }
 
         CRSSItem *rssItem = m_audioItems[currentItem];
-        currentImage.image = rssItem.appIcon;
-
-        [self prepareMusic];
+        [self setItem:rssItem];
     }
 }
 
@@ -115,9 +128,7 @@
         }
         
         CRSSItem *rssItem = m_audioItems[currentItem];
-        currentImage.image = rssItem.appIcon;
-        
-        [self prepareMusic];
+        [self setItem:rssItem];
     }
 }
 
@@ -134,14 +145,25 @@
         }
     }
 
-    if ((m_audioItems.count > 0) && currentImage)
+    currentItem = 0;
+    if (m_audioItems.count > 0)
     {
         CRSSItem *rssItem = m_audioItems[0];
-        currentImage.image = rssItem.appIcon;
-        [self prepareMusic];
+        [self setItem:rssItem];
     }
 }
 
+// called by our ImageDownloader when an icon is ready to be displayed
+- (void)appImageDidLoad:(IconDownloader *)iconDownloader
+{
+    if (m_audioItems.count > 0)
+    {
+        if (((CRSSItem*)m_audioItems[currentItem]).postID == iconDownloader.postID)
+        {
+            currentImage.image = iconDownloader.appRecord.appIcon;
+        }
+    }
+}
 
 - (void) onIconLoaded:(NSNotification *) notification
 {
@@ -209,12 +231,14 @@
                 [m_audioPlayer pause];
                 [toolbarDragger setSelected:FALSE];
                 m_isPlaying = false;
+                _labelTitle.textColor = [UIColor grayColor];
             }
             else
             {
                 [m_audioPlayer play];
                 [toolbarDragger setSelected:TRUE];
                 m_isPlaying = true;
+                _labelTitle.textColor = [UIColor whiteColor];
             }
         }
     }

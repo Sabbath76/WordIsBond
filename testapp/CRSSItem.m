@@ -9,8 +9,12 @@
 #import "CRSSItem.h"
 
 @implementation CRSSItem
+{
+    NSMutableData *m_receivedData;
+    id<PostRequestDelegate> m_delegate;
+}
 
-@synthesize title, description, imageURLString, appIcon, mediaURLString;
+@synthesize title, description, imageURLString, appIcon, mediaURLString, postID, requiresDownload;
 
 - (NSString*) findProperty: (NSString *)search
 {
@@ -41,7 +45,13 @@
     imageURLString = [self findProperty:@"img"];
     
     NSString *media = [self findProperty:@"iframe"];
+
+    static int LAST_ID = 0;
+    LAST_ID++;
     
+    _type = Text;
+    postID = LAST_ID;
+
     if (media)
     {
 //        https://api.soundcloud.com/tracks/3100297/stream?client_id=YOUR_CLIENT_ID
@@ -58,6 +68,25 @@
                 mediaURLString = [mediaURLString stringByAppendingString:@"/stream?client_id=YOUR_CLIENT_ID"];
                 
                 _type = Audio;
+            }
+        }
+        else if ([media rangeOfString:@"bandcamp"].location != NSNotFound)
+        {
+            NSRange range = [media rangeOfString:@"track="];
+            if (range.location != NSNotFound)
+            {
+                NSRange rangeToSearchWithin = NSMakeRange(range.location, media.length - range.location);
+                NSRange rangeEnd = [media rangeOfString:@"/" options:0 range:rangeToSearchWithin];
+
+                if ((range.location != NSNotFound)
+                    && (rangeEnd.location != NSNotFound))
+                {
+                    range.location += 6;
+                    range.length =media.length - rangeEnd.location;
+                    mediaURLString = [NSString stringWithFormat:@"http://popplers5.bandcamp.com/download/track?enc=mp3-128&id=%@&stream=1", [media substringWithRange:range]];
+                
+                    _type = Audio;
+                }
             }
         }
         else if ([media rangeOfString:@"youtube"].location != NSNotFound)
@@ -110,6 +139,68 @@
              }
              * /    		}   
     }*/
+}
+
+- (UIImage *) requestImage:(id<IconDownloaderDelegate>)delegate;
+{
+    if (appIcon == NULL)
+    {
+        [IconDownloader download:self delegate:delegate];
+    }
+
+    return appIcon;
+}
+
+- (void) requestFullFeed:(id<PostRequestDelegate>)delegate
+{
+    NSString *url = [@"http://www.thewordisbond.com/?json=get_post&id=" stringByAppendingFormat:@"%d", postID];
+    
+    m_delegate = delegate;
+    m_receivedData = [[NSMutableData alloc] init];
+    
+    //Create the connection with the string URL and kick it off
+    NSURLConnection *urlConnection = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] delegate:self];
+    [urlConnection start];
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+{
+    //Reset the data as this could be fired if a redirect or other response occurs
+    [m_receivedData setLength:0];
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+{
+    //Append the received data each time this is called
+    [m_receivedData appendData:data];
+}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+{
+    
+}
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection
+{
+    //Start the XML parser with the delegate pointing at the current object
+    NSDictionary* json = [NSJSONSerialization
+                          JSONObjectWithData:m_receivedData
+                          options:kNilOptions
+                          error:NULL];
+    
+    NSDictionary* post = [json objectForKey:@"post"];
+    if (post)
+    {
+        NSString *postContent = [post objectForKey:@"content"];
+        if (postContent)
+        {
+            description = postContent;
+            [self setup];
+        
+            [m_delegate fullPostDidLoad:self];
+        }
+    }
+    requiresDownload = false;
 }
 
 @end

@@ -8,12 +8,19 @@
 
 #import <Foundation/Foundation.h>
 
-@interface RSSFeed : NSObject
+
+@interface RSSFeed : NSObject < NSURLConnectionDelegate >
 
 @property (nonatomic, retain) NSMutableArray *items;
 @property (nonatomic, retain) NSMutableArray *features;
 
 - (void)handleLoadedApps:(NSArray *)loadedApps;
 + (RSSFeed *) getInstance;
+- (void) Filter:(NSString *)filter showAudio:(bool)showAudio showVideo:(bool)showVideo showText:(bool)showText;
+- (void) FilterJSON:(NSString *)filter showAudio:(bool)showAudio showVideo:(bool)showVideo showText:(bool)showText;
+- (int) GetPage;
+- (int) GetNumPages;
+- (void) LoadPage:(int) pageNum;
+- (void) LoadFeed;
 
 @end

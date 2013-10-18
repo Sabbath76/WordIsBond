@@ -16,6 +16,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "RSSFeed.h"
 #import "CRSSItem.h"
+#import "IconDownloader.h"
 
 
 const CGFloat TEXT_VIEW_PADDING = 50.0;
@@ -23,6 +24,20 @@ const CGFloat TEXT_VIEW_PADDING = 50.0;
 @implementation FeatureController
 
 @synthesize pageIndex;
+
+- (void)appImageDidLoad:(IconDownloader *)iconDownloader
+{
+    RSSFeed *feed = [RSSFeed getInstance];
+
+	if (pageIndex >= 0 && pageIndex < feed.features.count)
+	{
+        CRSSItem *rssItem = feed.features[pageIndex];
+        if (rssItem.postID == iconDownloader.postID)
+        {
+            _imageView.image = rssItem.appIcon;
+        }
+    }
+}
 
 - (void)setPageIndex:(NSInteger)newPageIndex
 {
@@ -46,7 +61,11 @@ const CGFloat TEXT_VIEW_PADDING = 50.0;
         
 //        imageView.image = [UIImage imageWithCGImage:masked];
         
-        imageView.image = rssItem.appIcon;
+//        if (imageView.image == NULL)
+//        {
+//            [IconDownloader download:rssItem postID:rssItem.postID delegate:self isItem:false];
+//        }
+        _imageView.image = rssItem.appIcon;
         label.text = rssItem.title;
 /*		NSDictionary *pageData =
 			[[DataSource sharedDataSource] dataForPage:pageIndex];

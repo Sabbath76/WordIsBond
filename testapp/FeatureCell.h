@@ -13,7 +13,7 @@
 @class DetailViewController;
 @class FeatureController;
 
-@interface FeatureCell : UITableViewCell <UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, IconDownloaderDelegate>
+@interface FeatureCell : UITableViewCell <UIScrollViewDelegate, IconDownloaderDelegate>
 {
     int leftMostFeature;
 	
@@ -21,7 +21,6 @@
 	FeatureController *nextPage;
 }
 
-@property (nonatomic, retain) IBOutlet UITableView *horizontalTableView;
 @property (nonatomic, retain) IBOutlet UIScrollView *scrollView;
 @property (nonatomic, retain) IBOutlet UIButton *imageView1;
 @property (nonatomic, retain) IBOutlet UIButton *imageView2;
@@ -32,5 +31,6 @@
 
 - (void)updateFeed;
 - (IBAction)onFeature:(id)sender;
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender;
 
 @end

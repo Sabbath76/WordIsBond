@@ -10,11 +10,14 @@
 
 #import "UIToolbarDragger.h"
 #import <AVFoundation/AVFoundation.h>
+#import "IconDownloader.h"
 
 
-@interface ViewControllerMediaPlayer : UIViewController <AVAudioPlayerDelegate>	
+@interface ViewControllerMediaPlayer : UIViewController <AVAudioPlayerDelegate, IconDownloaderDelegate>
 
 @property (weak, nonatomic) IBOutlet UIToolbarDragger *toolbarDragger;
 @property (weak, nonatomic) IBOutlet UIImageView *currentImage;
+@property (weak, nonatomic) IBOutlet UILabel *labelTitle;
+@property (weak, nonatomic) IBOutlet UIView *bar;
 
 @end

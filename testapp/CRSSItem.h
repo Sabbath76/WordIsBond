@@ -7,13 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "IconDownloader.h"
 
 typedef enum
 {
     Text, Audio, Video
 } PostType;
 
-@interface CRSSItem : NSObject
+@protocol PostRequestDelegate;
+
+@interface CRSSItem : NSObject  < NSURLConnectionDelegate >
 
 //This method kicks off a parse of a URL at a specified string
 - (void)setup;
@@ -24,5 +27,17 @@ typedef enum
 @property (nonatomic, retain) NSString *mediaURLString;
 @property (nonatomic, retain) UIImage *appIcon;
 @property (nonatomic, readonly) PostType type;
+@property (nonatomic, readwrite) int postID;
+@property (nonatomic, readwrite) Boolean requiresDownload;
+
+- (UIImage *) requestImage:(id<IconDownloaderDelegate>)delegate;
+- (void) requestFullFeed:(id<PostRequestDelegate>)delegate;
+
+@end
+
+
+@protocol PostRequestDelegate
+
+- (void)fullPostDidLoad:(CRSSItem *)post;
 
 @end

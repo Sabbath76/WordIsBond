@@ -12,6 +12,12 @@
 
 @implementation RSSFeed
 {
+    NSMutableArray *sourceItems;
+    NSMutableArray *sourceFeatures;
+    NSMutableData *m_receivedData;
+    int m_page;
+    int m_totalPages;
+    NSString *m_lastSearch;
 }
 
 @synthesize items, features;
@@ -20,12 +26,16 @@
 {
     //    [self.appRecords addObjectsFromArray:loadedApps];
     
+    sourceItems = [[NSMutableArray alloc] init];
+    sourceFeatures = [[NSMutableArray alloc] init];
     items = [[NSMutableArray alloc] init];
     features = [[NSMutableArray alloc] init];
     for (CRSSItem *item in loadedApps)
     {
         [items insertObject:item atIndex:0];
         [features insertObject:item atIndex:0];
+        [sourceItems insertObject:item atIndex:0];
+        [sourceFeatures insertObject:item atIndex:0];
     }
 }
 
@@ -35,9 +45,154 @@
     if (s_RSSFeed == NULL)
     {
         s_RSSFeed = [RSSFeed alloc];
+        s_RSSFeed->m_page = 0;
+        s_RSSFeed->m_totalPages = 0;
     }
     
     return s_RSSFeed;
+}
+
+- (void) Filter:(NSString *)filter showAudio:(bool)showAudio showVideo:(bool)showVideo showText:(bool)showText
+{
+    [items removeAllObjects];
+    [features removeAllObjects];
+    for (CRSSItem *item in sourceItems)
+    {
+        if (!showAudio && (item.type == Audio))
+            continue;
+        if (!showVideo && (item.type == Video))
+            continue;
+        if (!showText && (item.type == Text))
+            continue;
+        if (filter && ([item.title rangeOfString:filter].location == NSNotFound))
+            continue;
+        
+        [items insertObject:item atIndex:0];
+    }
+    for (CRSSItem *item in sourceFeatures)
+    {
+        if (!showAudio && (item.type == Audio))
+            continue;
+        if (!showVideo && (item.type == Video))
+            continue;
+        if (!showText && (item.type == Text))
+            continue;
+        if (filter && ([item.title rangeOfString:filter].location == NSNotFound))
+            continue;
+        
+        [features insertObject:item atIndex:0];
+    }
+}
+
+- (void) QueryAPI:(NSString *)url
+{
+    m_receivedData = [[NSMutableData alloc] init];
+    
+    //Create the connection with the string URL and kick it off
+    NSURLConnection *urlConnection = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] delegate:self];
+    [urlConnection start];
+//    NSURLConnection
+}
+
+
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+{
+    //Reset the data as this could be fired if a redirect or other response occurs
+    [m_receivedData setLength:0];
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+{
+    //Append the received data each time this is called
+    [m_receivedData appendData:data];
+}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+{
+    
+}
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection
+{
+    //Start the XML parser with the delegate pointing at the current object
+    NSDictionary* json = [NSJSONSerialization
+                          JSONObjectWithData:m_receivedData
+                          options:kNilOptions
+                          error:NULL];
+    
+    NSNumber *numItems = [json objectForKey:@"count"];
+    if (numItems.intValue > 0)
+    {
+        items = [[NSMutableArray alloc] init];
+        features = [[NSMutableArray alloc] init];
+
+//        [items removeAllObjects];
+//        [features removeAllObjects];
+
+        NSNumber *pages = [json objectForKey:@"pages"];
+        m_totalPages = pages.intValue;
+
+        NSArray *posts = [json objectForKey:@"posts"];
+        for (NSDictionary *post in posts)
+        {
+            CRSSItem *newPost = [CRSSItem alloc];
+            newPost.title = [post objectForKey:@"title"];
+            newPost.description = [post objectForKey:@"content"];
+            NSNumber *objID = [post objectForKey:@"id"];
+            newPost.postID = objID.intValue;
+            newPost.requiresDownload = true;
+            NSArray *attachments = [post objectForKey:@"attachments"];
+            for (NSDictionary *attachment in attachments)
+            {
+                NSString *mimeType = [attachment objectForKey:@"mime_type"];
+                if ([mimeType isEqualToString:@"image/jpeg"])
+                {
+                    newPost.imageURLString = [attachment objectForKey:@"url"];
+                }
+            }
+            
+            [items insertObject:newPost atIndex:0];
+            [features insertObject:newPost atIndex:0];
+        }
+        
+        
+        [[NSNotificationCenter defaultCenter]
+         postNotificationName:@"NewRSSFeed"
+         object:self];
+    }
+}
+
+- (void) LoadFeed
+{
+    NSString *url = @"http://www.thewordisbond.com/?json=get_latest_posts&count=20";
+    m_lastSearch = url;
+    [self QueryAPI:url];
+    m_page = 0;
+}
+
+- (void) FilterJSON:(NSString *)filter showAudio:(bool)showAudio showVideo:(bool)showVideo showText:(bool)showText
+{
+    NSString *url = [@"http://www.thewordisbond.com/?json=get_search_results&count=20&search=" stringByAppendingString:filter];
+    m_lastSearch = url;
+    [self QueryAPI:url];
+    m_page = 0;
+}
+
+- (int) GetPage
+{
+    return m_page;
+}
+- (int) GetNumPages
+{
+    return m_totalPages;
+}
+
+
+- (void) LoadPage:(int) pageNum
+{
+    NSString *url = [m_lastSearch stringByAppendingFormat:@"&page=%d",pageNum];
+    [self QueryAPI:url];
+    m_page = pageNum;
 }
 
 
