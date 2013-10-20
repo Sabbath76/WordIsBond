@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "UserData.h"
 
-@interface ViewControllerMenu : UIViewController <UISearchBarDelegate>
+@interface ViewControllerMenu : UIViewController <UISearchBarDelegate, UITableViewDelegate, UITableViewDataSource, FavouritesChangedDelegate>
 
 @property (weak, nonatomic) IBOutlet UISwitch *filterAudio;
 @property (weak, nonatomic) IBOutlet UISwitch *filterVideo;

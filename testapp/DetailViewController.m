@@ -7,6 +7,8 @@
 //
 
 #import "DetailViewController.h"
+#import "UserData.h"
+
 
 @interface DetailViewController ()
 @property (strong, nonatomic) UIPopoverController *masterPopoverController;
@@ -39,7 +41,7 @@
     {
         //self.title = [self.detailItem title];
         //self.detailDescriptionLabel.text = [self.detailItem description];
-        self.title = [self.detailItem title];
+//        self.title = [self.detailItem title];
         
         
         if ([self.detailItem requiresDownload])
@@ -50,6 +52,16 @@
         {
             [_webView loadHTMLString:[self.detailItem description] baseURL:nil];
         }
+        
+        NSMutableSet *favourites = [[UserData get] favourites];
+        if ([favourites containsObject:self.detailItem])
+        {
+            _btnFavourite.tintColor = [UIColor whiteColor];
+        }
+        else
+        {
+            _btnFavourite.tintColor = [UIColor blackColor];
+        }
     }
 }
 
@@ -57,6 +69,9 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+    
+    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"top_banner_logo"]];
+
     [self configureView];
 }
 
@@ -93,5 +108,20 @@
     }
 }
 
+- (IBAction)onFavourite:(id)sender
+{
+    NSMutableSet *favourites = [[UserData get] favourites];
+    if ([favourites containsObject:self.detailItem])
+    {
+        _btnFavourite.tintColor = [UIColor blackColor];
+        [favourites removeObject:self.detailItem];
+    }
+    else
+    {
+        _btnFavourite.tintColor = [UIColor whiteColor];
+        [favourites addObject:self.detailItem];
+    }
+    [[UserData get] onChanged];
+}
 
 @end

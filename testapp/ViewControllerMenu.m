@@ -8,6 +8,12 @@
 
 #import "ViewControllerMenu.h"
 #import "RSSFeed.h"
+#import "CRSSItem.h"
+#import "UserData.h"
+
+#import "MasterViewController.h"
+#import "DetailViewController.h"
+
 
 @interface ViewControllerMenu ()
 {
@@ -16,6 +22,9 @@
     bool showVideo;
     bool showText;
     NSString *filter;
+    __weak IBOutlet UITableView *tableFavourites;
+    
+    MasterViewController *masterViewController;
 }
 
 @end
@@ -40,6 +49,12 @@
     showAudio = true;
     showVideo = true;
     showText = true;
+    
+    [[UserData get] addListener:self];
+    
+//    [self.storyboard v]
+//    masterViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MasterViewController"];
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -93,6 +108,13 @@
     showText  = [_filterText isOn];
     
     [[RSSFeed getInstance] FilterJSON:searchBar.text showAudio:showAudio showVideo:showVideo showText:showText];
+  
+    [[NSNotificationCenter defaultCenter]
+     postNotificationName:@"CloseMenu"
+     object:self];
+
+    [tableFavourites setEditing:true];
+//    [masterViewController setMenuOpen:false];
 }
 
 - (void) searchBarCancelButtonClicked:(UISearchBar *)searchBar
@@ -102,5 +124,66 @@
     [self updateFeedFilter];
 }
 
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return true;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return [[UserData get] favourites].count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Favourite" forIndexPath:indexPath];
+    NSArray *favouriteArray = [[[UserData get] favourites] allObjects];
+    CRSSItem *item = [favouriteArray objectAtIndex:indexPath.row];
+    cell.textLabel.text = item.title;
+    return cell;
+}
+
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return UITableViewCellEditingStyleDelete;
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (editingStyle == UITableViewCellEditingStyleDelete)
+    {
+        //add code here for when you hit delete
+        NSMutableSet *favouriteSet = [[UserData get] favourites];
+        NSArray *favouriteArray = [favouriteSet allObjects];
+        [favouriteSet removeObject:[favouriteArray objectAtIndex:indexPath.row]];
+        [tableFavourites deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+//        [[self delegate]didDeletedBillItemRow:row];
+//        [tableFavourites deleteRO];
+    }
+}
+
+- (void)onFavouritesChanged
+{
+    [tableFavourites reloadData];
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSArray *favouriteArray = [[[UserData get] favourites] allObjects];
+    CRSSItem *item = [favouriteArray objectAtIndex:indexPath.row];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"ViewPost" object:item];
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([[segue identifier] isEqualToString:@"showDetailFavourite"])
+    {
+        NSIndexPath *indexPath = [tableFavourites indexPathForSelectedRow];
+        NSArray *favouriteArray = [[[UserData get] favourites] allObjects];
+        CRSSItem *item = [favouriteArray objectAtIndex:indexPath.row];
+        [[segue destinationViewController] setDetailItem:item];
+    }
+
+}
 
 @end

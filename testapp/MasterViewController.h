@@ -18,4 +18,7 @@
 @property (weak, nonatomic) IBOutlet UIToolbar *toolbar;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *btnMenu;
 
+- (void) setMenuOpen:(bool)state;
+- (void) selectDetail:(CRSSItem *)item;
+
 @end

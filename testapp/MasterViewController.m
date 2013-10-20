@@ -44,6 +44,8 @@ const int SectionSize[Total_Sections] =
     FeatureCell *m_featureCell;
     
     FeatureViewController *m_featuresController;
+    
+    CRSSItem *m_forcedDetailItem;
 }
 
 
@@ -55,26 +57,39 @@ const int SectionSize[Total_Sections] =
 
 @synthesize imageDownloadsInProgress, toolbar;
 
-- (IBAction)onMenu:(id)sender
+- (void) setMenuOpen:(bool)state
 {
     CGRect destination = self.navigationController.view.superview.superview.frame;
-
-    if (destination.origin.x > 0)
+    
+    if (state)
+    {
+        destination.origin.x = destination.size.width - 50;
+        _btnMenu.tintColor = [UIColor whiteColor];
+    }
+    else
     {
         destination.origin.x = 0;
         _btnMenu.tintColor = [UIColor blackColor];
         
     }
-    else
-    {
-        destination.origin.x = destination.size.width - 50;
-        _btnMenu.tintColor = [UIColor whiteColor];
-    }
     
     [UIView beginAnimations:@"Bringing up menu" context:nil];
     self.navigationController.view.superview.superview.frame = destination;
     [UIView commitAnimations];
- 
+}
+
+- (void) selectDetail:(CRSSItem *)item
+{
+    [self setMenuOpen:false];
+}
+
+- (IBAction)onMenu:(id)sender
+{
+    CGRect destination = self.navigationController.view.superview.superview.frame;
+    
+    bool menuOpen = (destination.origin.x == 0);
+    
+    [self setMenuOpen:menuOpen];
 }
 
 - (void)awakeFromNib
@@ -125,6 +140,16 @@ const int SectionSize[Total_Sections] =
                                              selector:@selector(receiveNewRSSFeed:)
                                                  name:@"NewRSSFeed"
                                                object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(receiveViewPost:)
+                                                 name:@"ViewPost"
+                                               object:nil];
+    
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(receiveCloseMenu:)
+//                                                 name:@"CloseMenu"
+//                                               object:nil];
 }
 
 - (void)startIconDownload:(CRSSItem *)appRecord forIndexPath:(NSIndexPath *)indexPath
@@ -194,12 +219,25 @@ const int SectionSize[Total_Sections] =
 
 - (void) receiveNewRSSFeed:(NSNotification *) notification
 {
+    [self setMenuOpen:false];
+    
     // tell our table view to reload its data, now that parsing has completed
     [self.tableView reloadData];
     [self loadImagesForOnscreenRows];
 
     [m_featureCell setNeedsDisplay];
     [m_featureCell updateFeed];
+}
+
+- (void) receiveViewPost:(NSNotification *) notification
+{
+//    CRSSItem *item = notification.object;
+    [self setMenuOpen:false];
+//    [self.detailViewController setDetailItem:item];
+    m_forcedDetailItem = notification.object;
+    
+    [self performSegueWithIdentifier: @"showDetailManual" sender:self];
+//    [self.navigationController pushViewController:self.detailViewController animated:true];
 }
 
 - (void)viewDidLoad
@@ -421,6 +459,10 @@ const int SectionSize[Total_Sections] =
         {
             [m_featureCell prepareForSegue:segue sender:sender];
         }
+    }
+    else if ([[segue identifier] isEqualToString:@"showDetailManual"])
+    {
+        [[segue destinationViewController] setDetailItem:m_forcedDetailItem];
     }
 }
 

@@ -54,33 +54,40 @@
 
 - (void) Filter:(NSString *)filter showAudio:(bool)showAudio showVideo:(bool)showVideo showText:(bool)showText
 {
-    [items removeAllObjects];
-    [features removeAllObjects];
-    for (CRSSItem *item in sourceItems)
+    if (sourceItems == nil)
     {
-        if (!showAudio && (item.type == Audio))
-            continue;
-        if (!showVideo && (item.type == Video))
-            continue;
-        if (!showText && (item.type == Text))
-            continue;
-        if (filter && ([item.title rangeOfString:filter].location == NSNotFound))
-            continue;
-        
-        [items insertObject:item atIndex:0];
+        [self LoadFeed];
     }
-    for (CRSSItem *item in sourceFeatures)
+    else
     {
-        if (!showAudio && (item.type == Audio))
-            continue;
-        if (!showVideo && (item.type == Video))
-            continue;
-        if (!showText && (item.type == Text))
-            continue;
-        if (filter && ([item.title rangeOfString:filter].location == NSNotFound))
-            continue;
-        
-        [features insertObject:item atIndex:0];
+        [items removeAllObjects];
+        [features removeAllObjects];
+        for (CRSSItem *item in sourceItems)
+        {
+            if (!showAudio && (item.type == Audio))
+                continue;
+            if (!showVideo && (item.type == Video))
+                continue;
+            if (!showText && (item.type == Text))
+                continue;
+            if (filter && ([item.title rangeOfString:filter].location == NSNotFound))
+                continue;
+            
+            [items insertObject:item atIndex:0];
+        }
+        for (CRSSItem *item in sourceFeatures)
+        {
+            if (!showAudio && (item.type == Audio))
+                continue;
+            if (!showVideo && (item.type == Video))
+                continue;
+            if (!showText && (item.type == Text))
+                continue;
+            if (filter && ([item.title rangeOfString:filter].location == NSNotFound))
+                continue;
+            
+            [features insertObject:item atIndex:0];
+        }
     }
 }
 
@@ -112,6 +119,24 @@
     
 }
 
+- (NSString *) convertWordPressString:(NSString*) inString
+{
+    struct SStringPair
+    {
+        __unsafe_unretained NSString *const symbol;
+        __unsafe_unretained NSString *const value;
+    };
+    const int NUM_VALUES = 8;
+    const struct SStringPair values[NUM_VALUES] = {{@"&#8211;", @"-"}, {@"&#8212;", @"--"}, {@"&#8230;", @"..."}, {@"&#8216;", @"'"}, {@"&#8217;", @"'"}, {@"&#8220;", @"'"}, {@"&#8221;", @"\""}, {@"&#038;", @"&"}};
+    NSString *retString = inString;
+    for (int i=0; i<NUM_VALUES; i++)
+    {
+        retString = [retString stringByReplacingOccurrencesOfString:values[i].symbol withString:values[i].value];
+    }
+    
+    return retString;
+}
+
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
     //Start the XML parser with the delegate pointing at the current object
@@ -136,7 +161,7 @@
         for (NSDictionary *post in posts)
         {
             CRSSItem *newPost = [CRSSItem alloc];
-            newPost.title = [post objectForKey:@"title"];
+            newPost.title = [self convertWordPressString:[post objectForKey:@"title"]];
             newPost.description = [post objectForKey:@"content"];
             NSNumber *objID = [post objectForKey:@"id"];
             newPost.postID = objID.intValue;
@@ -148,11 +173,15 @@
                 if ([mimeType isEqualToString:@"image/jpeg"])
                 {
                     newPost.imageURLString = [attachment objectForKey:@"url"];
+                    NSString *imgBlock = [NSString stringWithFormat:@"<div><a><img src=\"%@\" /></a></div>", newPost.imageURLString];
+//                    NSString *imgBlock = [NSString stringWithFormat:@"<div><a><img width=320 height=240 src=\"%@\" /></a></div>", newPost.imageURLString];
+                    newPost.description = [imgBlock stringByAppendingString:newPost.description];
+//                    [newPost.description stringByAppendingString:@"<div><a><img width=320 height=240 src=\""];
                 }
             }
             
-            [items insertObject:newPost atIndex:0];
-            [features insertObject:newPost atIndex:0];
+            [items addObject:newPost];
+            [features addObject:newPost];
         }
         
         

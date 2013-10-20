@@ -85,22 +85,8 @@ static NSMutableDictionary *s_downloadingImagesByID = NULL;
     // Set appIcon and clear temporary data/image
     UIImage *image = [[UIImage alloc] initWithData:self.activeDownload];
     
-/*    if (image.size.width != kAppIconSize || image.size.height != kAppIconSize)
-    {
-        CGSize itemSize = CGSizeMake(kAppIconSize, kAppIconSize);
-        UIGraphicsBeginImageContext(itemSize);
-        CGRect imageRect = CGRectMake(0.0, 0.0, itemSize.width, itemSize.height);
-        [image drawInRect:imageRect];
-        self.appRecord.appIcon = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-    }
-    else*/
-    {
-        self.appRecord.appIcon = image;
-    }
-    
+    self.appRecord.appIcon = image;
     self.activeDownload = nil;
-//    [image release];
     
     // Release the connection now that it's finished
     self.imageConnection = nil;
@@ -109,18 +95,6 @@ static NSMutableDictionary *s_downloadingImagesByID = NULL;
     {
         [delegateItem appImageDidLoad:self];
     }
-//    @property (nonatomic, retain) id <IconDownloaderDelegate> delegate;
-
-    // call our delegate and tell it that our icon is ready for display
-//    [delegate appImageDidLoad:self];
-    
-//    NSDictionary *userInfo = [NSDictionary dictionaryWithObject:self.appRecord forKey:@"item"];
-
-//    [[NSNotificationCenter defaultCenter]
-//     postNotificationName:@"IconLoaded"
-//     object:self
-//     userInfo:userInfo];
-
 }
 
 + (bool)download:(CRSSItem *)item indexPath:(NSIndexPath *)indexPathInTableView delegate:(id<IconDownloaderDelegate>)delegate isItem:(Boolean)isItem

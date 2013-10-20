@@ -40,17 +40,26 @@
     return NULL;
 }
 
+- (CRSSItem *) init
+{
+    static int LAST_ID = 0;
+    LAST_ID++;
+    
+    self.postID = LAST_ID;
+    return self;
+}
+
 - (void) setup
 {
     imageURLString = [self findProperty:@"img"];
     
     NSString *media = [self findProperty:@"iframe"];
 
-    static int LAST_ID = 0;
-    LAST_ID++;
+//    static int LAST_ID = 0;
+//    LAST_ID++;
     
     _type = Text;
-    postID = LAST_ID;
+//    postID = LAST_ID;
 
     if (media)
     {
@@ -195,6 +204,10 @@
         if (postContent)
         {
             description = postContent;
+            
+            NSString *imgBlock = [NSString stringWithFormat:@"<div><a><img src=\"%@\" /></a></div>", imageURLString];
+            description = [imgBlock stringByAppendingString:description];
+
             [self setup];
         
             [m_delegate fullPostDidLoad:self];
