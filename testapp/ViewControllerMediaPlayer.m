@@ -12,8 +12,6 @@
 #import "CRSSItem.h"
 
 
-
-
 @interface ViewControllerMediaPlayer ()
 {
     int currentItem;
@@ -48,7 +46,7 @@
     [super viewDidAppear:animated];
     
     CGRect rect = self.view.superview.frame;
-    rect.origin.y = rect.size.height - 39;
+    rect.origin.y = rect.size.height - 37;
     self.view.superview.frame = rect;
 }
 
@@ -139,7 +137,11 @@
     [m_audioItems removeAllObjects];
     for (CRSSItem *item in feed.items)
     {
-        if (item.mediaURLString)
+        if (item.tracks)
+        {
+            [m_audioItems insertObject:item atIndex:0];
+        }
+        else if (item.mediaURLString)
         {
             [m_audioItems insertObject:item atIndex:0];
         }
@@ -191,18 +193,24 @@
     {
         CRSSItem *item = m_audioItems[currentItem];
         
-        NSString* resourcePath = item.mediaURLString; //your url
+        NSString* resourcePath = item.tracks ? item.tracks[0] : item.mediaURLString;
         NSError *error;
         NSData *_objectData = [NSData dataWithContentsOfURL:[NSURL URLWithString:resourcePath]];
-        m_audioPlayer = [[AVAudioPlayer alloc] initWithData:_objectData error:&error];
-        m_audioPlayer.numberOfLoops = 0;
-        m_audioPlayer.volume = 5.0f;  //set volume here
-        m_audioPlayer.delegate = self;
-        [m_audioPlayer prepareToPlay];
-        
-        if (m_isPlaying)
+        @try
         {
-            [m_audioPlayer play];
+            m_audioPlayer = [[AVAudioPlayer alloc] initWithData:_objectData error:&error];
+            m_audioPlayer.numberOfLoops = 0;
+            m_audioPlayer.volume = 5.0f;  //set volume here
+            m_audioPlayer.delegate = self;
+            [m_audioPlayer prepareToPlay];
+            
+            if (m_isPlaying)
+            {
+                [m_audioPlayer play];
+            }
+        }
+        @catch (NSException *exception)
+        {
         }
     }
 }
@@ -218,6 +226,10 @@
         [toolbarDragger setSelected:FALSE];
         m_isPlaying = false;
     }
+}
+
+- (IBAction)onPlayList:(id)sender
+{
 }
 
 - (IBAction)togglePlay:(id)sender

@@ -165,20 +165,66 @@
             newPost.description = [post objectForKey:@"content"];
             NSNumber *objID = [post objectForKey:@"id"];
             newPost.postID = objID.intValue;
-            newPost.requiresDownload = true;
+            newPost.dateString = [post objectForKey:@"date"];
+//            newPost.requiresDownload = true;
             NSArray *attachments = [post objectForKey:@"attachments"];
+            NSString *fullContent = @"";
             for (NSDictionary *attachment in attachments)
             {
                 NSString *mimeType = [attachment objectForKey:@"mime_type"];
-                if ([mimeType isEqualToString:@"image/jpeg"])
+/*                if ([mimeType hasPrefix:@"image"])
                 {
-                    newPost.imageURLString = [attachment objectForKey:@"url"];
-                    NSString *imgBlock = [NSString stringWithFormat:@"<div><a><img src=\"%@\" /></a></div>", newPost.imageURLString];
+                    NSDictionary *imageList = [attachment objectForKey:@"images"];
+                    
+                    if (imageList)
+                    {
+                        NSDictionary *imageMed =[imageList objectForKey:@"medium"];
+                        newPost.imageURLString = [imageMed objectForKey:@"url"];
+                    }
+                    else
+                    {
+                        newPost.imageURLString = [attachment objectForKey:@"url"];
+                    }
+                    
+//                    const char *ch = [newPost.imageURLString cStringUsingEncoding:NSISOLatin1StringEncoding];
+//                    NSString *yourstring = [[NSString alloc]initWithCString:ch encoding:NSUTF8StringEncoding];
+                    
+                    
+                    NSString *imgHTML = [NSString stringWithFormat:@"<div><a><img src=\"%@\" /></a></div>", newPost.imageURLString];
+                    fullContent = [fullContent stringByAppendingString:imgHTML];
+
+//                    NSString *fullPost = [NSString stringWithFormat:@"<div><a><img src=\"%@\" /></a></div><div style='text-align:justify; font-size:45px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>", newPost.imageURLString, newPost.description];
 //                    NSString *imgBlock = [NSString stringWithFormat:@"<div><a><img width=320 height=240 src=\"%@\" /></a></div>", newPost.imageURLString];
-                    newPost.description = [imgBlock stringByAppendingString:newPost.description];
+//                    newPost.description = fullPost;//[imgBlock stringByAppendingString:newPost.description];
 //                    [newPost.description stringByAppendingString:@"<div><a><img width=320 height=240 src=\""];
+                    
+                    //            NSString *fullString = [NSString stringWithFormat:@"<div style='text-align:justify; font-size:45px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>", [self.detailItem description]];
+
+                }
+                else */if ([mimeType hasPrefix:@"audio"])
+                {
+                    NSString *trackUrl = [attachment objectForKey:@"url"];
+                    [newPost addTrack:trackUrl];
                 }
             }
+            CGRect screenBounds = [[UIScreen mainScreen] bounds];
+            CGFloat screenScale = [[UIScreen mainScreen] scale];
+            float width = screenBounds.size.width * screenScale;
+            
+            NSDictionary *thumbs = [post objectForKey:@"thumbnail_images"];
+            NSDictionary *image =[thumbs objectForKey:@"medium"];
+            NSNumber *objWidth = [image objectForKey:@"width"];
+            NSNumber *objHeight = [image objectForKey:@"height"];
+            newPost.imageURLString = [image objectForKey:@"url"];
+            float scale = (width / objWidth.floatValue);
+            NSString *imgHTML = [NSString stringWithFormat:@"<div><a><img src=\"%@\" width=\"%d\" height=\"%d\"/></a></div>", newPost.imageURLString, (int)(objWidth.intValue*scale), (int)(objHeight.intValue*scale)];
+            fullContent = [fullContent stringByAppendingString:imgHTML];
+
+            
+            newPost.description = [NSString stringWithFormat:@"%@<div style='text-align:justify; font-size:45px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>", fullContent, newPost.description];
+
+            
+            [newPost setup];
             
             [items addObject:newPost];
             [features addObject:newPost];
@@ -193,7 +239,7 @@
 
 - (void) LoadFeed
 {
-    NSString *url = @"http://www.thewordisbond.com/?json=get_latest_posts&count=20";
+    NSString *url = @"http://www.thewordisbond.com/?json=appqueries.get_recent_posts&count=20";
     m_lastSearch = url;
     [self QueryAPI:url];
     m_page = 0;
@@ -201,7 +247,7 @@
 
 - (void) FilterJSON:(NSString *)filter showAudio:(bool)showAudio showVideo:(bool)showVideo showText:(bool)showText
 {
-    NSString *url = [@"http://www.thewordisbond.com/?json=get_search_results&count=20&search=" stringByAppendingString:filter];
+    NSString *url = [@"http://www.thewordisbond.com/?json=appqueries.get_search_results&count=20&search=" stringByAppendingString:filter];
     m_lastSearch = url;
     [self QueryAPI:url];
     m_page = 0;
@@ -219,7 +265,7 @@
 
 - (void) LoadPage:(int) pageNum
 {
-    NSString *url = [m_lastSearch stringByAppendingFormat:@"&page=%d",pageNum];
+    NSString *url = [m_lastSearch stringByAppendingFormat:@"&page=%d",pageNum+1];
     [self QueryAPI:url];
     m_page = pageNum;
 }

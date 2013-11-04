@@ -25,13 +25,16 @@ typedef enum
 @property (nonatomic, retain) NSString *description;
 @property (nonatomic, retain) NSString *imageURLString;
 @property (nonatomic, retain) NSString *mediaURLString;
+@property (nonatomic, retain) NSString *dateString;
 @property (nonatomic, retain) UIImage *appIcon;
 @property (nonatomic, readonly) PostType type;
+@property (nonatomic, readonly) NSMutableArray *tracks;
 @property (nonatomic, readwrite) int postID;
 @property (nonatomic, readwrite) Boolean requiresDownload;
 
 - (UIImage *) requestImage:(id<IconDownloaderDelegate>)delegate;
 - (void) requestFullFeed:(id<PostRequestDelegate>)delegate;
+- (void)addTrack:(NSString *) track;
 
 @end
 

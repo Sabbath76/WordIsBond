@@ -14,7 +14,7 @@
     id<PostRequestDelegate> m_delegate;
 }
 
-@synthesize title, description, imageURLString, appIcon, mediaURLString, postID, requiresDownload;
+@synthesize title, description, imageURLString, appIcon, mediaURLString, postID, requiresDownload, tracks, dateString;
 
 - (NSString*) findProperty: (NSString *)search
 {
@@ -60,6 +60,11 @@
     
     _type = Text;
 //    postID = LAST_ID;
+    
+    if (tracks)
+    {
+        _type = Audio;
+    }
 
     if (media)
     {
@@ -149,6 +154,17 @@
              * /    		}   
     }*/
 }
+
+- (void)addTrack:(NSString *) track
+{
+    if (tracks == NULL)
+    {
+        tracks = [[NSMutableArray alloc] init];
+    }
+    
+    [tracks addObject:track];
+}
+
 
 - (UIImage *) requestImage:(id<IconDownloaderDelegate>)delegate;
 {

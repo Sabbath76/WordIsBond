@@ -48,9 +48,11 @@ static NSMutableDictionary *s_downloadingImagesByID = NULL;
 {
     self.activeDownload = [NSMutableData data];
     // alloc+init and start an NSURLConnection; release on completion/failure
+    NSURL *url = [NSURL URLWithString:[appRecord.imageURLString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+//    [textField.text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]
     NSURLConnection *conn = [[NSURLConnection alloc] initWithRequest:
                              [NSURLRequest requestWithURL:
-                              [NSURL URLWithString:appRecord.imageURLString]] delegate:self];
+                              url] delegate:self];
     self.imageConnection = conn;
 //    [conn release];
 }

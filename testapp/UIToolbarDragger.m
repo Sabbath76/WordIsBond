@@ -23,7 +23,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
-        self->bottomOffset = 39;
+        self->bottomOffset = 37;
         self->midOffset = 139;
         self->isDragging = false;
     }
@@ -35,7 +35,7 @@
     self = [super initWithCoder:aDecoder];
     if (self) {
         // Initialization code
-        self->bottomOffset = 39;
+        self->bottomOffset = 37;
         self->midOffset = 139;
         self->isDragging = false;
     }

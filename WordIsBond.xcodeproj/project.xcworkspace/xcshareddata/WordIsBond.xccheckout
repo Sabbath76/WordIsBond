@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>06F20F30-E406-4516-9CBF-31646CF3D111</string>
+	<key>IDESourceControlProjectName</key>
+	<string>WordIsBond</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>7D836220-DC3B-42F0-AF2F-C17CDC2AA7D6</key>
+		<string>https://github.com/Sabbath76/WordIsBond.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>WordIsBond.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>7D836220-DC3B-42F0-AF2F-C17CDC2AA7D6</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/Sabbath76/WordIsBond.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>7D836220-DC3B-42F0-AF2F-C17CDC2AA7D6</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>7D836220-DC3B-42F0-AF2F-C17CDC2AA7D6</string>
+			<key>IDESourceControlWCCName</key>
+			<string>WordIsBond</string>
+		</dict>
+	</array>
+</dict>
+</plist>

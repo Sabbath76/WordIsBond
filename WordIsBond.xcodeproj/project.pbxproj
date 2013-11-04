@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0E033051181D22E40047BA11 /* icon_55.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E03304F181D22E40047BA11 /* icon_55.png */; };
+		0E033052181D22E40047BA11 /* icon_120.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E033050181D22E40047BA11 /* icon_120.png */; };
+		0E033055181D240E0047BA11 /* icon_57.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E033053181D240E0047BA11 /* icon_57.png */; };
+		0E033056181D240E0047BA11 /* icon_114.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E033054181D240E0047BA11 /* icon_114.png */; };
 		0E0A673117EEEFD700E5918A /* WIBNavBarMenu.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E0A672F17EEEFD700E5918A /* WIBNavBarMenu.png */; };
 		0E0A673217EEEFD700E5918A /* WIBNavBarMenu@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E0A673017EEEFD700E5918A /* WIBNavBarMenu@2x.png */; };
 		0E0A673417EEF9C400E5918A /* Bond_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E0A673317EEF9C400E5918A /* Bond_logo.png */; };
@@ -32,6 +36,11 @@
 		0E2E965917FA090D00FB9BD8 /* post_type_text@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E2E965017FA090D00FB9BD8 /* post_type_text@2x.png */; };
 		0E2E965A17FA090D00FB9BD8 /* post_type_vid@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E2E965117FA090D00FB9BD8 /* post_type_vid@2x.png */; };
 		0E2E965B17FA090D00FB9BD8 /* top_banner@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E2E965217FA090D00FB9BD8 /* top_banner@2x.png */; };
+		0E54EBA8182556770061D3B7 /* simplePlay.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E54EBA7182556770061D3B7 /* simplePlay.png */; };
+		0E54EBAA182558530061D3B7 /* player_playlist.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E54EBA9182558530061D3B7 /* player_playlist.png */; };
+		0E54EBAC18255A2A0061D3B7 /* text.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E54EBAB18255A2A0061D3B7 /* text.png */; };
+		0E54EBAE18255A460061D3B7 /* video.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E54EBAD18255A460061D3B7 /* video.png */; };
+		0E54EBB018255A610061D3B7 /* audio.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E54EBAF18255A610061D3B7 /* audio.png */; };
 		0E6241DE17D12AAF0038A9F6 /* yellowButton@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E6241DD17D12AAF0038A9F6 /* yellowButton@2x.png */; };
 		0E6241E017D12C2A0038A9F6 /* cutaway.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E6241DF17D12C2A0038A9F6 /* cutaway.png */; };
 		0E67D74517D5FBB300CFB7C5 /* WIBNavBar.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0E67D74417D5FBB300CFB7C5 /* WIBNavBar.jpg */; };
@@ -114,6 +123,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0E03304F181D22E40047BA11 /* icon_55.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_55.png; sourceTree = "<group>"; };
+		0E033050181D22E40047BA11 /* icon_120.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_120.png; sourceTree = "<group>"; };
+		0E033053181D240E0047BA11 /* icon_57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_57.png; sourceTree = "<group>"; };
+		0E033054181D240E0047BA11 /* icon_114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_114.png; sourceTree = "<group>"; };
 		0E0A672F17EEEFD700E5918A /* WIBNavBarMenu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = WIBNavBarMenu.png; sourceTree = "<group>"; };
 		0E0A673017EEEFD700E5918A /* WIBNavBarMenu@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "WIBNavBarMenu@2x.png"; sourceTree = "<group>"; };
 		0E0A673317EEF9C400E5918A /* Bond_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Bond_logo.png; sourceTree = "<group>"; };
@@ -139,6 +152,11 @@
 		0E2E965017FA090D00FB9BD8 /* post_type_text@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "post_type_text@2x.png"; sourceTree = "<group>"; };
 		0E2E965117FA090D00FB9BD8 /* post_type_vid@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "post_type_vid@2x.png"; sourceTree = "<group>"; };
 		0E2E965217FA090D00FB9BD8 /* top_banner@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "top_banner@2x.png"; sourceTree = "<group>"; };
+		0E54EBA7182556770061D3B7 /* simplePlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = simplePlay.png; sourceTree = "<group>"; };
+		0E54EBA9182558530061D3B7 /* player_playlist.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = player_playlist.png; sourceTree = "<group>"; };
+		0E54EBAB18255A2A0061D3B7 /* text.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = text.png; sourceTree = "<group>"; };
+		0E54EBAD18255A460061D3B7 /* video.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = video.png; sourceTree = "<group>"; };
+		0E54EBAF18255A610061D3B7 /* audio.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = audio.png; sourceTree = "<group>"; };
 		0E6241DD17D12AAF0038A9F6 /* yellowButton@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "yellowButton@2x.png"; sourceTree = "<group>"; };
 		0E6241DF17D12C2A0038A9F6 /* cutaway.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cutaway.png; sourceTree = "<group>"; };
 		0E67D74417D5FBB300CFB7C5 /* WIBNavBar.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = WIBNavBar.jpg; sourceTree = "<group>"; };
@@ -162,14 +180,14 @@
 		0E842E3D180C89A4005723BF /* player_play_on@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "player_play_on@2x.png"; sourceTree = "<group>"; };
 		0E842E46180C90B5005723BF /* top_banner_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = top_banner_logo.png; sourceTree = "<group>"; };
 		0E842E47180C90B5005723BF /* top_banner_logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "top_banner_logo@2x.png"; sourceTree = "<group>"; };
-		0E98F61A1706E30F006E9857 /* testapp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = testapp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E98F61A1706E30F006E9857 /* WordIsBond.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WordIsBond.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E98F61D1706E30F006E9857 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		0E98F61F1706E30F006E9857 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		0E98F6211706E30F006E9857 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		0E98F6251706E30F006E9857 /* testapp-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "testapp-Info.plist"; sourceTree = "<group>"; };
+		0E98F6251706E30F006E9857 /* WordIsBond-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "WordIsBond-Info.plist"; sourceTree = "<group>"; };
 		0E98F6271706E30F006E9857 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		0E98F6291706E30F006E9857 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		0E98F62B1706E30F006E9857 /* testapp-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "testapp-Prefix.pch"; sourceTree = "<group>"; };
+		0E98F62B1706E30F006E9857 /* WordIsBond-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WordIsBond-Prefix.pch"; sourceTree = "<group>"; };
 		0E98F62C1706E30F006E9857 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		0E98F62D1706E30F006E9857 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		0E98F62F1706E30F006E9857 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
@@ -181,9 +199,9 @@
 		0E98F63C1706E30F006E9857 /* MasterViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MasterViewController.m; sourceTree = "<group>"; };
 		0E98F63E1706E30F006E9857 /* DetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		0E98F63F1706E30F006E9857 /* DetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
-		0E98F6461706E310006E9857 /* testappTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = testappTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E98F6461706E310006E9857 /* WordIsBondTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WordIsBondTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E98F6471706E310006E9857 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
-		0E98F64F1706E310006E9857 /* testappTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "testappTests-Info.plist"; sourceTree = "<group>"; };
+		0E98F64F1706E310006E9857 /* WordIsBondTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "WordIsBondTests-Info.plist"; sourceTree = "<group>"; };
 		0E98F6511706E310006E9857 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		0E98F6531706E310006E9857 /* testappTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = testappTests.h; sourceTree = "<group>"; };
 		0E98F6541706E310006E9857 /* testappTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = testappTests.m; sourceTree = "<group>"; };
@@ -271,8 +289,8 @@
 		0E98F61B1706E30F006E9857 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				0E98F61A1706E30F006E9857 /* testapp.app */,
-				0E98F6461706E310006E9857 /* testappTests.octest */,
+				0E98F61A1706E30F006E9857 /* WordIsBond.app */,
+				0E98F6461706E310006E9857 /* WordIsBondTests.octest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -338,6 +356,15 @@
 		0E98F6241706E30F006E9857 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				0E54EBAF18255A610061D3B7 /* audio.png */,
+				0E54EBAD18255A460061D3B7 /* video.png */,
+				0E54EBAB18255A2A0061D3B7 /* text.png */,
+				0E54EBA9182558530061D3B7 /* player_playlist.png */,
+				0E54EBA7182556770061D3B7 /* simplePlay.png */,
+				0E033053181D240E0047BA11 /* icon_57.png */,
+				0E033054181D240E0047BA11 /* icon_114.png */,
+				0E03304F181D22E40047BA11 /* icon_55.png */,
+				0E033050181D22E40047BA11 /* icon_120.png */,
 				0EB3DE4C180DC83200BABC2A /* user_avatar.png */,
 				0EB3DE4D180DC83200BABC2A /* user_avatar@2x.png */,
 				0E842E46180C90B5005723BF /* top_banner_logo.png */,
@@ -396,10 +423,10 @@
 				0E67D74417D5FBB300CFB7C5 /* WIBNavBar.jpg */,
 				0E6241DF17D12C2A0038A9F6 /* cutaway.png */,
 				0E6241DD17D12AAF0038A9F6 /* yellowButton@2x.png */,
-				0E98F6251706E30F006E9857 /* testapp-Info.plist */,
+				0E98F6251706E30F006E9857 /* WordIsBond-Info.plist */,
 				0E98F6261706E30F006E9857 /* InfoPlist.strings */,
 				0E98F6291706E30F006E9857 /* main.m */,
-				0E98F62B1706E30F006E9857 /* testapp-Prefix.pch */,
+				0E98F62B1706E30F006E9857 /* WordIsBond-Prefix.pch */,
 				0E98F62F1706E30F006E9857 /* Default.png */,
 				0E98F6311706E30F006E9857 /* Default@2x.png */,
 				0E98F6331706E30F006E9857 /* Default-568h@2x.png */,
@@ -420,7 +447,7 @@
 		0E98F64E1706E310006E9857 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				0E98F64F1706E310006E9857 /* testappTests-Info.plist */,
+				0E98F64F1706E310006E9857 /* WordIsBondTests-Info.plist */,
 				0E98F6501706E310006E9857 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
@@ -429,9 +456,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		0E98F6191706E30F006E9857 /* testapp */ = {
+		0E98F6191706E30F006E9857 /* WordIsBond */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0E98F6581706E310006E9857 /* Build configuration list for PBXNativeTarget "testapp" */;
+			buildConfigurationList = 0E98F6581706E310006E9857 /* Build configuration list for PBXNativeTarget "WordIsBond" */;
 			buildPhases = (
 				0E98F6161706E30F006E9857 /* Sources */,
 				0E98F6171706E30F006E9857 /* Frameworks */,
@@ -441,14 +468,14 @@
 			);
 			dependencies = (
 			);
-			name = testapp;
+			name = WordIsBond;
 			productName = testapp;
-			productReference = 0E98F61A1706E30F006E9857 /* testapp.app */;
+			productReference = 0E98F61A1706E30F006E9857 /* WordIsBond.app */;
 			productType = "com.apple.product-type.application";
 		};
-		0E98F6451706E310006E9857 /* testappTests */ = {
+		0E98F6451706E310006E9857 /* WordIsBondTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0E98F65B1706E310006E9857 /* Build configuration list for PBXNativeTarget "testappTests" */;
+			buildConfigurationList = 0E98F65B1706E310006E9857 /* Build configuration list for PBXNativeTarget "WordIsBondTests" */;
 			buildPhases = (
 				0E98F6411706E310006E9857 /* Sources */,
 				0E98F6421706E310006E9857 /* Frameworks */,
@@ -460,9 +487,9 @@
 			dependencies = (
 				0E98F64C1706E310006E9857 /* PBXTargetDependency */,
 			);
-			name = testappTests;
+			name = WordIsBondTests;
 			productName = testappTests;
-			productReference = 0E98F6461706E310006E9857 /* testappTests.octest */;
+			productReference = 0E98F6461706E310006E9857 /* WordIsBondTests.octest */;
 			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
@@ -473,8 +500,13 @@
 			attributes = {
 				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = "Tom Berry";
+				TargetAttributes = {
+					0E98F6191706E30F006E9857 = {
+						DevelopmentTeam = 4BYV89NS42;
+					};
+				};
 			};
-			buildConfigurationList = 0E98F6151706E30F006E9857 /* Build configuration list for PBXProject "testapp" */;
+			buildConfigurationList = 0E98F6151706E30F006E9857 /* Build configuration list for PBXProject "WordIsBond" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -486,8 +518,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				0E98F6191706E30F006E9857 /* testapp */,
-				0E98F6451706E310006E9857 /* testappTests */,
+				0E98F6191706E30F006E9857 /* WordIsBond */,
+				0E98F6451706E310006E9857 /* WordIsBondTests */,
 			);
 		};
 /* End PBXProject section */
@@ -508,21 +540,26 @@
 				0E2E964417FA081200FB9BD8 /* post_drag.png in Resources */,
 				0E98F6321706E30F006E9857 /* Default@2x.png in Resources */,
 				0EB3DE4F180DC83200BABC2A /* user_avatar@2x.png in Resources */,
+				0E033056181D240E0047BA11 /* icon_114.png in Resources */,
 				0E0A673417EEF9C400E5918A /* Bond_logo.png in Resources */,
 				0E98F6341706E30F006E9857 /* Default-568h@2x.png in Resources */,
 				0E98F6371706E30F006E9857 /* MainStoryboard_iPhone.storyboard in Resources */,
 				0EBCABE117FEE92700C4FA17 /* banner_maskA.png in Resources */,
 				0E2E965617FA090D00FB9BD8 /* post_drag@2x.png in Resources */,
+				0E033055181D240E0047BA11 /* icon_57.png in Resources */,
 				0E0A673117EEEFD700E5918A /* WIBNavBarMenu.png in Resources */,
 				0E98F63A1706E30F006E9857 /* MainStoryboard_iPad.storyboard in Resources */,
 				0ED1D2D617BFED4E006FC6D4 /* play_icon.png in Resources */,
 				0E6241DE17D12AAF0038A9F6 /* yellowButton@2x.png in Resources */,
 				0E6241E017D12C2A0038A9F6 /* cutaway.png in Resources */,
 				0E842E43180C89A4005723BF /* player_play_off@2x.png in Resources */,
+				0E033052181D22E40047BA11 /* icon_120.png in Resources */,
 				0E67D74517D5FBB300CFB7C5 /* WIBNavBar.jpg in Resources */,
+				0E033051181D22E40047BA11 /* icon_55.png in Resources */,
 				0E2E964517FA081200FB9BD8 /* post_mask.png in Resources */,
 				0EBAC3D817FF4F5300DCD6A5 /* cornerfull.png in Resources */,
 				0E0A673817EEFBD800E5918A /* Bond_logo132@2x.png in Resources */,
+				0E54EBAC18255A2A0061D3B7 /* text.png in Resources */,
 				0E2E964117FA081200FB9BD8 /* banner_mask.png in Resources */,
 				0E2E964817FA081200FB9BD8 /* post_type_vid.png in Resources */,
 				0E2E965B17FA090D00FB9BD8 /* top_banner@2x.png in Resources */,
@@ -541,6 +578,7 @@
 				0EBEA2B817D8984B001CE110 /* WIB_mediabar.png in Resources */,
 				0E842E45180C89A4005723BF /* player_play_on@2x.png in Resources */,
 				0E2E965417FA090D00FB9BD8 /* icon_fav@2x.png in Resources */,
+				0E54EBAE18255A460061D3B7 /* video.png in Resources */,
 				0E842E41180C89A4005723BF /* player_pause_on@2x.png in Resources */,
 				0E842E49180C90B5005723BF /* top_banner_logo@2x.png in Resources */,
 				0EBEA2B917D8984B001CE110 /* WIB_mediabar@2x.png in Resources */,
@@ -552,14 +590,17 @@
 				0E0A673217EEEFD700E5918A /* WIBNavBarMenu@2x.png in Resources */,
 				0EBCABE217FEE92700C4FA17 /* banner_maskA@2x.png in Resources */,
 				0EBEA2BC17D8AB62001CE110 /* FastForward.png in Resources */,
+				0E54EBA8182556770061D3B7 /* simplePlay.png in Resources */,
 				0EBCABE817FEFD3A00C4FA17 /* corner.png in Resources */,
 				0E842E40180C89A4005723BF /* player_pause_on.png in Resources */,
+				0E54EBB018255A610061D3B7 /* audio.png in Resources */,
 				0E842E3F180C89A4005723BF /* player_pause_off@2x.png in Resources */,
 				0EBEA2BD17D8AB62001CE110 /* Rewind.png in Resources */,
 				0EBEA2BF17D8AC09001CE110 /* Banner_Display.png in Resources */,
 				0E842E48180C90B5005723BF /* top_banner_logo.png in Resources */,
 				0E73727717D9E36700E7226E /* MEDIUM_WIB_Loader.gif in Resources */,
 				0E73727917D9E83A00E7226E /* streaming.png in Resources */,
+				0E54EBAA182558530061D3B7 /* player_playlist.png in Resources */,
 				0EBCABDE17FECA1100C4FA17 /* frame.png in Resources */,
 				0ED77FC317DB855C001923B2 /* Plus_button.png in Resources */,
 				0E2E964917FA081200FB9BD8 /* top_banner.png in Resources */,
@@ -631,7 +672,7 @@
 /* Begin PBXTargetDependency section */
 		0E98F64C1706E310006E9857 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 0E98F6191706E30F006E9857 /* testapp */;
+			target = 0E98F6191706E30F006E9857 /* WordIsBond */;
 			targetProxy = 0E98F64B1706E310006E9857 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -733,11 +774,13 @@
 		0E98F6591706E310006E9857 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "testapp/testapp-Prefix.pch";
-				INFOPLIST_FILE = "testapp/testapp-Info.plist";
+				GCC_PREFIX_HEADER = "testapp/WordIsBond-Prefix.pch";
+				INFOPLIST_FILE = "testapp/WordIsBond-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = WordIsBond;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -745,11 +788,13 @@
 		0E98F65A1706E310006E9857 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "testapp/testapp-Prefix.pch";
-				INFOPLIST_FILE = "testapp/testapp-Info.plist";
+				GCC_PREFIX_HEADER = "testapp/WordIsBond-Prefix.pch";
+				INFOPLIST_FILE = "testapp/WordIsBond-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = WordIsBond;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -764,8 +809,8 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "testapp/testapp-Prefix.pch";
-				INFOPLIST_FILE = "testappTests/testappTests-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				INFOPLIST_FILE = "testappTests/WordIsBondTests-Info.plist";
+				PRODUCT_NAME = WordIsBondTests;
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = octest;
 			};
@@ -781,8 +826,8 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "testapp/testapp-Prefix.pch";
-				INFOPLIST_FILE = "testappTests/testappTests-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				INFOPLIST_FILE = "testappTests/WordIsBondTests-Info.plist";
+				PRODUCT_NAME = WordIsBondTests;
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = octest;
 			};
@@ -791,7 +836,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0E98F6151706E30F006E9857 /* Build configuration list for PBXProject "testapp" */ = {
+		0E98F6151706E30F006E9857 /* Build configuration list for PBXProject "WordIsBond" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0E98F6561706E310006E9857 /* Debug */,
@@ -800,7 +845,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0E98F6581706E310006E9857 /* Build configuration list for PBXNativeTarget "testapp" */ = {
+		0E98F6581706E310006E9857 /* Build configuration list for PBXNativeTarget "WordIsBond" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0E98F6591706E310006E9857 /* Debug */,
@@ -809,7 +854,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0E98F65B1706E310006E9857 /* Build configuration list for PBXNativeTarget "testappTests" */ = {
+		0E98F65B1706E310006E9857 /* Build configuration list for PBXNativeTarget "WordIsBondTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0E98F65C1706E310006E9857 /* Debug */,

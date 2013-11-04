@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "0E98F6191706E30F006E9857"
-               BuildableName = "testapp.app"
-               BlueprintName = "testapp"
-               ReferencedContainer = "container:testapp.xcodeproj">
+               BuildableName = "WordIsBond.app"
+               BlueprintName = "WordIsBond"
+               ReferencedContainer = "container:WordIsBond.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "0E98F6451706E310006E9857"
-               BuildableName = "testappTests.octest"
-               BlueprintName = "testappTests"
-               ReferencedContainer = "container:testapp.xcodeproj">
+               BuildableName = "WordIsBondTests.octest"
+               BlueprintName = "WordIsBondTests"
+               ReferencedContainer = "container:WordIsBond.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -43,9 +43,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "0E98F6191706E30F006E9857"
-            BuildableName = "testapp.app"
-            BlueprintName = "testapp"
-            ReferencedContainer = "container:testapp.xcodeproj">
+            BuildableName = "WordIsBond.app"
+            BlueprintName = "WordIsBond"
+            ReferencedContainer = "container:WordIsBond.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
@@ -62,9 +62,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "0E98F6191706E30F006E9857"
-            BuildableName = "testapp.app"
-            BlueprintName = "testapp"
-            ReferencedContainer = "container:testapp.xcodeproj">
+            BuildableName = "WordIsBond.app"
+            BlueprintName = "WordIsBond"
+            ReferencedContainer = "container:WordIsBond.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -80,9 +80,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "0E98F6191706E30F006E9857"
-            BuildableName = "testapp.app"
-            BlueprintName = "testapp"
-            ReferencedContainer = "container:testapp.xcodeproj">
+            BuildableName = "WordIsBond.app"
+            BlueprintName = "WordIsBond"
+            ReferencedContainer = "container:WordIsBond.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

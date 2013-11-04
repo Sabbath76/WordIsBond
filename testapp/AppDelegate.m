@@ -23,10 +23,17 @@
 //                                       forBarMetrics:UIBarMetricsDefault];
     [[UINavigationBar appearance] setBackgroundImage:navBarImage
                                        forBarMetrics:UIBarMetricsDefault];
+    
+//    [[UINavigationBar appearance] set setBarStyle:UIStatusBarStyleLightContent];
 //    [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"topbanner.jpg"]
 //                                           forBarMetrics:UIBarMetricsDefault];
     
 }
+
+//- (UIStatusBarStyle) preferredStatusBarStyle
+//{
+//    return UIStatusBarStyleLightContent;
+//}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {

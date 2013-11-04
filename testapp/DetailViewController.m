@@ -50,6 +50,8 @@
         }
         if (_webView)
         {
+//            NSString *fullString = [NSString stringWithFormat:@"<div style='text-align:justify; font-size:45px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>", [self.detailItem description]];
+//            [_webView loadHTMLString:fullString baseURL:nil];
             [_webView loadHTMLString:[self.detailItem description] baseURL:nil];
         }
         

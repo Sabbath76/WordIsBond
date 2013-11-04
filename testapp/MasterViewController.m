@@ -64,12 +64,12 @@ const int SectionSize[Total_Sections] =
     if (state)
     {
         destination.origin.x = destination.size.width - 50;
-        _btnMenu.tintColor = [UIColor whiteColor];
+        _btnMenu.tintColor = [UIColor blackColor];
     }
     else
     {
         destination.origin.x = 0;
-        _btnMenu.tintColor = [UIColor blackColor];
+        _btnMenu.tintColor = [UIColor whiteColor];
         
     }
     
@@ -82,6 +82,12 @@ const int SectionSize[Total_Sections] =
 {
     [self setMenuOpen:false];
 }
+
+//- (UIStatusBarStyle) preferredStatusBarStyle
+//{
+//    return UIStatusBarStyleLightContent;
+//}
+
 
 - (IBAction)onMenu:(id)sender
 {
@@ -183,7 +189,9 @@ const int SectionSize[Total_Sections] =
             {
                 UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
                 UIImageView *imgView = (UIImageView *)[cell viewWithTag:2];
+                UIImageView *imgViewMini = (UIImageView *)[cell viewWithTag:4];
                 imgView.image = iconDownloader.appRecord.appIcon;
+                imgViewMini.image = iconDownloader.appRecord.appIcon;
 
                 break;
             }
@@ -355,33 +363,43 @@ const int SectionSize[Total_Sections] =
             
             CRSSItem *object = _feed.items[indexPath.row];
             
-            CALayer *_maskingLayer = [CALayer layer];
-            _maskingLayer.frame = cell.bounds;
-            UIImage *stretchableImage = (id)[UIImage imageNamed:@"corner"];
-            
-            _maskingLayer.contents = (id)stretchableImage.CGImage;
-            _maskingLayer.contentsScale = [UIScreen mainScreen].scale; //<-needed for the retina display, otherwise our image will not be scaled properly
-            _maskingLayer.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
-            
-            [cell.layer setMask:_maskingLayer];
+//            [cell.layer setMask:_maskingLayer];
 
             UILabel *label = (UILabel *)[cell viewWithTag:1];
             label.text = [object title];
             UIImageView *imgView = (UIImageView *)[cell viewWithTag:2];
             UIImageView *imgIcon = (UIImageView *)[cell viewWithTag:3];
+            UIImageView *imgViewMini = (UIImageView *)[cell viewWithTag:4];
+            UILabel *labelDate = (UILabel *)[cell viewWithTag:5];
+            labelDate.text = object.dateString;
 
             imgView.image = object.appIcon;
+            imgViewMini.image = object.appIcon;
+            
+            if (imgViewMini)
+            {
+                CALayer *_maskingLayer = [CALayer layer];
+                _maskingLayer.frame = imgViewMini.bounds;
+                UIImage *stretchableImage = (id)[UIImage imageNamed:@"cornerfull"];
+                
+                _maskingLayer.contents = (id)stretchableImage.CGImage;
+                _maskingLayer.contentsScale = [UIScreen mainScreen].scale; //<-needed for the retina display, otherwise our image will not be scaled properly
+                _maskingLayer.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
+
+                [imgViewMini.layer setMask:_maskingLayer];
+            }
+
 
             switch (object.type)
             {
                 case Audio:
-                    imgIcon.image = [UIImage imageNamed:@"post_type_aud"];
+                    imgIcon.image = [UIImage imageNamed:@"audio"];
                    break;
                 case Video:
-                    imgIcon.image = [UIImage imageNamed:@"post_type_vid"];
+                    imgIcon.image = [UIImage imageNamed:@"video"];
                     break;
                 case Text:
-                    imgIcon.image = [UIImage imageNamed:@"post_type_text"];
+                    imgIcon.image = [UIImage imageNamed:@"text"];
                     break;
             }
 
