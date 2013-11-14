@@ -137,6 +137,49 @@
     return retString;
 }
 
+- (NSString *) convertDate:(NSString *)initialDate
+{
+    NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
+//    [formatter setDateStyle:NSDateFormatterShortStyle];
+//    [formatter setTimeStyle:NSDateFormatterShortStyle];
+//    [formatter setDateFormat:@"yyyy-MM-dd HH:MM:SS"];
+    [formatter setDateFormat:@"yyyy'-'MM'-'dd' 'HH':'mm':'ss"];
+    
+
+ 
+    //SET YOUT TIMEZONE HERE
+    formatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+    NSDate *myDate = [formatter dateFromString:initialDate];
+
+    [formatter setDateFormat:@"MMM dd"];
+    return[formatter stringFromDate:myDate];
+    
+/*    NSString *month = [initialDate substringWithRange:NSMakeRange(5, 2)];
+    NSString *day = [initialDate substringWithRange:NSMakeRange(8, 2)];
+    int monthNum = [month intValue];
+    int dayNum = [day intValue];
+
+//    NSString *day = [initialDate substringWithRange:NSMakeRange(5, 2)];
+    NSDateFormatter *dateformatter = [[NSDateFormatter alloc]init];
+    NSString *extensions[4] = {@"st", @"nd", @"rd", @"th"};
+    
+    return [NSString stringWithFormat:@"%@ %d%@", [dateformatter standaloneMonthSymbols][monthNum], dayNum, extensions[MIN(dayNum, 3)]];
+ */
+/*    [dateformatter setDateStyle:NSDateFormatterShortStyle];
+    [dateformatter setTimeStyle:NSDateFormatterNoStyle];
+    [dateformatter setDateFormat:@"yyyy-MM-dd"];
+    NSDate *myDate = [[NSDate alloc] init];
+    
+    //SET YOUT TIMEZONE HERE
+    dateformatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"PDT"];
+    myDate = [dateformatter dateFromString:initialDate];
+    [dateformatter standaloneMonthSymbols][]
+    myDate.month
+    
+    return [dateformatter stringFromDate:myDate];
+ */
+}
+
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
     //Start the XML parser with the delegate pointing at the current object
@@ -165,8 +208,12 @@
             newPost.description = [post objectForKey:@"content"];
             NSNumber *objID = [post objectForKey:@"id"];
             newPost.postID = objID.intValue;
-            newPost.dateString = [post objectForKey:@"date"];
+            NSString *rawDate = [post objectForKey:@"date"];
+            newPost.dateString = [self convertDate:rawDate];
 //            newPost.requiresDownload = true;
+            NSDictionary *author = [post objectForKey:@"author"];
+            newPost.author = [author objectForKey:@"name"];
+            
             NSArray *attachments = [post objectForKey:@"attachments"];
             NSString *fullContent = @"";
             for (NSDictionary *attachment in attachments)
@@ -203,8 +250,12 @@
                 }
                 else */if ([mimeType hasPrefix:@"audio"])
                 {
-                    NSString *trackUrl = [attachment objectForKey:@"url"];
-                    [newPost addTrack:trackUrl];
+                    TrackInfo *trackInfo = [TrackInfo alloc];
+                    trackInfo->url = [attachment objectForKey:@"url"];
+                    trackInfo->title = [attachment objectForKey:@"title"];
+                    trackInfo->duration = 0.0f;
+                    
+                    [newPost addTrack:trackInfo];
                 }
             }
             CGRect screenBounds = [[UIScreen mainScreen] bounds];
@@ -220,8 +271,11 @@
             NSString *imgHTML = [NSString stringWithFormat:@"<div><a><img src=\"%@\" width=\"%d\" height=\"%d\"/></a></div>", newPost.imageURLString, (int)(objWidth.intValue*scale), (int)(objHeight.intValue*scale)];
             fullContent = [fullContent stringByAppendingString:imgHTML];
 
-            
-            newPost.description = [NSString stringWithFormat:@"%@<div style='text-align:justify; font-size:45px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>", fullContent, newPost.description];
+            NSString *postFormat = @"<div style='font-size:45px;font-family:HelveticaNeue-CondensedBold;color:#0000;'><h1>%@</h1></div>\
+            <p><div style='font-size:30px;float:left'>%@</div> <div style='font-size:30px;float:right'>%@</div></p><br/>\
+            %@\
+            <div style='text-align:justify; font-size:30px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>";
+            newPost.description = [NSString stringWithFormat:postFormat, newPost.title, newPost.author, newPost.dateString, fullContent, newPost.description];
 
             
             [newPost setup];

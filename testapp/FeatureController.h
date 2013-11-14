@@ -20,7 +20,7 @@
 	NSInteger pageIndex;
 	BOOL textViewNeedsUpdate;
 	IBOutlet UILabel *label;
-	IBOutlet UITextView *textView;
+    __weak IBOutlet UILabel *dateView;
 //    IBOutlet UIImageView *imageView;
 }
 

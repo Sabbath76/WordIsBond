@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import "IconDownloader.h"
+#import "TrackInfo.h"
+
 
 typedef enum
 {
@@ -25,6 +27,7 @@ typedef enum
 @property (nonatomic, retain) NSString *description;
 @property (nonatomic, retain) NSString *imageURLString;
 @property (nonatomic, retain) NSString *mediaURLString;
+@property (nonatomic, retain) NSString *author;
 @property (nonatomic, retain) NSString *dateString;
 @property (nonatomic, retain) UIImage *appIcon;
 @property (nonatomic, readonly) PostType type;
@@ -34,7 +37,7 @@ typedef enum
 
 - (UIImage *) requestImage:(id<IconDownloaderDelegate>)delegate;
 - (void) requestFullFeed:(id<PostRequestDelegate>)delegate;
-- (void)addTrack:(NSString *) track;
+- (void)addTrack:(TrackInfo *) track;
 
 @end
 

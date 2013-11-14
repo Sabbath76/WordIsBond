@@ -67,6 +67,7 @@ const CGFloat TEXT_VIEW_PADDING = 50.0;
 //        }
         _imageView.image = rssItem.appIcon;
         label.text = rssItem.title;
+        dateView.text = rssItem.dateString;
 /*		NSDictionary *pageData =
 			[[DataSource sharedDataSource] dataForPage:pageIndex];
 		label.text = [pageData objectForKey:@"pageName"];
@@ -87,7 +88,7 @@ const CGFloat TEXT_VIEW_PADDING = 50.0;
 
 - (void)updateTextViews:(BOOL)force
 {
-	if (force ||
+/*	if (force ||
 		(textViewNeedsUpdate &&
 		self.view.window &&
 		CGRectIntersectsRect(
@@ -101,7 +102,7 @@ const CGFloat TEXT_VIEW_PADDING = 50.0;
 			[childView setNeedsDisplay];
 		}
 		textViewNeedsUpdate = NO;
-	}
+	}*/
 }
 
 @end

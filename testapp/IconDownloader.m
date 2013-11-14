@@ -97,6 +97,8 @@ static NSMutableDictionary *s_downloadingImagesByID = NULL;
     {
         [delegateItem appImageDidLoad:self];
     }
+    
+    [s_downloadingImagesByID removeObjectForKey:[NSNumber numberWithInt:self.postID]];
 }
 
 + (bool)download:(CRSSItem *)item indexPath:(NSIndexPath *)indexPathInTableView delegate:(id<IconDownloaderDelegate>)delegate isItem:(Boolean)isItem

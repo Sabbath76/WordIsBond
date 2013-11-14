@@ -14,7 +14,7 @@
     id<PostRequestDelegate> m_delegate;
 }
 
-@synthesize title, description, imageURLString, appIcon, mediaURLString, postID, requiresDownload, tracks, dateString;
+@synthesize title, description, imageURLString, appIcon, mediaURLString, postID, requiresDownload, tracks, dateString, author;
 
 - (NSString*) findProperty: (NSString *)search
 {
@@ -81,6 +81,11 @@
                 mediaURLString = [mediaURLString stringByReplacingOccurrencesOfString:@"%2F" withString:@"/"];
                 mediaURLString = [mediaURLString stringByAppendingString:@"/stream?client_id=YOUR_CLIENT_ID"];
                 
+                TrackInfo *newTrack = [TrackInfo alloc];
+                newTrack->title = self.title;
+                newTrack->url = mediaURLString;
+                [self addTrack:newTrack];
+                
                 _type = Audio;
             }
         }
@@ -99,6 +104,11 @@
                     range.length =media.length - rangeEnd.location;
                     mediaURLString = [NSString stringWithFormat:@"http://popplers5.bandcamp.com/download/track?enc=mp3-128&id=%@&stream=1", [media substringWithRange:range]];
                 
+                    TrackInfo *newTrack = [TrackInfo alloc];
+                    newTrack->title = self.title;
+                    newTrack->url = mediaURLString;
+                    [self addTrack:newTrack];
+
                     _type = Audio;
                 }
             }
@@ -155,7 +165,7 @@
     }*/
 }
 
-- (void)addTrack:(NSString *) track
+- (void)addTrack:(TrackInfo *) track
 {
     if (tracks == NULL)
     {

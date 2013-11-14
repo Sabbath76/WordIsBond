@@ -63,7 +63,7 @@ const int SectionSize[Total_Sections] =
     
     if (state)
     {
-        destination.origin.x = destination.size.width - 50;
+        destination.origin.x = 270;
         _btnMenu.tintColor = [UIColor blackColor];
     }
     else
@@ -83,10 +83,10 @@ const int SectionSize[Total_Sections] =
     [self setMenuOpen:false];
 }
 
-//- (UIStatusBarStyle) preferredStatusBarStyle
-//{
-//    return UIStatusBarStyleLightContent;
-//}
+- (UIStatusBarStyle) preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
+}
 
 
 - (IBAction)onMenu:(id)sender
@@ -134,7 +134,9 @@ const int SectionSize[Total_Sections] =
 //        self.m_queue = nil;   // we are finished with the queue and our ParseOperation
     }];*/
     
-    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"top_banner_logo"]];
+//Huh?    [self setNeedsStatusBarAppearanceUpdate];
+    
+    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Bond_logo132"]];
     
     [super awakeFromNib];
     
@@ -336,7 +338,7 @@ const int SectionSize[Total_Sections] =
             cell.rssFeed = _feed;
             cell.detailViewController = _detailViewController;
            
-            CALayer *_maskingLayer = [CALayer layer];
+/*            CALayer *_maskingLayer = [CALayer layer];
             _maskingLayer.frame = cell.bounds;
             UIImage *stretchableImage = (id)[UIImage imageNamed:@"corner"];
             
@@ -345,7 +347,7 @@ const int SectionSize[Total_Sections] =
             _maskingLayer.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
 
             [cell.layer setMask:_maskingLayer];
-            
+            */
             if (newFeatureCell)
             {
                 [cell updateFeed];
