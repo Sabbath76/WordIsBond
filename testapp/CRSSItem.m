@@ -49,6 +49,169 @@
     return self;
 }
 
+- (NSString *) convertWordPressString:(NSString*) inString
+{
+    struct SStringPair
+    {
+        __unsafe_unretained NSString *const symbol;
+        __unsafe_unretained NSString *const value;
+    };
+    const int NUM_VALUES = 8;
+    const struct SStringPair values[NUM_VALUES] = {{@"&#8211;", @"-"}, {@"&#8212;", @"--"}, {@"&#8230;", @"..."}, {@"&#8216;", @"'"}, {@"&#8217;", @"'"}, {@"&#8220;", @"'"}, {@"&#8221;", @"\""}, {@"&#038;", @"&"}};
+    NSString *retString = inString;
+    for (int i=0; i<NUM_VALUES; i++)
+    {
+        retString = [retString stringByReplacingOccurrencesOfString:values[i].symbol withString:values[i].value];
+    }
+    
+    return retString;
+}
+
+- (NSString *) convertDate:(NSString *)initialDate
+{
+    NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
+    //    [formatter setDateStyle:NSDateFormatterShortStyle];
+    //    [formatter setTimeStyle:NSDateFormatterShortStyle];
+    //    [formatter setDateFormat:@"yyyy-MM-dd HH:MM:SS"];
+    [formatter setDateFormat:@"yyyy'-'MM'-'dd' 'HH':'mm':'ss"];
+    
+    
+    
+    //SET YOUT TIMEZONE HERE
+    formatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+    NSDate *myDate = [formatter dateFromString:initialDate];
+    
+    [formatter setDateFormat:@"MMM dd"];
+    return[formatter stringFromDate:myDate];
+    
+    /*    NSString *month = [initialDate substringWithRange:NSMakeRange(5, 2)];
+     NSString *day = [initialDate substringWithRange:NSMakeRange(8, 2)];
+     int monthNum = [month intValue];
+     int dayNum = [day intValue];
+     
+     //    NSString *day = [initialDate substringWithRange:NSMakeRange(5, 2)];
+     NSDateFormatter *dateformatter = [[NSDateFormatter alloc]init];
+     NSString *extensions[4] = {@"st", @"nd", @"rd", @"th"};
+     
+     return [NSString stringWithFormat:@"%@ %d%@", [dateformatter standaloneMonthSymbols][monthNum], dayNum, extensions[MIN(dayNum, 3)]];
+     */
+    /*    [dateformatter setDateStyle:NSDateFormatterShortStyle];
+     [dateformatter setTimeStyle:NSDateFormatterNoStyle];
+     [dateformatter setDateFormat:@"yyyy-MM-dd"];
+     NSDate *myDate = [[NSDate alloc] init];
+     
+     //SET YOUT TIMEZONE HERE
+     dateformatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"PDT"];
+     myDate = [dateformatter dateFromString:initialDate];
+     [dateformatter standaloneMonthSymbols][]
+     myDate.month
+     
+     return [dateformatter stringFromDate:myDate];
+     */
+}
+
+
+- (void) initWithDictionary:(NSDictionary*)post
+{
+    CGRect screenBounds = [[UIScreen mainScreen] bounds];
+    CGFloat screenScale = [[UIScreen mainScreen] scale];
+    float width = screenBounds.size.width * screenScale;
+
+    title = [self convertWordPressString:[post objectForKey:@"title"]];
+    description = [post objectForKey:@"content"];
+
+    NSRange range = [description rangeOfString:@"width="];
+    while(range.location != NSNotFound)
+    {
+        NSRange rangeTillEnd = NSMakeRange(range.location + 1, [description length] - range.location - 1);
+        NSRange endPos = [description rangeOfString:@"\" " options:0 range:rangeTillEnd];
+        NSRange widthRange = NSMakeRange(range.location+7, endPos.location - (range.location+7));
+        description = [description stringByReplacingCharactersInRange:widthRange withString:@"100%%"];
+//        int imageWidth = [[description substringWithRange:NSMakeRange(range.location+7, endPos.location - (range.location+7))] intValue];
+        
+        range = [description rangeOfString:@"width=" options:0 range:NSMakeRange(range.location + 1, [description length] - range.location - 1)];
+    }
+
+//    description = [description stringByReplacingOccurrencesOfString:@"width=" withString:@"wad="];
+    description = [description stringByReplacingOccurrencesOfString:@"height=" withString:@"hat="];
+    NSNumber *objID = [post objectForKey:@"id"];
+    postID = objID.intValue;
+    NSString *rawDate = [post objectForKey:@"date"];
+    dateString = [self convertDate:rawDate];
+    //            newPost.requiresDownload = true;
+    NSDictionary *authorDict = [post objectForKey:@"author"];
+    author = [authorDict objectForKey:@"name"];
+    
+    NSArray *attachments = [post objectForKey:@"attachments"];
+    NSString *fullContent = @"";
+    for (NSDictionary *attachment in attachments)
+    {
+        NSString *mimeType = [attachment objectForKey:@"mime_type"];
+        /*                if ([mimeType hasPrefix:@"image"])
+         {
+         NSDictionary *imageList = [attachment objectForKey:@"images"];
+         
+         if (imageList)
+         {
+         NSDictionary *imageMed =[imageList objectForKey:@"medium"];
+         newPost.imageURLString = [imageMed objectForKey:@"url"];
+         }
+         else
+         {
+         newPost.imageURLString = [attachment objectForKey:@"url"];
+         }
+         
+         //                    const char *ch = [newPost.imageURLString cStringUsingEncoding:NSISOLatin1StringEncoding];
+         //                    NSString *yourstring = [[NSString alloc]initWithCString:ch encoding:NSUTF8StringEncoding];
+         
+         
+         NSString *imgHTML = [NSString stringWithFormat:@"<div><a><img src=\"%@\" /></a></div>", newPost.imageURLString];
+         fullContent = [fullContent stringByAppendingString:imgHTML];
+         
+         //                    NSString *fullPost = [NSString stringWithFormat:@"<div><a><img src=\"%@\" /></a></div><div style='text-align:justify; font-size:45px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>", newPost.imageURLString, newPost.description];
+         //                    NSString *imgBlock = [NSString stringWithFormat:@"<div><a><img width=320 height=240 src=\"%@\" /></a></div>", newPost.imageURLString];
+         //                    newPost.description = fullPost;//[imgBlock stringByAppendingString:newPost.description];
+         //                    [newPost.description stringByAppendingString:@"<div><a><img width=320 height=240 src=\""];
+         
+         //            NSString *fullString = [NSString stringWithFormat:@"<div style='text-align:justify; font-size:45px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>", [self.detailItem description]];
+         
+         }
+         else */if ([mimeType hasPrefix:@"audio"])
+         {
+             TrackInfo *trackInfo = [TrackInfo alloc];
+             trackInfo->url = [attachment objectForKey:@"url"];
+             trackInfo->title = [attachment objectForKey:@"title"];
+             trackInfo->duration = 0.0f;
+             
+             [self addTrack:trackInfo];
+         }
+    }
+    
+    NSDictionary *thumbs = [post objectForKey:@"thumbnail_images"];
+    NSDictionary *image =[thumbs objectForKey:@"medium"];
+    NSNumber *objWidth = [image objectForKey:@"width"];
+    NSNumber *objHeight = [image objectForKey:@"height"];
+    imageURLString = [image objectForKey:@"url"];
+    float scale = 1.0f;///(width / objWidth.floatValue);
+    NSString *imgHTML = [NSString stringWithFormat:@"<div><a><img src=\"%@\" width='100%%'/></a></div>", imageURLString];
+//    NSString *imgHTML = [NSString stringWithFormat:@"<div><a><img src=\"%@\" width=\"%d\" height=\"%d\"/></a></div>", imageURLString, (int)(objWidth.intValue*scale), (int)(objHeight.intValue*scale)];
+    fullContent = [fullContent stringByAppendingString:imgHTML];
+    
+    NSString *postFormat = @"<meta name='viewport' content='width=device-width; initial-scale=1, maximum-scale=1'>\
+    <div style='font-size:15px;font-family:HelveticaNeue-CondensedBold;color:#0000;'><h1>%@</h1></div>\
+    <p><div style='font-size:8px;float:left'>%@</div> <div style='font-size:8px;float:right'>%@</div></p><br/>\
+    %@\
+    <div style='text-align:justify; font-size:12px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>";
+//    NSString *postFormat = @"<meta name='viewport' content='width=device-width; initial-scale=1, maximum-scale=1'>\
+//    <div style='font-size:45px;font-family:HelveticaNeue-CondensedBold;color:#0000;'><h1>%@</h1></div>\
+//    <p><div style='font-size:30px;float:left'>%@</div> <div style='font-size:30px;float:right'>%@</div></p><br/>\
+//    %@\
+//    <div style='text-align:justify; font-size:30px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>";
+    description = [NSString stringWithFormat:postFormat, title, author, dateString, fullContent, description];
+    
+    [self setup];
+}
+
 - (void) setup
 {
     imageURLString = [self findProperty:@"img"];
@@ -226,7 +389,8 @@
     NSDictionary* post = [json objectForKey:@"post"];
     if (post)
     {
-        NSString *postContent = [post objectForKey:@"content"];
+        [self initWithDictionary:post];
+/*        NSString *postContent = [post objectForKey:@"content"];
         if (postContent)
         {
             description = postContent;
@@ -237,7 +401,9 @@
             [self setup];
         
             [m_delegate fullPostDidLoad:self];
-        }
+        }*/
+
+        [m_delegate fullPostDidLoad:self];
     }
     requiresDownload = false;
 }

@@ -37,7 +37,8 @@ typedef enum
 
 - (UIImage *) requestImage:(id<IconDownloaderDelegate>)delegate;
 - (void) requestFullFeed:(id<PostRequestDelegate>)delegate;
-- (void)addTrack:(TrackInfo *) track;
+- (void) addTrack:(TrackInfo *) track;
+- (void) initWithDictionary:(NSDictionary*)post;
 
 @end
 
