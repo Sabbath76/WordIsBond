@@ -94,7 +94,7 @@
             int curFeature = round(self.scrollView.contentOffset.x / self.scrollView.frame.size.width);
             
             CRSSItem *object = rssFeed.features[curFeature];
-            [[segue destinationViewController] setDetailItem:object];
+            [[segue destinationViewController] setDetailItem:object list:rssFeed.features];
         }
     }
 }

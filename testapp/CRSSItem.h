@@ -25,6 +25,7 @@ typedef enum
 
 @property (nonatomic, retain) NSString *title;
 @property (nonatomic, retain) NSString *description;
+@property (nonatomic, retain) NSString *blurb;
 @property (nonatomic, retain) NSString *imageURLString;
 @property (nonatomic, retain) NSString *mediaURLString;
 @property (nonatomic, retain) NSString *author;

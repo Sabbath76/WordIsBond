@@ -10,11 +10,13 @@
 #import "CRSSItem.h"
 
 
-@interface DetailViewController : UIViewController <UISplitViewControllerDelegate, PostRequestDelegate>
+@interface DetailViewController : UIViewController <UISplitViewControllerDelegate, PostRequestDelegate, UIScrollViewDelegate, IconDownloaderDelegate>
 @property (weak, nonatomic) IBOutlet UIWebView *webView;
 
 @property (strong, nonatomic) id detailItem;
 //@property (weak, nonatomic) IBOutlet UILabel *detailDescriptionLabel;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *btnFavourite;
+
+- (void)setDetailItem:(id)newDetailItem list:(NSArray *)sourceList;
 
 @end

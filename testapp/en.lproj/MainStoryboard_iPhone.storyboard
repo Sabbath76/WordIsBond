@@ -391,6 +391,14 @@
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <dataDetectorType key="dataDetectorTypes" phoneNumber="YES" link="YES" address="YES" calendarEvent="YES"/>
                             </webView>
+                            <scrollView clipsSubviews="YES" clearsContextBeforeDrawing="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" pagingEnabled="YES" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cHb-ex-rrt">
+                                <rect key="frame" x="0.0" y="62" width="320" height="200"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="delegate" destination="21" id="ybH-iq-L1c"/>
+                                </connections>
+                            </scrollView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
@@ -413,6 +421,7 @@
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="btnFavourite" destination="ebI-g6-Xfx" id="9G9-G4-8AT"/>
+                        <outlet property="m_header" destination="cHb-ex-rrt" id="m10-kc-wGW"/>
                         <outlet property="webView" destination="9r4-Y0-Dey" id="LVj-tY-7uu"/>
                     </connections>
                 </viewController>
@@ -423,7 +432,6 @@
         <!--View Controller Media Player-->
         <scene sceneID="O5S-g9-H1D">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="05K-fL-324" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController id="jaJ-hr-n2n" customClass="ViewControllerMediaPlayer" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="h2c-E8-Tha"/>
@@ -649,6 +657,7 @@
                         <outlet property="tableView" destination="yxc-hi-and" id="O1i-zg-uYk"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="05K-fL-324" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="198" y="-623"/>
         </scene>

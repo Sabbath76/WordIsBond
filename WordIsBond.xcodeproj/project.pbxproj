@@ -89,6 +89,8 @@
 		0E98F6521706E310006E9857 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0E98F6501706E310006E9857 /* InfoPlist.strings */; };
 		0E98F6551706E310006E9857 /* testappTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E98F6541706E310006E9857 /* testappTests.m */; };
 		0EA5FA9818126EAD00133EC8 /* UserData.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EA5FA9718126EAC00133EC8 /* UserData.m */; };
+		0EAC77A91837364F0084CE8C /* PostHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0EAC77A81837364F0084CE8C /* PostHeader.xib */; };
+		0EAC77AC1837396F0084CE8C /* PostHeaderController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EAC77AB1837396F0084CE8C /* PostHeaderController.m */; };
 		0EB3DE4E180DC83200BABC2A /* user_avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EB3DE4C180DC83200BABC2A /* user_avatar.png */; };
 		0EB3DE4F180DC83200BABC2A /* user_avatar@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EB3DE4D180DC83200BABC2A /* user_avatar@2x.png */; };
 		0EBAC3D817FF4F5300DCD6A5 /* cornerfull.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EBAC3D717FF4F5300DCD6A5 /* cornerfull.png */; };
@@ -224,6 +226,9 @@
 		0E98F6541706E310006E9857 /* testappTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = testappTests.m; sourceTree = "<group>"; };
 		0EA5FA9618126EAC00133EC8 /* UserData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserData.h; sourceTree = "<group>"; };
 		0EA5FA9718126EAC00133EC8 /* UserData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserData.m; sourceTree = "<group>"; };
+		0EAC77A81837364F0084CE8C /* PostHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PostHeader.xib; path = ../PostHeader.xib; sourceTree = "<group>"; };
+		0EAC77AA1837396F0084CE8C /* PostHeaderController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PostHeaderController.h; sourceTree = "<group>"; };
+		0EAC77AB1837396F0084CE8C /* PostHeaderController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PostHeaderController.m; sourceTree = "<group>"; };
 		0EB3DE4C180DC83200BABC2A /* user_avatar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = user_avatar.png; sourceTree = "<group>"; };
 		0EB3DE4D180DC83200BABC2A /* user_avatar@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "user_avatar@2x.png"; sourceTree = "<group>"; };
 		0EBAC3D717FF4F5300DCD6A5 /* cornerfull.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cornerfull.png; sourceTree = "<group>"; };
@@ -327,8 +332,11 @@
 		0E98F6231706E30F006E9857 /* testapp */ = {
 			isa = PBXGroup;
 			children = (
+				0EAC77AA1837396F0084CE8C /* PostHeaderController.h */,
+				0EAC77AB1837396F0084CE8C /* PostHeaderController.m */,
 				0EE620D217EB89B000D11B3B /* FeatureController.h */,
 				0EE620D317EB89B000D11B3B /* FeatureController.m */,
+				0EAC77A81837364F0084CE8C /* PostHeader.xib */,
 				0ED1D2D117BFED4E006FC6D4 /* play_icon.png */,
 				0ED1D2D217BFED4E006FC6D4 /* RSSFeed.h */,
 				0ED1D2D317BFED4E006FC6D4 /* RSSFeed.m */,
@@ -599,6 +607,7 @@
 				0E0A673C17EF010400E5918A /* postIconText@2x.png in Resources */,
 				0E2E965317FA090D00FB9BD8 /* banner_mask@2x.png in Resources */,
 				0EBEA2A917D886C9001CE110 /* WiB_playMedia.png in Resources */,
+				0EAC77A91837364F0084CE8C /* PostHeader.xib in Resources */,
 				0E2E964317FA081200FB9BD8 /* icon_opt.png in Resources */,
 				0E842E42180C89A4005723BF /* player_play_off.png in Resources */,
 				0E9596DA182ADA3C0088A61B /* topbondlogo.png in Resources */,
@@ -675,6 +684,7 @@
 				0E98F62E1706E30F006E9857 /* AppDelegate.m in Sources */,
 				0E98F63D1706E30F006E9857 /* MasterViewController.m in Sources */,
 				0E5D2C9E182E0D330036870A /* TrackInfo.m in Sources */,
+				0EAC77AC1837396F0084CE8C /* PostHeaderController.m in Sources */,
 				0E98F6401706E30F006E9857 /* DetailViewController.m in Sources */,
 				0EA5FA9818126EAD00133EC8 /* UserData.m in Sources */,
 				0ED1D2C317BFED27006FC6D4 /* CRSSItem.m in Sources */,

@@ -14,7 +14,7 @@
     id<PostRequestDelegate> m_delegate;
 }
 
-@synthesize title, description, imageURLString, appIcon, mediaURLString, postID, requiresDownload, tracks, dateString, author;
+@synthesize title, description, imageURLString, appIcon, mediaURLString, postID, requiresDownload, tracks, dateString, author, blurb;
 
 - (NSString*) findProperty: (NSString *)search
 {
@@ -113,9 +113,9 @@
 
 - (void) initWithDictionary:(NSDictionary*)post
 {
-    CGRect screenBounds = [[UIScreen mainScreen] bounds];
-    CGFloat screenScale = [[UIScreen mainScreen] scale];
-    float width = screenBounds.size.width * screenScale;
+//    CGRect screenBounds = [[UIScreen mainScreen] bounds];
+//    CGFloat screenScale = [[UIScreen mainScreen] scale];
+//    float width = screenBounds.size.width * screenScale;
 
     title = [self convertWordPressString:[post objectForKey:@"title"]];
     description = [post objectForKey:@"content"];
@@ -189,13 +189,16 @@
     
     NSDictionary *thumbs = [post objectForKey:@"thumbnail_images"];
     NSDictionary *image =[thumbs objectForKey:@"medium"];
-    NSNumber *objWidth = [image objectForKey:@"width"];
-    NSNumber *objHeight = [image objectForKey:@"height"];
+//    NSNumber *objWidth = [image objectForKey:@"width"];
+//    NSNumber *objHeight = [image objectForKey:@"height"];
     imageURLString = [image objectForKey:@"url"];
-    float scale = 1.0f;///(width / objWidth.floatValue);
+//    float scale = 1.0f;///(width / objWidth.floatValue);
     NSString *imgHTML = [NSString stringWithFormat:@"<div><a><img src=\"%@\" width='100%%'/></a></div>", imageURLString];
 //    NSString *imgHTML = [NSString stringWithFormat:@"<div><a><img src=\"%@\" width=\"%d\" height=\"%d\"/></a></div>", imageURLString, (int)(objWidth.intValue*scale), (int)(objHeight.intValue*scale)];
     fullContent = [fullContent stringByAppendingString:imgHTML];
+    
+    NSString *blurbFormat = @"<meta name='viewport' content='width=device-width; initial-scale=1, maximum-scale=1'><div style='text-align:justify; font-size:12px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>";
+    blurb = [NSString stringWithFormat:blurbFormat, description];
     
     NSString *postFormat = @"<meta name='viewport' content='width=device-width; initial-scale=1, maximum-scale=1'>\
     <div style='font-size:15px;font-family:HelveticaNeue-CondensedBold;color:#0000;'><h1>%@</h1></div>\
@@ -341,7 +344,7 @@
 
 - (UIImage *) requestImage:(id<IconDownloaderDelegate>)delegate;
 {
-    if (appIcon == NULL)
+    if ((appIcon == NULL) && (imageURLString != NULL))
     {
         [IconDownloader download:self delegate:delegate];
     }
@@ -355,6 +358,7 @@
     
     m_delegate = delegate;
     m_receivedData = [[NSMutableData alloc] init];
+    requiresDownload = false;
     
     //Create the connection with the string URL and kick it off
     NSURLConnection *urlConnection = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] delegate:self];

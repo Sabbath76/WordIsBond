@@ -17,6 +17,7 @@
 #import "UIToolbarDragger.h"
 
 #import "FeatureViewController.h"
+#import "UserData.h"
 
 
 #import <MediaPlayer/MediaPlayer.h>
@@ -459,7 +460,7 @@ const int SectionSize[Total_Sections] =
             if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
             {
                 CRSSItem *object = _feed.items[indexPath.row];
-                self.detailViewController.detailItem = object;
+                [self.detailViewController setDetailItem:object list:_feed.items];
             }
             break;
     }
@@ -471,7 +472,7 @@ const int SectionSize[Total_Sections] =
     {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
         CRSSItem *object = _feed.items[indexPath.row];
-        [[segue destinationViewController] setDetailItem:object];
+        [[segue destinationViewController] setDetailItem:object list:_feed.items];
     }
     else if ([[segue identifier] isEqualToString:@"showDetailFeature"])
     {
@@ -482,7 +483,8 @@ const int SectionSize[Total_Sections] =
     }
     else if ([[segue identifier] isEqualToString:@"showDetailManual"])
     {
-        [[segue destinationViewController] setDetailItem:m_forcedDetailItem];
+        NSArray *favouriteList = [[[UserData get] favourites] allObjects];
+        [[segue destinationViewController] setDetailItem:m_forcedDetailItem list:favouriteList];
     }
 }
 
