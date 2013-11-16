@@ -10,9 +10,17 @@
 
 @implementation CRSSItem
 {
-    NSMutableData *m_receivedData;
     id<PostRequestDelegate> m_delegate;
+    
+    NSURLConnection *m_fullPostQuery;
+    NSMutableData *m_receivedData;
+    NSURLConnection *m_tracksQuery;
+    NSMutableData *m_receivedDataTracks;
 }
+
+static NSString * BAND_CAMP_KEY = @"godsthannlitanpalafreyregna";
+static NSString * BAND_CAMP_ALBUM_QUERY = @"http://api.bandcamp.com/api/album/2/info?key=godsthannlitanpalafreyregna&album_id=";
+static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download/track?enc=mp3-128&id=%@&stream=1";
 
 @synthesize title, description, imageURLString, appIcon, mediaURLString, postID, requiresDownload, tracks, dateString, author, blurb;
 
@@ -267,8 +275,8 @@
                     && (rangeEnd.location != NSNotFound))
                 {
                     range.location += 6;
-                    range.length =media.length - rangeEnd.location;
-                    mediaURLString = [NSString stringWithFormat:@"http://popplers5.bandcamp.com/download/track?enc=mp3-128&id=%@&stream=1", [media substringWithRange:range]];
+                    range.length = media.length - rangeEnd.location;
+                    mediaURLString = [NSString stringWithFormat:BAND_CAMP_TRACK_URL, [media substringWithRange:range]];
                 
                     TrackInfo *newTrack = [TrackInfo alloc];
                     newTrack->title = self.title;
@@ -276,6 +284,28 @@
                     [self addTrack:newTrack];
 
                     _type = Audio;
+                }
+            }
+            else
+            {
+                NSRange albumRange = [media rangeOfString:@"album="];
+                if (albumRange.location != NSNotFound)
+                {
+                    NSRange rangeToSearchWithin = NSMakeRange(albumRange.location, media.length - albumRange.location);
+                    NSRange rangeEnd = [media rangeOfString:@"/" options:0 range:rangeToSearchWithin];
+
+                    if (rangeEnd.location != NSNotFound)
+                    {
+                        albumRange.location += 6;
+                        albumRange.length = rangeEnd.location-albumRange.location;
+                        NSString *url = [BAND_CAMP_ALBUM_QUERY stringByAppendingString:[media substringWithRange:albumRange]];
+                        
+                        m_receivedDataTracks = [[NSMutableData alloc] init];
+
+                        //Create the connection with the string URL and kick it off
+                        m_tracksQuery = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] delegate:self];
+                        [m_tracksQuery start];
+                    }
                 }
             }
         }
@@ -367,14 +397,28 @@
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
-    //Reset the data as this could be fired if a redirect or other response occurs
-    [m_receivedData setLength:0];
+    if (connection == m_tracksQuery)
+    {
+        [m_receivedDataTracks setLength:0];
+    }
+    else
+    {
+        //Reset the data as this could be fired if a redirect or other response occurs
+        [m_receivedData setLength:0];
+    }
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
-    //Append the received data each time this is called
-    [m_receivedData appendData:data];
+    if (connection == m_tracksQuery)
+    {
+        [m_receivedDataTracks appendData:data];
+    }
+    else
+    {
+        //Append the received data each time this is called
+        [m_receivedData appendData:data];
+    }
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
@@ -384,6 +428,31 @@
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
+    if (connection == m_tracksQuery)
+    {
+        NSDictionary* json = [NSJSONSerialization
+                              JSONObjectWithData:m_receivedDataTracks
+                              options:kNilOptions
+                              error:NULL];
+        
+        NSArray *tracksArray = [json objectForKey:@"tracks"];
+        for (NSDictionary *track in tracksArray)
+        {
+            TrackInfo *newTrack = [TrackInfo alloc];
+            newTrack->title = [track objectForKey:@"title"];
+            newTrack->url = [NSString stringWithFormat:BAND_CAMP_TRACK_URL, ((NSNumber*)([track objectForKey:@"track_id"])).stringValue];
+//            newTrack->url = [track objectForKey:@"streaming_url"];
+            newTrack->duration = ((NSNumber*)([track objectForKey:@"duration"])).floatValue;
+            [self addTrack:newTrack];
+        }
+        _type = Audio;
+        
+        [[NSNotificationCenter defaultCenter]
+         postNotificationName:@"NewTrackInfo"
+         object:self];
+    }
+    else
+    {
     //Start the XML parser with the delegate pointing at the current object
     NSDictionary* json = [NSJSONSerialization
                           JSONObjectWithData:m_receivedData
@@ -410,6 +479,7 @@
         [m_delegate fullPostDidLoad:self];
     }
     requiresDownload = false;
+    }
 }
 
 @end

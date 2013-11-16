@@ -89,6 +89,10 @@
                                              selector:@selector(onIconLoaded:)
                                                  name:@"IconLoaded"
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(receiveNewRSSFeed:)
+                                                 name:@"NewTrackInfo"
+                                               object:nil];
     m_audioItems = [[NSMutableArray alloc] init];
     
     _labelTitle.textColor = [UIColor grayColor];
@@ -569,7 +573,7 @@
             }
             else
             {
-                lblDuration.text = [NSString stringWithFormat:@"%d:%d", (int)(trackInfo->duration / 60.0f), (int)(trackInfo)%60];
+                lblDuration.text = [NSString stringWithFormat:@"%d:%2d", (int)(trackInfo->duration / 60.0f), (int)(trackInfo)%60];
             }
             imgView.image = [self getImageForTrack:indexPath.row];
         }
@@ -604,7 +608,7 @@
         }
         else
         {
-            lblDuration.text = [NSString stringWithFormat:@"%d:%d", (int)(trackInfo->duration / 60.0f), (int)(trackInfo)%60];
+            lblDuration.text = [NSString stringWithFormat:@"%d:%2d", (int)(trackInfo->duration / 60.0f), (int)(trackInfo)%60];
         }
         imgView.image = [self getImageForTrack:indexPath.row];
 
