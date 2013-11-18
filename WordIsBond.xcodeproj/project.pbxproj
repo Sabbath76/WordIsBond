@@ -110,6 +110,7 @@
 		0EBEA2BC17D8AB62001CE110 /* FastForward.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EBEA2BA17D8AB62001CE110 /* FastForward.png */; };
 		0EBEA2BD17D8AB62001CE110 /* Rewind.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EBEA2BB17D8AB62001CE110 /* Rewind.png */; };
 		0EBEA2BF17D8AC09001CE110 /* Banner_Display.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EBEA2BE17D8AC09001CE110 /* Banner_Display.png */; };
+		0EC11B7D183AC032006DC8F9 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EC11B7C183AC032006DC8F9 /* CoreMedia.framework */; };
 		0ED1D2C317BFED27006FC6D4 /* CRSSItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ED1D2C217BFED27006FC6D4 /* CRSSItem.m */; };
 		0ED1D2CD17BFED3C006FC6D4 /* FeatureCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ED1D2C617BFED3C006FC6D4 /* FeatureCell.m */; };
 		0ED1D2CE17BFED3C006FC6D4 /* FeatureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ED1D2C817BFED3C006FC6D4 /* FeatureViewController.m */; };
@@ -251,6 +252,7 @@
 		0EBEA2BA17D8AB62001CE110 /* FastForward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FastForward.png; sourceTree = "<group>"; };
 		0EBEA2BB17D8AB62001CE110 /* Rewind.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Rewind.png; sourceTree = "<group>"; };
 		0EBEA2BE17D8AC09001CE110 /* Banner_Display.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Banner_Display.png; sourceTree = "<group>"; };
+		0EC11B7C183AC032006DC8F9 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		0ED1D2C217BFED27006FC6D4 /* CRSSItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRSSItem.m; sourceTree = "<group>"; };
 		0ED1D2C417BFED30006FC6D4 /* CRSSItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRSSItem.h; sourceTree = "<group>"; };
 		0ED1D2C517BFED3C006FC6D4 /* FeatureCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeatureCell.h; sourceTree = "<group>"; };
@@ -276,6 +278,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0EC11B7D183AC032006DC8F9 /* CoreMedia.framework in Frameworks */,
 				0EBCABE417FEEBF700C4FA17 /* QuartzCore.framework in Frameworks */,
 				0E73727517D9D15B00E7226E /* AVFoundation.framework in Frameworks */,
 				0E98F61E1706E30F006E9857 /* UIKit.framework in Frameworks */,
@@ -320,6 +323,7 @@
 		0E98F61C1706E30F006E9857 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0EC11B7C183AC032006DC8F9 /* CoreMedia.framework */,
 				0EBCABE317FEEBF700C4FA17 /* QuartzCore.framework */,
 				0E98F61D1706E30F006E9857 /* UIKit.framework */,
 				0E98F61F1706E30F006E9857 /* Foundation.framework */,

@@ -212,7 +212,7 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
     <div style='font-size:15px;font-family:HelveticaNeue-CondensedBold;color:#0000;'><h1>%@</h1></div>\
     <p><div style='font-size:8px;float:left'>%@</div> <div style='font-size:8px;float:right'>%@</div></p><br/>\
     %@\
-    <div style='text-align:justify; font-size:12px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>";
+    <div style='text-align:justify; font-size:14px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>";
 //    NSString *postFormat = @"<meta name='viewport' content='width=device-width; initial-scale=1, maximum-scale=1'>\
 //    <div style='font-size:45px;font-family:HelveticaNeue-CondensedBold;color:#0000;'><h1>%@</h1></div>\
 //    <p><div style='font-size:30px;float:left'>%@</div> <div style='font-size:30px;float:right'>%@</div></p><br/>\

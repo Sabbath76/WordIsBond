@@ -16,6 +16,7 @@
 {
     NSMutableData *m_receivedData;
     AVAudioPlayer *m_audioPlayer;
+    AVPlayer *m_player;
     NSMutableArray *m_audioItems;
     NSURLConnection *m_currentConnection;
     float midOffset;
@@ -229,9 +230,9 @@
         CRSSItem *item = m_audioItems[currentItem];
         
         TrackInfo *trackInfo = item.tracks[currentTrack];
-
-        NSString* resourcePath = trackInfo ? trackInfo->url : item.mediaURLString;
         
+        NSString* resourcePath = trackInfo ? trackInfo->url : item.mediaURLString;
+
         [btnPlay setImage:[UIImage imageNamed:@"streaming"] forState:UIControlStateNormal];
         [btnPlay setImage:[UIImage imageNamed:@"streamingOn"] forState:UIControlStateSelected];
 
@@ -241,8 +242,19 @@
         fullRotation.duration = 0.5;
         fullRotation.repeatCount = INFINITY;
         [btnPlay.layer addAnimation:fullRotation forKey:@"360"];
-
         
+        NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
+        for (NSIndexPath *indexPath in visiblePaths)
+        {
+            if ((indexPath.section == 0) && (indexPath.row == currentTrack))
+            {
+                UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+                UIImageView *imgView = (UIImageView *)[cell viewWithTag:4];
+                [imgView.layer addAnimation:fullRotation forKey:@"360"];
+                imgView.image = m_isPlaying ? [UIImage imageNamed:@"streamingOn"] : [UIImage imageNamed:@"streaming"];
+            }
+        }
+
         [self streamData:resourcePath];
         
  /*       NSError *error;
@@ -270,6 +282,7 @@
 {
     currentTrack = newTrack;
     [self prepareMusic];
+//    [self updateTracks];
 }
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
@@ -314,11 +327,35 @@
     }
 }
 
-
 - (IBAction)togglePlay:(id)sender
 {
     if (btnPlay.isDragging == false)
     {
+        if (m_player)
+        {
+            [sldrPosition.layer removeAllAnimations];
+            if (m_isPlaying)
+            {
+                [m_player pause];
+            }
+            else
+            {
+                [m_player play];
+                
+                AVPlayerItem *item = m_player.currentItem;
+                
+                float curTime = CMTimeGetSeconds(item.currentTime);
+                float duration = CMTimeGetSeconds(item.duration);
+                [sldrPosition setValue:curTime];
+                [UIView animateWithDuration:duration-curTime animations:^{
+                    [sldrPosition setValue:curTime];
+                }];
+            }
+            m_isPlaying = !m_isPlaying;
+            [btnPlay setSelected:m_isPlaying];
+            [self updateTracks];
+        }
+        
         if (m_audioPlayer)
         {
             if ([m_audioPlayer isPlaying])
@@ -413,6 +450,15 @@
 
 - (void) streamData:(NSString *)url
 {
+    NSURL *streamURL = [NSURL URLWithString:url];
+    AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:streamURL];
+    
+    [playerItem addObserver:self forKeyPath:@"status" options:0
+                    context:nil];
+    m_player = [AVPlayer playerWithPlayerItem:playerItem];
+    
+/*
+    
     m_receivedData = [[NSMutableData alloc] init];
     
     if (m_currentConnection)
@@ -422,7 +468,71 @@
     //Create the connection with the string URL and kick it off
     m_currentConnection = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] delegate:self];
     [m_currentConnection start];
-    //    NSURLConnection
+    //    NSURLConnection*/
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ([object isKindOfClass:[AVPlayerItem class]])
+    {
+        AVPlayerItem *item = (AVPlayerItem *)object;
+        //playerItem status value changed?
+        if ([keyPath isEqualToString:@"status"])
+        {   //yes->check it...
+            switch(item.status)
+            {
+                case AVPlayerItemStatusFailed:
+                {
+                    [btnPlay.layer removeAllAnimations];
+                    [btnPlay setImage:[UIImage imageNamed:@"icon_opt"] forState:UIControlStateNormal];
+                    [btnPlay setImage:[UIImage imageNamed:@"icon_opt"] forState:UIControlStateSelected];
+
+                    UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead_off"];
+                    [sldrPosition setThumbImage:sliderThumb forState:UIControlStateNormal];
+                    [sldrPosition setThumbImage:sliderThumb forState:UIControlStateHighlighted];
+
+                    NSLog(@"player item status failed");
+                    break;
+                }
+                case AVPlayerItemStatusReadyToPlay:
+                {
+                    [btnPlay.layer removeAllAnimations];
+                    [btnPlay setImage:[UIImage imageNamed:@"simplePlay"] forState:UIControlStateNormal];
+                    [btnPlay setImage:[UIImage imageNamed:@"simplePlayOn"] forState:UIControlStateSelected];
+
+                    CRSSItem *post = m_audioItems[currentItem];
+                    TrackInfo *trackInfo = post.tracks[currentTrack];
+                    trackInfo->duration = CMTimeGetSeconds(item.duration);
+
+                    if (m_isPlaying)
+                    {
+                        [m_player play];
+                    }
+                    [self updateTracks];
+
+                    UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead"];
+                    [sldrPosition setThumbImage:sliderThumb forState:UIControlStateNormal];
+                    [sldrPosition setThumbImage:sliderThumb forState:UIControlStateHighlighted];
+                    
+                    sldrPosition.maximumValue = trackInfo->duration;
+                    sldrPosition.value = 0.0;
+
+                    NSLog(@"player item status is ready to play");
+                }
+                    break;
+                case AVPlayerItemStatusUnknown:
+                    NSLog(@"player item status is unknown");
+                    break;
+            }
+        }
+        else if ([keyPath isEqualToString:@"playbackBufferEmpty"])
+        {
+            if (item.playbackBufferEmpty)
+            {
+                NSLog(@"player item playback buffer is empty");
+            }
+        }
+    }
 }
 
 
@@ -529,6 +639,10 @@
 
 - (IBAction)slideTIme:(id)sender
 {
+    if (m_player)
+    {
+        [m_player seekToTime:CMTimeMakeWithSeconds(sldrPosition.value, 10)];
+    }
     if (m_audioPlayer)
     {
         m_audioPlayer.currentTime = sldrPosition.value;
@@ -573,9 +687,11 @@
             }
             else
             {
-                lblDuration.text = [NSString stringWithFormat:@"%d:%2d", (int)(trackInfo->duration / 60.0f), (int)(trackInfo)%60];
+                lblDuration.text = [NSString stringWithFormat:@"%d:%02d", (int)(trackInfo->duration / 60.0f), (int)(trackInfo)%60];
             }
             imgView.image = [self getImageForTrack:indexPath.row];
+            [imgView.layer removeAllAnimations];
+
         }
     }
 }
@@ -608,7 +724,7 @@
         }
         else
         {
-            lblDuration.text = [NSString stringWithFormat:@"%d:%2d", (int)(trackInfo->duration / 60.0f), (int)(trackInfo)%60];
+            lblDuration.text = [NSString stringWithFormat:@"%d:%02d", (int)(trackInfo->duration / 60.0f), (int)(trackInfo)%60];
         }
         imgView.image = [self getImageForTrack:indexPath.row];
 
