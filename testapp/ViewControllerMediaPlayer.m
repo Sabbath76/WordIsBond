@@ -8,15 +8,18 @@
 
 #import "ViewControllerMediaPlayer.h"
 
+#import <MediaPlayer/MPNowPlayingInfoCenter.h>
+#import <MediaPlayer/MPMediaItem.h>
+
 #import "RSSFeed.h"
 #import "CRSSItem.h"
-
+#import "SelectedItem.h"
 
 @interface ViewControllerMediaPlayer ()
 {
     NSMutableData *m_receivedData;
     AVAudioPlayer *m_audioPlayer;
-    AVPlayer *m_player;
+    AVQueuePlayer *m_player;
     NSMutableArray *m_audioItems;
     NSURLConnection *m_currentConnection;
     float midOffset;
@@ -27,6 +30,7 @@
     bool m_autoPlay;
     __weak IBOutlet UIToolbarDragger *btnPlay;
     __weak IBOutlet UISlider *sldrPosition;
+    __weak IBOutlet UIButton *miniImage;
 }
 
 @end
@@ -66,6 +70,61 @@
     rect.origin.y = parentHeight - self->bottomOffset;
 //    rect.origin.y = rect.size.height - self->bottomOffset;
     self.view.superview.frame = rect;
+    
+    //Once the view has loaded then we can register to begin recieving controls and we can become the first responder
+    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+    [self becomeFirstResponder];
+    
+    NSError *setCategoryError = nil;
+    NSError *activationError = nil;
+    [[AVAudioSession sharedInstance] setActive:YES error:&activationError];
+    [[AVAudioSession sharedInstance] setDelegate:self];
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&setCategoryError];
+    
+    m_player = [[AVQueuePlayer alloc] init];
+    m_player.actionAtItemEnd = AVPlayerActionAtItemEndAdvance;
+}
+
+-(void) viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    
+    //End recieving events
+    [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
+    [self resignFirstResponder];
+}
+
+//Make sure we can recieve remote control events
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
+
+- (void)remoteControlReceivedWithEvent:(UIEvent *)event
+{
+    //if it is a remote control event handle it correctly
+    if (event.type == UIEventTypeRemoteControl)
+    {
+        if (event.subtype == UIEventSubtypeRemoteControlPlay)
+        {
+            [self setPlaying:true];
+        }
+        else if (event.subtype == UIEventSubtypeRemoteControlPause)
+        {
+            [self setPlaying:false];
+        }
+        else if (event.subtype == UIEventSubtypeRemoteControlTogglePlayPause)
+        {
+            [self setPlaying:!m_isPlaying];
+        }
+        else if (event.subtype == UIEventSubtypeRemoteControlNextTrack)
+        {
+            [self onNext:self];
+        }
+        else if (event.subtype == UIEventSubtypeRemoteControlPreviousTrack)
+        {
+            [self onPrev:self];
+        }
+    }
 }
 
 - (void)viewDidLoad
@@ -102,6 +161,20 @@
     [sldrPosition setThumbImage:sliderThumb forState:UIControlStateNormal];
     [sldrPosition setThumbImage:sliderThumb forState:UIControlStateHighlighted];
 
+    
+    if (miniImage)
+    {
+        CALayer *_maskingLayer = [CALayer layer];
+        _maskingLayer.frame = miniImage.bounds;
+        UIImage *stretchableImage = (id)[UIImage imageNamed:@"cornerfull"];
+        
+        _maskingLayer.contents = (id)stretchableImage.CGImage;
+        _maskingLayer.contentsScale = [UIScreen mainScreen].scale; //<-needed for the retina display, otherwise our image will not be scaled properly
+        _maskingLayer.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
+        
+        [miniImage.layer setMask:_maskingLayer];
+    }
+
 //    _bar.layer.masksToBounds = false;
 //    _bar.layer.shadowOffset = CGSizeMake(0, 15);
 //    _bar.layer.shadowRadius = 8;
@@ -129,6 +202,8 @@
 - (void)setItem:(CRSSItem *) rssItem
 {
     currentImage.image = [rssItem requestImage:self];
+    [miniImage setImage:rssItem.appIcon forState:UIControlStateNormal];
+    [miniImage setImage:rssItem.appIcon forState:UIControlStateSelected];
     _labelTitle.text = rssItem.title;
     [_tableView reloadData];
 
@@ -140,7 +215,10 @@
 {
     if (m_audioItems.count > 0)
     {
-        currentItem++;
+        [m_player advanceToNextItem];
+        [self onNextTrack];
+        
+/*        currentItem++;
         if (currentItem >= m_audioItems.count)
         {
             currentItem = 0;
@@ -148,21 +226,36 @@
 
         CRSSItem *rssItem = m_audioItems[currentItem];
         [self setItem:rssItem];
-    }
+*/    }
 }
 
 - (IBAction)onPrev:(id)sender
 {
     if (m_audioItems.count > 0)
     {
-        currentItem--;
-        if (currentItem < 0)
+        if (currentTrack > 0)
         {
-            currentItem = (m_audioItems.count-1);
+            currentTrack--;
+        }
+        else
+        {
+            currentItem--;
+            if (currentItem < 0)
+            {
+                currentItem = (m_audioItems.count-1);
+            }
+
+            CRSSItem *rssItem = m_audioItems[currentItem];
+            currentTrack = rssItem.tracks.count - 1;
+            currentImage.image = [rssItem requestImage:self];
+            [miniImage setImage:rssItem.appIcon forState:UIControlStateNormal];
+            [miniImage setImage:rssItem.appIcon forState:UIControlStateSelected];
+            _labelTitle.text = rssItem.title;
+            [_tableView reloadData];
+
         }
         
-        CRSSItem *rssItem = m_audioItems[currentItem];
-        [self setItem:rssItem];
+        [self prepareMusic];
     }
 }
 
@@ -199,6 +292,8 @@
         if (((CRSSItem*)m_audioItems[currentItem]).postID == iconDownloader.postID)
         {
             currentImage.image = iconDownloader.appRecord.appIcon;
+            [miniImage setImage:iconDownloader.appRecord.appIcon forState:UIControlStateNormal];
+            [miniImage setImage:iconDownloader.appRecord.appIcon forState:UIControlStateSelected];
         }
     }
 }
@@ -211,6 +306,8 @@
         if (m_audioItems[currentItem] == item)
         {
             currentImage.image = item.appIcon;
+            [miniImage setImage:item.appIcon forState:UIControlStateNormal];
+            [miniImage setImage:item.appIcon forState:UIControlStateSelected];
         }
     }
 }
@@ -255,7 +352,31 @@
             }
         }
 
+        [m_player removeAllItems];
         [self streamData:resourcePath];
+        TrackInfo *nextTrack = [self getNextTrack];
+        if (nextTrack)
+        {
+            [self streamData:nextTrack->url];
+        }
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(playerItemDidReachEnd:)
+                                                     name:AVPlayerItemDidPlayToEndTimeNotification object:[m_player currentItem]];
+        
+
+        NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
+        [songInfo setObject:trackInfo->title forKey:MPMediaItemPropertyTitle];
+        [songInfo setObject:item.title forKey:MPMediaItemPropertyArtist];
+        [songInfo setObject:item.title forKey:MPMediaItemPropertyAlbumTitle];
+        [songInfo setObject:[NSNumber numberWithInt:1] forKey:MPNowPlayingInfoPropertyPlaybackRate];
+        
+        if ([item appIcon] != nil)
+        {
+            MPMediaItemArtwork *albumArt = [[MPMediaItemArtwork alloc] initWithImage: [item appIcon]];
+            [songInfo setObject:albumArt forKey:MPMediaItemPropertyArtwork];
+        }
+        [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
         
  /*       NSError *error;
         NSData *_objectData = [NSData dataWithContentsOfURL:[NSURL URLWithString:resourcePath]];
@@ -278,11 +399,113 @@
     }
 }
 
+struct STrackIdx
+{
+    int itemID;
+    int trackID;
+};
+
+- (struct STrackIdx)getNextTrackIdx
+{
+    struct STrackIdx trackIdx;
+    CRSSItem *item = m_audioItems[currentItem];
+    if (currentTrack+1 < item.tracks.count)
+    {
+        trackIdx.itemID = currentItem;
+        trackIdx.trackID = currentTrack+1;
+    }
+    else
+    {
+        trackIdx.itemID = (currentItem+1)%m_audioItems.count;
+        trackIdx.trackID = 0;
+    }
+    
+    return trackIdx;
+}
+
+- (IBAction)onPostClick:(id)sender
+{
+    if (m_audioItems)
+    {
+        SelectedItem *item = [SelectedItem alloc];
+        item->isFavourite = false;
+        item->item = m_audioItems[currentItem];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"ViewPost" object:item];
+    }
+}
+
+- (void)onNextTrack
+{
+    //--- Update UI
+    struct STrackIdx newTrack = [self getNextTrackIdx];
+
+    CRSSItem *newItem = m_audioItems[newTrack.itemID];
+    bool itemChanged = newTrack.itemID != currentItem;
+    
+    currentItem = newTrack.itemID;
+    currentTrack = newTrack.trackID;
+    if (itemChanged)
+    {
+        currentImage.image = [newItem requestImage:self];
+        [miniImage setImage:newItem.appIcon forState:UIControlStateNormal];
+        [miniImage setImage:newItem.appIcon forState:UIControlStateSelected];
+        _labelTitle.text = newItem.title;
+        [_tableView reloadData];
+    }
+  
+    //--- Queue up the next track
+    TrackInfo *nextTrack = [self getNextTrack];
+    if (nextTrack)
+    {
+        [self streamData:nextTrack->url];
+
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                              selector:@selector(playerItemDidReachEnd:)
+                                              name:AVPlayerItemDidPlayToEndTimeNotification object:[m_player currentItem]];
+    }
+    
+    [self updateTracks];
+    
+    //--- Update control centre display
+    TrackInfo *curTrack = newItem.tracks[currentTrack];
+    NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
+    [songInfo setObject:curTrack->title forKey:MPMediaItemPropertyTitle];
+    [songInfo setObject:newItem.title forKey:MPMediaItemPropertyArtist];
+    [songInfo setObject:newItem.title forKey:MPMediaItemPropertyAlbumTitle];
+    [songInfo setObject:[NSNumber numberWithFloat:curTrack->duration] forKey:MPMediaItemPropertyPlaybackDuration];
+    [songInfo setObject:[NSNumber numberWithInt:1] forKey:MPNowPlayingInfoPropertyPlaybackRate];
+    
+    if ([newItem appIcon] != nil)
+    {
+        MPMediaItemArtwork *albumArt = [[MPMediaItemArtwork alloc] initWithImage: [newItem appIcon]];
+        [songInfo setObject:albumArt forKey:MPMediaItemPropertyArtwork];
+    }
+    [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
+    
+//    [m_player removeItem:[m_player items][0]];
+    int count = [m_player items].count;
+}
+
+- (void)playerItemDidReachEnd:(NSNotification *)notification
+{
+    //allow for state updates, UI changes
+    [self onNextTrack];
+
+}
+
+
 - (void)setTrack:(int)newTrack
 {
     currentTrack = newTrack;
     [self prepareMusic];
 //    [self updateTracks];
+}
+
+- (TrackInfo *)getNextTrack
+{
+    struct STrackIdx newTrack = [self getNextTrackIdx];
+    CRSSItem *item = m_audioItems[newTrack.itemID];
+    return item.tracks[newTrack.trackID];
 }
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
@@ -327,18 +550,16 @@
     }
 }
 
-- (IBAction)togglePlay:(id)sender
+- (void) setPlaying:(bool)play
 {
-    if (btnPlay.isDragging == false)
+    if (m_isPlaying != play)
     {
+        m_isPlaying = play;
+    
         if (m_player)
         {
             [sldrPosition.layer removeAllAnimations];
             if (m_isPlaying)
-            {
-                [m_player pause];
-            }
-            else
             {
                 [m_player play];
                 
@@ -351,37 +572,22 @@
                     [sldrPosition setValue:curTime];
                 }];
             }
-            m_isPlaying = !m_isPlaying;
+            else
+            {
+                [m_player pause];
+            }
+
             [btnPlay setSelected:m_isPlaying];
             [self updateTracks];
         }
-        
-        if (m_audioPlayer)
-        {
-            if ([m_audioPlayer isPlaying])
-            {
-                [m_audioPlayer pause];
-                [btnPlay setSelected:FALSE];
-                m_isPlaying = false;
-                _labelTitle.textColor = [UIColor grayColor];
-            }
-            else
-            {
-                [m_audioPlayer play];
-                [btnPlay setSelected:TRUE];
-                m_isPlaying = true;
-                _labelTitle.textColor = [UIColor whiteColor];
+    }
+}
 
-                [sldrPosition.layer removeAllAnimations];
-                [sldrPosition setValue:m_audioPlayer.currentTime];
-                [UIView animateWithDuration:m_audioPlayer.duration-m_audioPlayer.currentTime animations:^{
-                    [sldrPosition setValue:m_audioPlayer.currentTime];
-                }];
-
-            }
-            
-            [self updateTracks];
-        }
+- (IBAction)togglePlay:(id)sender
+{
+    if (btnPlay.isDragging == false)
+    {
+        [self setPlaying:!m_isPlaying];
     }
 }
 
@@ -455,7 +661,9 @@
     
     [playerItem addObserver:self forKeyPath:@"status" options:0
                     context:nil];
-    m_player = [AVPlayer playerWithPlayerItem:playerItem];
+    
+    [m_player insertItem:playerItem afterItem:nil];
+    //m_player = [AVPlayer playerWithPlayerItem:playerItem];
     
 /*
     

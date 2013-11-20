@@ -10,6 +10,7 @@
 #import "RSSFeed.h"
 #import "CRSSItem.h"
 #import "UserData.h"
+#import "SelectedItem.h"
 
 #import "MasterViewController.h"
 #import "DetailViewController.h"
@@ -171,7 +172,11 @@
 {
     NSArray *favouriteArray = [[[UserData get] favourites] allObjects];
     CRSSItem *item = [favouriteArray objectAtIndex:indexPath.row];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"ViewPost" object:item];
+    SelectedItem *selItem = [SelectedItem alloc];
+    selItem->isFavourite = true;
+    selItem->item = item;
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"ViewPost" object:selItem];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender

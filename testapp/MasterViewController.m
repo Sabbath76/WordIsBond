@@ -19,6 +19,7 @@
 #import "FeatureViewController.h"
 #import "UserData.h"
 
+#import "SelectedItem.h"
 
 #import <MediaPlayer/MediaPlayer.h>
 
@@ -46,7 +47,7 @@ const int SectionSize[Total_Sections] =
     
     FeatureViewController *m_featuresController;
     
-    CRSSItem *m_forcedDetailItem;
+    SelectedItem *m_forcedDetailItem;
 }
 
 
@@ -483,8 +484,15 @@ const int SectionSize[Total_Sections] =
     }
     else if ([[segue identifier] isEqualToString:@"showDetailManual"])
     {
-        NSArray *favouriteList = [[[UserData get] favourites] allObjects];
-        [[segue destinationViewController] setDetailItem:m_forcedDetailItem list:favouriteList];
+        if (m_forcedDetailItem->isFavourite)
+        {
+            NSArray *favouriteList = [[[UserData get] favourites] allObjects];
+            [[segue destinationViewController] setDetailItem:m_forcedDetailItem->item list:favouriteList];
+        }
+        else
+        {
+            [[segue destinationViewController] setDetailItem:m_forcedDetailItem->item list:_feed.items];
+        }
     }
 }
 
