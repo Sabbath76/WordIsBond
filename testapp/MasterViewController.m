@@ -114,6 +114,8 @@ const int SectionSize[Total_Sections] =
     
     _feed = [RSSFeed getInstance];
     
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+    
 //    m_featureCell = [FeatureCell alloc];
 //    m_featureCell.rssFeed = _feed;
 //    m_featuresController = [FeatureViewController alloc];
