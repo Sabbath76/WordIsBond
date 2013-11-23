@@ -684,6 +684,9 @@ struct STrackIdx
     if ([object isKindOfClass:[AVPlayerItem class]])
     {
         AVPlayerItem *item = (AVPlayerItem *)object;
+        
+        if (item == [m_player currentItem])
+        {
         //playerItem status value changed?
         if ([keyPath isEqualToString:@"status"])
         {   //yes->check it...
@@ -739,6 +742,7 @@ struct STrackIdx
             {
                 NSLog(@"player item playback buffer is empty");
             }
+        }
         }
     }
 }

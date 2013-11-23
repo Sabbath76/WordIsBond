@@ -132,10 +132,14 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
     while(range.location != NSNotFound)
     {
         NSRange rangeTillEnd = NSMakeRange(range.location + 1, [description length] - range.location - 1);
+//debug        NSString *testSection = [description substringWithRange:rangeTillEnd];
         NSRange endPos = [description rangeOfString:@"\" " options:0 range:rangeTillEnd];
         NSRange widthRange = NSMakeRange(range.location+7, endPos.location - (range.location+7));
+        if ((endPos.location != NSNotFound) && (endPos.location > (range.location+7)))
+        {
         description = [description stringByReplacingCharactersInRange:widthRange withString:@"100%%"];
 //        int imageWidth = [[description substringWithRange:NSMakeRange(range.location+7, endPos.location - (range.location+7))] intValue];
+        }
         
         range = [description rangeOfString:@"width=" options:0 range:NSMakeRange(range.location + 1, [description length] - range.location - 1)];
     }

@@ -144,22 +144,22 @@
     if (newleftmost != leftMostFeature)
     {
         leftMostFeature = newleftmost;
-        if (self.imageView1 != NULL)
+        if ((self.imageView1 != NULL) && (leftMostFeature < pageCount))
         {
             CRSSItem *rssItem1 = rssFeed.features[leftMostFeature];
             [imageView1 setImage:[rssItem1 requestImage:self] forState:UIControlStateNormal];
         }
-        if (self.imageView2 != NULL)
+        if ((self.imageView2 != NULL) && (leftMostFeature+1 < pageCount))
         {
             CRSSItem *rssItem2 = rssFeed.features[leftMostFeature+1];
             [imageView2 setImage:[rssItem2 requestImage:self] forState:UIControlStateNormal];
         }
-        if (self.imageView3 != NULL)
+        if ((self.imageView3 != NULL) && (leftMostFeature+2 < pageCount))
         {
             CRSSItem *rssItem3 = rssFeed.features[leftMostFeature+2];
             [imageView3 setImage:[rssItem3 requestImage:self] forState:UIControlStateNormal];
         }
-        if (self.imageView4 != NULL)
+        if ((self.imageView4 != NULL) && (leftMostFeature+3 < pageCount))
         {
             CRSSItem *rssItem4 = rssFeed.features[leftMostFeature+3];
             [imageView4 setImage:[rssItem4 requestImage:self] forState:UIControlStateNormal];

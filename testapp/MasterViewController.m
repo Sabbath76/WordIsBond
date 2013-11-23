@@ -34,7 +34,7 @@ typedef enum
 
 const int SectionSize[Total_Sections] =
 {
-    30, 183, 80, 30
+    30, 183, 80, 40
 };
 
 @interface MasterViewController ()
@@ -48,6 +48,8 @@ const int SectionSize[Total_Sections] =
     FeatureViewController *m_featuresController;
     
     SelectedItem *m_forcedDetailItem;
+    
+    bool m_isLoadingMoreData;
 }
 
 
@@ -138,6 +140,8 @@ const int SectionSize[Total_Sections] =
     
 //Huh?    [self setNeedsStatusBarAppearanceUpdate];
     
+    m_isLoadingMoreData = false;
+    
     self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Bond_logo132"]];
     
     [super awakeFromNib];
@@ -150,7 +154,13 @@ const int SectionSize[Total_Sections] =
                                              selector:@selector(receiveNewRSSFeed:)
                                                  name:@"NewRSSFeed"
                                                object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(failedNewRSSFeed:)
+                                                 name:@"FailedFeed"
+                                               object:nil];
     
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(receiveViewPost:)
                                                  name:@"ViewPost"
@@ -160,6 +170,21 @@ const int SectionSize[Total_Sections] =
 //                                             selector:@selector(receiveCloseMenu:)
 //                                                 name:@"CloseMenu"
 //                                               object:nil];
+    
+    
+    UIRefreshControl *refresh = [[UIRefreshControl alloc] init];
+    refresh.attributedTitle = [[NSAttributedString alloc] initWithString:@"Pull to Refresh"];
+    [refresh setTintColor:[UIColor whiteColor]];
+
+    [refresh addTarget:self action:@selector(loadNewer) forControlEvents:UIControlEventValueChanged];
+    self.refreshControl = refresh;
+    
+}
+
+- (void) loadNewer
+{
+    int newPage = MAX([_feed GetPage]-1, 0);
+    [_feed LoadPage:newPage];
 }
 
 - (void)startIconDownload:(CRSSItem *)appRecord forIndexPath:(NSIndexPath *)indexPath
@@ -229,16 +254,76 @@ const int SectionSize[Total_Sections] =
 
 }
 
+- (void) failedNewRSSFeed:(NSNotification *) notification
+{
+    if (m_isLoadingMoreData)
+    {
+        m_isLoadingMoreData = false;
+        [self.tableView beginUpdates];
+        [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:LoadOlder] withRowAnimation:UITableViewRowAnimationLeft];
+        [self.tableView endUpdates];
+    }
+}
+
 - (void) receiveNewRSSFeed:(NSNotification *) notification
 {
     [self setMenuOpen:false];
     
     // tell our table view to reload its data, now that parsing has completed
-    [self.tableView reloadData];
+    if (_feed.reset)
+    {
+        [self.tableView reloadData];
+    }
+    else
+    {
+        NSMutableArray *newIndexPaths = [[NSMutableArray alloc] init];
+        for (int i=0; i<_feed.numNewFront; i++)
+        {
+            [newIndexPaths addObject:[NSIndexPath indexPathForRow:i inSection:Posts]];
+        }
+        for (int i=0; i<_feed.numNewBack; i++)
+        {
+            [newIndexPaths addObject:[NSIndexPath indexPathForRow:_feed.items.count-i-1 inSection:Posts]];
+        }
+
+        bool wasLoadingMoreData = m_isLoadingMoreData;
+        m_isLoadingMoreData = false;
+        
+        [self.tableView beginUpdates];
+        [self.tableView insertRowsAtIndexPaths:newIndexPaths withRowAnimation:UITableViewRowAnimationRight];
+        if (wasLoadingMoreData)
+        {
+            [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:LoadOlder] withRowAnimation:UITableViewRowAnimationLeft];
+        }
+        [self.tableView endUpdates];
+
+    }
+/*    NSArray *visibleCells = [self.tableView indexPathsForVisibleRows];
+    if (visibleCells.count)
+    {
+        NSMutableArray *updateCells = [[NSMutableArray alloc] init];
+        
+        for(NSIndexPath *indexPath in visibleCells)
+        {
+            if (indexPath.section == Posts)
+            {
+                [updateCells addObject:indexPath];
+            }
+        }
+        
+        [self.tableView reloadRowsAtIndexPaths:updateCells
+                          withRowAnimation:UITableViewRowAnimationRight];
+    }
+    else
+*/    {
+        [self.tableView reloadData];
+    }
     [self loadImagesForOnscreenRows];
 
     [m_featureCell setNeedsDisplay];
     [m_featureCell updateFeed];
+    
+    [self.refreshControl endRefreshing];
 }
 
 - (void) receiveViewPost:(NSNotification *) notification
@@ -271,20 +356,23 @@ const int SectionSize[Total_Sections] =
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return Total_Sections;
+    if (m_isLoadingMoreData)
+        return Total_Sections;
+    else
+        return LoadOlder;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    int numPages = [_feed GetNumPages];
-    int page = [_feed GetPage];
+//    int numPages = [_feed GetNumPages];
+//    int page = [_feed GetPage];
 
     switch (section)
     {
         case LoadNewer:
-            if (page > 0)
-                return 1;
-            else
+//            if (page > 0)
+//                return 1;
+//            else
                 return 0;
             break;
         case Features:
@@ -297,7 +385,7 @@ const int SectionSize[Total_Sections] =
             return _feed.items.count;
             break;
         case LoadOlder:
-            if (page+1 < numPages)
+            if (m_isLoadingMoreData)
                 return 1;
             else
                 return 0;
@@ -327,7 +415,7 @@ const int SectionSize[Total_Sections] =
         case LoadOlder:
         {
              UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"LoadMoreCell" forIndexPath:indexPath];
-             cell.textLabel.text = [NSString stringWithFormat:@"Load Older Posts (%d of %d)", page+2, numPages];
+//             cell.textLabel.text = [NSString stringWithFormat:@"Load Older Posts (%d of %d)", page+2, numPages];
             return cell;
         }
         break;
@@ -406,7 +494,23 @@ const int SectionSize[Total_Sections] =
                     imgIcon.image = [UIImage imageNamed:@"text"];
                     break;
             }
-
+            
+/*            [UIView animateWithDuration:1.0
+                    delay: 0.0
+                    options: UIViewAnimationOptionCurveEaseIn
+                    animations:^{
+                                 [cell.frame.size.height = 0.0;
+                             }
+                             completion:^(BOOL finished){
+                                 // Wait one second and then fade in the view
+                                 [UIView animateWithDuration:1.0
+                                                       delay: 1.0
+                                                     options:UIViewAnimationOptionCurveEaseOut
+                                                  animations:^{
+                                                      thirdView.alpha = 1.0;
+                                                  }
+                                                  completion:nil];
+                             }];*/
             return cell;
         }
         break;
@@ -452,10 +556,10 @@ const int SectionSize[Total_Sections] =
     switch (indexPath.section)
     {
         case LoadNewer:
-            [_feed LoadPage:[_feed GetPage]-1];
+//            [_feed LoadPage:[_feed GetPage]-1];
             break;
         case LoadOlder:
-            [_feed LoadPage:[_feed GetPage]+1];
+//            [_feed LoadPage:[_feed GetPage]+1];
             break;
         case Posts:
             if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
@@ -496,6 +600,25 @@ const int SectionSize[Total_Sections] =
     }
 }
 
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    if (_feed.items.count)
+    {
+    if ((scrollView.contentOffset.y + scrollView.frame.size.height) >= scrollView.contentSize.height)
+    {
+        if (!m_isLoadingMoreData)
+        {
+            m_isLoadingMoreData = true;
+
+            [self.tableView beginUpdates];
+            [self.tableView insertSections:[NSIndexSet indexSetWithIndex:LoadOlder] withRowAnimation:UITableViewRowAnimationRight];
+            [self.tableView endUpdates];
+
+            [_feed LoadPage:[_feed GetPage]+1];
+        }
+    }
+    }
+}
 
 // Load images for all onscreen rows when scrolling is finished
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate

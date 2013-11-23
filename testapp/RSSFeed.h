@@ -13,6 +13,9 @@
 
 @property (nonatomic, retain) NSMutableArray *items;
 @property (nonatomic, retain) NSMutableArray *features;
+@property (nonatomic, readonly) int numNewFront;
+@property (nonatomic, readonly) int numNewBack;
+@property (nonatomic, readonly) Boolean reset;
 
 - (void)handleLoadedApps:(NSArray *)loadedApps;
 + (RSSFeed *) getInstance;

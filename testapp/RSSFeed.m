@@ -18,9 +18,10 @@
     int m_page;
     int m_totalPages;
     NSString *m_lastSearch;
+    Boolean m_insertFront;
 }
 
-@synthesize items, features;
+@synthesize items, features, numNewBack, numNewFront, reset;
 
 - (void)handleLoadedApps:(NSArray *)loadedApps
 {
@@ -91,9 +92,10 @@
     }
 }
 
-- (void) QueryAPI:(NSString *)url
+- (void) QueryAPI:(NSString *)url reset:(Boolean)doReset
 {
     m_receivedData = [[NSMutableData alloc] init];
+    reset = doReset;
     
     //Create the connection with the string URL and kick it off
     NSURLConnection *urlConnection = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] delegate:self];
@@ -116,7 +118,9 @@
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-    
+    [[NSNotificationCenter defaultCenter]
+         postNotificationName:@"FailedFeed"
+         object:self];
 }
 
 - (NSString *) convertWordPressString:(NSString*) inString
@@ -191,28 +195,67 @@
     NSNumber *numItems = [json objectForKey:@"count"];
     if (numItems.intValue > 0)
     {
-        items = [[NSMutableArray alloc] init];
-        features = [[NSMutableArray alloc] init];
-
-//        [items removeAllObjects];
-//        [features removeAllObjects];
+        if (reset)
+        {
+            items = [[NSMutableArray alloc] init];
+            features = [[NSMutableArray alloc] init];
+        }
 
         NSNumber *pages = [json objectForKey:@"pages"];
         m_totalPages = pages.intValue;
 
+        numNewFront = 0;
+        numNewBack = 0;
+    
         NSArray *posts = [json objectForKey:@"posts"];
         for (NSDictionary *post in posts)
         {
-            CRSSItem *newPost = [CRSSItem alloc];
-            [newPost initWithDictionary:post];
+            NSNumber *postIdx = [post objectForKey:@"id"];
+            bool skip = false;
             
-            [items addObject:newPost];
-            [features addObject:newPost];
+            if (reset == false)
+            {
+                //--- Check for inserting new posts
+                for (CRSSItem *oldPost in items)
+                {
+                    if (oldPost.postID == postIdx.integerValue)
+                    {
+                        //--- Terminate
+                        skip = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (!skip)
+            {
+                CRSSItem *newPost = [CRSSItem alloc];
+                [newPost initWithDictionary:post];
+            
+                if (m_insertFront)
+                {
+                    [items insertObject:newPost atIndex:numNewFront];
+                    [features insertObject:newPost atIndex:numNewFront];
+                    numNewFront++;
+                }
+                else
+                {
+                    [items addObject:newPost];
+                    [features addObject:newPost];
+                    numNewBack++;
+                }
+            }
         }
         
         
         [[NSNotificationCenter defaultCenter]
          postNotificationName:@"NewRSSFeed"
+         object:self];
+    }
+    else
+    {
+        [[NSNotificationCenter defaultCenter]
+         postNotificationName:@"FailedFeed"
          object:self];
     }
 }
@@ -221,7 +264,8 @@
 {
     NSString *url = @"http://www.thewordisbond.com/?json=appqueries.get_recent_posts&count=20";
     m_lastSearch = url;
-    [self QueryAPI:url];
+    m_insertFront = false;
+    [self QueryAPI:url reset:true];
     m_page = 0;
 }
 
@@ -229,7 +273,8 @@
 {
     NSString *url = [@"http://www.thewordisbond.com/?json=appqueries.get_search_results&count=20&search=" stringByAppendingString:filter];
     m_lastSearch = url;
-    [self QueryAPI:url];
+    m_insertFront = false;
+    [self QueryAPI:url reset:true];
     m_page = 0;
 }
 
@@ -246,7 +291,8 @@
 - (void) LoadPage:(int) pageNum
 {
     NSString *url = [m_lastSearch stringByAppendingFormat:@"&page=%d",pageNum+1];
-    [self QueryAPI:url];
+    [self QueryAPI:url reset:false];
+    m_insertFront = pageNum <= m_page;
     m_page = pageNum;
 }
 
