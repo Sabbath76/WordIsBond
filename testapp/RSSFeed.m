@@ -15,10 +15,14 @@
     NSMutableArray *sourceItems;
     NSMutableArray *sourceFeatures;
     NSMutableData *m_receivedData;
+    NSMutableData *m_receivedDataFeatures;
+    NSURLConnection *m_connectionPosts;
+    NSURLConnection *m_connectionFeatures;
     int m_page;
     int m_totalPages;
     NSString *m_lastSearch;
     Boolean m_insertFront;
+    bool m_resetFeatures;
 }
 
 @synthesize items, features, numNewBack, numNewFront, reset;
@@ -98,29 +102,72 @@
     reset = doReset;
     
     //Create the connection with the string URL and kick it off
-    NSURLConnection *urlConnection = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] delegate:self];
-    [urlConnection start];
+    m_connectionPosts = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] delegate:self];
+    [m_connectionPosts start];
 //    NSURLConnection
 }
 
+- (void) QueryAPIFeatures:(NSString *)url reset:(Boolean)doReset
+{
+    m_receivedDataFeatures = [[NSMutableData alloc] init];
+    m_resetFeatures = doReset;
+    
+    //Create the connection with the string URL and kick it off
+    m_connectionFeatures = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] delegate:self];
+    [m_connectionFeatures start];
+    //    NSURLConnection
+}
 
+/*
+Hello Miles
+
+Lloyd is eating Shreddees
+ 
+I want my mummee
+
+ PoooooooooOoooooooOoooo
+ 
+ I luv my mummee
+*/
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
     //Reset the data as this could be fired if a redirect or other response occurs
-    [m_receivedData setLength:0];
+    if (connection == m_connectionPosts)
+    {
+        [m_receivedData setLength:0];
+    }
+    else if (connection == m_connectionFeatures)
+    {
+        [m_receivedDataFeatures setLength:0];
+    }
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
     //Append the received data each time this is called
-    [m_receivedData appendData:data];
+    if (connection == m_connectionPosts)
+    {
+        [m_receivedData appendData:data];
+    }
+    else if (connection == m_connectionFeatures)
+    {
+        [m_receivedDataFeatures appendData:data];
+    }
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-    [[NSNotificationCenter defaultCenter]
-         postNotificationName:@"FailedFeed"
-         object:self];
+    if (connection == m_connectionPosts)
+    {
+        [[NSNotificationCenter defaultCenter]
+            postNotificationName:@"FailedFeed"
+            object:self];
+        m_connectionPosts = nil;
+    }
+    else if (connection == m_connectionFeatures)
+    {
+        m_connectionFeatures = nil;
+    }
 }
 
 - (NSString *) convertWordPressString:(NSString*) inString
@@ -186,28 +233,53 @@
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
+    bool isPosts = (connection == m_connectionPosts);
+    bool isFeatures = (connection == m_connectionFeatures);
+    
+    if (!isPosts && !isFeatures)
+        return;
+    
+    NSMutableData *data = nil;
+    if (isPosts)
+    {
+        m_connectionPosts = nil;
+        data = m_receivedData;
+    }
+    else if (isFeatures)
+    {
+        m_connectionFeatures = nil;
+        data = m_receivedDataFeatures;
+    }
+    
     //Start the XML parser with the delegate pointing at the current object
     NSDictionary* json = [NSJSONSerialization
-                          JSONObjectWithData:m_receivedData
+                          JSONObjectWithData:data
                           options:kNilOptions
                           error:NULL];
     
     NSNumber *numItems = [json objectForKey:@"count"];
-    if (numItems.intValue > 0)
+    if ((numItems.intValue > 0) || isFeatures)
     {
-        if (reset)
+        if (isPosts && reset)
         {
             items = [[NSMutableArray alloc] init];
+        }
+        else if (isFeatures && m_resetFeatures)
+        {
             features = [[NSMutableArray alloc] init];
         }
 
-        NSNumber *pages = [json objectForKey:@"pages"];
-        m_totalPages = pages.intValue;
+        if (isPosts)
+        {
+            NSNumber *pages = [json objectForKey:@"pages"];
+            m_totalPages = pages.intValue;
 
-        numNewFront = 0;
-        numNewBack = 0;
+            numNewFront = 0;
+            numNewBack = 0;
+        }
     
         NSArray *posts = [json objectForKey:@"posts"];
+
         for (NSDictionary *post in posts)
         {
             NSNumber *postIdx = [post objectForKey:@"id"];
@@ -234,25 +306,39 @@
             
                 if (m_insertFront)
                 {
-                    [items insertObject:newPost atIndex:numNewFront];
-                    [features insertObject:newPost atIndex:numNewFront];
-                    numNewFront++;
+                    if (isPosts)
+                    {
+                        [items insertObject:newPost atIndex:numNewFront];
+                        numNewFront++;
+                    }
+                    else
+                    {
+                        [features insertObject:newPost atIndex:numNewFront];
+                    }
                 }
                 else
                 {
-                    [items addObject:newPost];
-                    [features addObject:newPost];
-                    numNewBack++;
+                    if (isPosts)
+                    {
+                        [items addObject:newPost];
+                        numNewBack++;
+                    }
+                    else
+                    {
+                        [features addObject:newPost];
+                    }
                 }
             }
         }
         
-        
-        [[NSNotificationCenter defaultCenter]
-         postNotificationName:@"NewRSSFeed"
-         object:self];
+        if ((m_connectionPosts == nil) && (m_connectionFeatures == nil))
+        {
+            [[NSNotificationCenter defaultCenter]
+             postNotificationName:@"NewRSSFeed"
+             object:self];
+        }
     }
-    else
+    else if (isPosts)
     {
         [[NSNotificationCenter defaultCenter]
          postNotificationName:@"FailedFeed"
@@ -263,18 +349,22 @@
 - (void) LoadFeed
 {
     NSString *url = @"http://www.thewordisbond.com/?json=appqueries.get_recent_posts&count=20";
+    NSString *urlFeatures = @"http://www.thewordisbond.com/?json=appqueries.get_recent_features&count=5";
     m_lastSearch = url;
     m_insertFront = false;
     [self QueryAPI:url reset:true];
+    [self QueryAPIFeatures:urlFeatures reset:true];
     m_page = 0;
 }
 
 - (void) FilterJSON:(NSString *)filter showAudio:(bool)showAudio showVideo:(bool)showVideo showText:(bool)showText
 {
     NSString *url = [@"http://www.thewordisbond.com/?json=appqueries.get_search_results&count=20&search=" stringByAppendingString:filter];
+    NSString *urlFeatures = [@"http://www.thewordisbond.com/?json=appqueries.get_search_feature_results&count=5&search=" stringByAppendingString:filter];
     m_lastSearch = url;
     m_insertFront = false;
     [self QueryAPI:url reset:true];
+    [self QueryAPIFeatures:urlFeatures reset:true];
     m_page = 0;
 }
 
