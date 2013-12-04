@@ -30,7 +30,9 @@ typedef enum
 @property (nonatomic, retain) NSString *mediaURLString;
 @property (nonatomic, retain) NSString *author;
 @property (nonatomic, retain) NSString *dateString;
+@property (nonatomic, retain) NSString *postURL;
 @property (nonatomic, retain) UIImage *appIcon;
+@property (nonatomic, retain) UIImage *blurredImage;
 @property (nonatomic, readonly) PostType type;
 @property (nonatomic, readonly) NSMutableArray *tracks;
 @property (nonatomic, readwrite) int postID;
@@ -40,6 +42,7 @@ typedef enum
 - (void) requestFullFeed:(id<PostRequestDelegate>)delegate;
 - (void) addTrack:(TrackInfo *) track;
 - (void) initWithDictionary:(NSDictionary*)post;
+- (void) updateImage:(UIImage *)image;
 
 @end
 

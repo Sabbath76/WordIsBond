@@ -23,6 +23,10 @@
 
 #import <MediaPlayer/MediaPlayer.h>
 
+#import <Social/Social.h>
+
+#import <Accounts/Accounts.h>
+
 typedef enum
 {
     LoadNewer,
@@ -39,6 +43,8 @@ const int SectionSize[Total_Sections] =
 
 @interface MasterViewController ()
 {
+    __weak IBOutlet UIButton *m_btnFavourite;
+    
     RSSFeed *_feed;
 
     RSSParser *m_parser;
@@ -48,6 +54,10 @@ const int SectionSize[Total_Sections] =
     FeatureViewController *m_featuresController;
     
     SelectedItem *m_forcedDetailItem;
+    
+    UIView *m_quickMenu;
+    
+    int m_currentQuickMenuItem;
     
     bool m_isLoadingMoreData;
 }
@@ -69,12 +79,15 @@ const int SectionSize[Total_Sections] =
     {
         destination.origin.x = 270;
         _btnMenu.tintColor = [UIColor blackColor];
+        
+        [self.tableView setUserInteractionEnabled:false];
     }
     else
     {
         destination.origin.x = 0;
         _btnMenu.tintColor = [UIColor whiteColor];
         
+        [self.tableView setUserInteractionEnabled:true];
     }
     
     [UIView beginAnimations:@"Bringing up menu" context:nil];
@@ -102,6 +115,11 @@ const int SectionSize[Total_Sections] =
     [self setMenuOpen:menuOpen];
 }
 
+- (IBAction)onSearch:(id)sender
+{
+    [self setMenuOpen:true];
+}
+
 - (void)awakeFromNib
 {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
@@ -125,7 +143,7 @@ const int SectionSize[Total_Sections] =
 //    self.m_queue = [[[NSOperationQueue alloc] init] autorelease];
 
     //--- JSON Only
-    [_feed LoadFeed];
+//    [_feed LoadFeed];
     
     //--- RSS Feed
 //    NSString *url = @"http://www.thewordisbond.com/feed/mobile/?format=xml";
@@ -144,7 +162,7 @@ const int SectionSize[Total_Sections] =
     
     m_isLoadingMoreData = false;
     
-    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Bond_logo132"]];
+    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"top_banner_logo"]];
     
     [super awakeFromNib];
     
@@ -174,6 +192,45 @@ const int SectionSize[Total_Sections] =
 //                                               object:nil];
     
     
+/*
+ 
+ Makka munda.
+ Hello there!
+ I like to mohgli mohgli.
+ 
+ Oh Poo!
+ 
+ Hello painted dog!
+ Who painted you anyway?
+ Was it a naughty cat?
+ 
+ Brulbrrulbrulbrbulrbrulbrulbrrp!
+ 
+ Pifftlerpahpacutpennoo
+ 
+ How much wood would a woodchuck chuck if a woodchuck could chuck wood?
+ 
+ Red lorry yellow lorry Red lorry yellow lorry Red lorry yellow lorry Red lorry yellow lorry.
+ 
+ She sells seashells on the seashore
+ 
+ Luke luck licks lakes
+ Luke Luke's duck licks lakes?
+ 
+ Polar bears are smashing their heads against the ice
+ 
+ my memery is gone!
+ 
+ EeeeeeeeeEeeeeeeeeeeeEeeeeeee
+ 
+ I'm stupid
+ 
+ You are a poo
+ 
+ OH POO. I really hate myself!
+ */
+    
+    
     UIRefreshControl *refresh = [[UIRefreshControl alloc] init];
     refresh.attributedTitle = [[NSAttributedString alloc] initWithString:@"Pull to Refresh"];
     [refresh setTintColor:[UIColor whiteColor]];
@@ -181,6 +238,21 @@ const int SectionSize[Total_Sections] =
     [refresh addTarget:self action:@selector(loadNewer) forControlEvents:UIControlEventValueChanged];
     self.refreshControl = refresh;
     
+    UISwipeGestureRecognizer *swipeRecognizerLeft = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+    [swipeRecognizerLeft setDirection:(UISwipeGestureRecognizerDirectionLeft)];
+    [self.tableView addGestureRecognizer:swipeRecognizerLeft];
+
+    UISwipeGestureRecognizer *swipeRecognizerRight = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+    [swipeRecognizerRight setDirection:(UISwipeGestureRecognizerDirectionRight)];
+    [self.tableView addGestureRecognizer:swipeRecognizerRight];
+
+/*    UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc]
+                                          initWithTarget:self action:@selector(handleLongPress:)];
+    lpgr.minimumPressDuration = 2.0; //seconds
+    lpgr.delegate = self;
+    [self.tableView addGestureRecognizer:lpgr];*/
+    
+    m_quickMenu = [[[NSBundle mainBundle] loadNibNamed:@"PostQuickMenu" owner:self options:nil] objectAtIndex:0];
 }
 
 - (void) loadNewer
@@ -221,7 +293,7 @@ const int SectionSize[Total_Sections] =
                 UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
                 UIImageView *imgView = (UIImageView *)[cell viewWithTag:2];
                 UIImageView *imgViewMini = (UIImageView *)[cell viewWithTag:4];
-                imgView.image = iconDownloader.appRecord.appIcon;
+                imgView.image = iconDownloader.appRecord.blurredImage;
                 imgViewMini.image = iconDownloader.appRecord.appIcon;
 
                 break;
@@ -399,6 +471,80 @@ const int SectionSize[Total_Sections] =
     }
 }
 
+- (IBAction)onFavourite:(id)sender
+{
+    if (m_currentQuickMenuItem != -1)
+    {
+        CRSSItem *item = _feed.items[m_currentQuickMenuItem];
+        NSMutableSet *favourites = [[UserData get] favourites];
+        if ([favourites containsObject:item])
+        {
+            [m_btnFavourite setSelected:false];
+            [favourites removeObject:item];
+        }
+        else
+        {
+            [m_btnFavourite setSelected:true];
+            [favourites addObject:item];
+        }
+        [[UserData get] onChanged];
+    }
+}
+
+- (IBAction)onTweet:(id)sender
+{
+    if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter])
+    {
+        SLComposeViewController *mySLComposerSheet = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
+        CRSSItem *item = _feed.items[m_currentQuickMenuItem];
+
+        [mySLComposerSheet setInitialText:@"Found a dope post on WIB"];
+    
+        [mySLComposerSheet addImage:item.appIcon];
+    
+        [mySLComposerSheet addURL:[NSURL URLWithString:item.postURL]];
+        
+        [self presentViewController:mySLComposerSheet animated:YES completion:nil];
+    }
+    else
+    {
+        UIAlertView *alertView = [[UIAlertView alloc]
+                                  initWithTitle:@"Cannot connect to Twitter"
+                                  message:@"Please ensure that you are connected to the internet and have a valid Twitter account on this device."
+                                  delegate:self
+                                  cancelButtonTitle:@"OK"
+                                  otherButtonTitles:nil];
+        [alertView show];
+    }
+}
+
+- (IBAction)onFacebook:(id)sender
+{
+    if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeFacebook])
+    {
+        SLComposeViewController *mySLComposerSheet = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeFacebook];
+        CRSSItem *item = _feed.items[m_currentQuickMenuItem];
+        
+        [mySLComposerSheet setInitialText:@"Found a dope post on WIB"];
+        
+        [mySLComposerSheet addImage:item.appIcon];
+        
+        [mySLComposerSheet addURL:[NSURL URLWithString:item.postURL]];
+        
+        [self presentViewController:mySLComposerSheet animated:YES completion:nil];
+    }
+    else
+    {
+        UIAlertView *alertView = [[UIAlertView alloc]
+                                  initWithTitle:@"Cannot connect to Facebook"
+                                  message:@"Please ensure that you are connected to the internet and have a valid Facebook account on this device."
+                                  delegate:self
+                                  cancelButtonTitle:@"OK"
+                                  otherButtonTitles:nil];
+        [alertView show];
+    }
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     int numPages = [_feed GetNumPages];
@@ -467,7 +613,7 @@ const int SectionSize[Total_Sections] =
             UILabel *labelDate = (UILabel *)[cell viewWithTag:5];
             labelDate.text = object.dateString;
 
-            imgView.image = object.appIcon;
+            imgView.image = object.blurredImage;
             imgViewMini.image = object.appIcon;
             
             if (imgViewMini)
@@ -535,6 +681,8 @@ const int SectionSize[Total_Sections] =
 // this method is used in case the user scrolled into a set of cells that don't have their app icons yet
 - (void) loadImagesForOnscreenRows
 {
+    int minItem = _feed.items.count;
+    int maxItem = 0;
     if (_feed.items.count > 0)
     {
         NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
@@ -542,16 +690,115 @@ const int SectionSize[Total_Sections] =
         {
             if (indexPath.section == Posts)
             {
-                CRSSItem *appRecord = _feed.items[indexPath.row];
-            
-                if (!appRecord.appIcon) // avoid the app icon download if the app already has an icon
+                minItem = MIN(indexPath.row, minItem);
+                maxItem = MAX(indexPath.row, maxItem);
+            }
+        }
+    }
+    
+    minItem = MAX(minItem-3, 0);
+    maxItem = MIN(maxItem+4, _feed.items.count);
+    
+    for (int i=minItem; i<maxItem; i++)
+    {
+        CRSSItem *appRecord = _feed.items[i];
+        
+        [appRecord requestImage:self];
+/*        if (!appRecord.appIcon) // avoid the app icon download if the app already has an icon
+        {
+            [self startIconDownload:appRecord forIndexPath:indexPath];
+        }*/
+
+    }
+}
+
+-(void)handleLongPress:(UISwipeGestureRecognizer *)gestureRecognizer
+{
+    CGPoint p = [gestureRecognizer locationInView:self.tableView];
+    
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:p];
+    if (indexPath.section == Posts)
+    {
+        if (indexPath == nil)
+        {
+            //--- Cancel existing?
+        }
+        else
+        {
+            NSLog(@"long press on table view at row %d", indexPath.row);
+            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+            if (cell)
+            {
+                if (gestureRecognizer.direction == UISwipeGestureRecognizerDirectionRight)
                 {
-                    [self startIconDownload:appRecord forIndexPath:indexPath];
+                    if (m_currentQuickMenuItem != indexPath.row)
+                    {
+                        CGRect initialFrame = cell.frame;
+                        CGRect newMenuFrame = cell.frame;
+                        CGRect newFrame = cell.frame;
+                        initialFrame.origin.x = 0;
+                        initialFrame.size.width = 0;
+                        newMenuFrame.size.width = 100.0f;
+                        newFrame.origin.x = 100;
+                        
+                        // Add the side swipe view to the table below the cell
+                        [self.tableView insertSubview:m_quickMenu belowSubview:cell];
+                        
+                        CRSSItem *item = _feed.items[indexPath.row];
+                        bool isFavourite = [[[UserData get] favourites] containsObject:item];
+                        
+                        if (m_currentQuickMenuItem >= 0)
+                        {
+                            NSIndexPath *oldIndexPath = [NSIndexPath indexPathForRow:m_currentQuickMenuItem inSection:Posts];
+                            UITableViewCell *oldcell = [self.tableView cellForRowAtIndexPath:oldIndexPath];
+
+                            CGRect oldClosedFrame = oldcell.frame;
+                            oldClosedFrame.origin.x = 0;
+                            CGRect oldClosedMenuFrame = oldcell.frame;
+                            oldClosedMenuFrame.origin.x = 0;
+                            oldClosedMenuFrame.size.width = 0;
+                            [UIView animateWithDuration:0.1f
+                              animations:^
+                              {
+                                  [oldcell setFrame:oldClosedFrame];
+                                  [m_quickMenu setFrame:oldClosedMenuFrame];
+                              }
+                              completion:^(BOOL finished)
+                              {
+                                  [m_quickMenu setFrame:initialFrame];
+                                  [m_btnFavourite setSelected:isFavourite];
+                                  [UIView animateWithDuration:0.2f animations:^{[cell setFrame:newFrame];[m_quickMenu setFrame:newMenuFrame];}];
+                              }
+                              ];
+                        }
+                        else
+                        {
+                            m_quickMenu.frame = initialFrame;
+                            [m_btnFavourite setSelected:isFavourite];
+                            [UIView animateWithDuration:0.3f animations:^{[cell setFrame:newFrame];[m_quickMenu setFrame:newMenuFrame];}];
+                        }
+                        
+                        m_currentQuickMenuItem = indexPath.row;
+                    }
+                }
+                else
+                {
+                    if (indexPath.row == m_currentQuickMenuItem)
+                    {
+                        CGRect newFrame = cell.frame;
+                        newFrame.origin.x = 0;
+                        CGRect newMenuFrame = cell.frame;
+                        newMenuFrame.origin.x = 0;
+                        newMenuFrame.size.width= 0;
+                        [UIView animateWithDuration:0.3f animations:^{[cell setFrame:newFrame];[m_quickMenu setFrame:newMenuFrame];}];
+                        m_currentQuickMenuItem = -1;
+                    }
                 }
             }
         }
     }
 }
+
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {

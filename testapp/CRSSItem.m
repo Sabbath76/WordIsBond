@@ -7,6 +7,7 @@
 //
 
 #import "CRSSItem.h"
+#import "UIImage+ImageEffects.h"
 
 @implementation CRSSItem
 {
@@ -22,7 +23,7 @@ static NSString * BAND_CAMP_KEY = @"godsthannlitanpalafreyregna";
 static NSString * BAND_CAMP_ALBUM_QUERY = @"http://api.bandcamp.com/api/album/2/info?key=godsthannlitanpalafreyregna&album_id=";
 static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download/track?enc=mp3-128&id=%@&stream=1";
 
-@synthesize title, description, imageURLString, appIcon, mediaURLString, postID, requiresDownload, tracks, dateString, author, blurb;
+@synthesize title, description, imageURLString, appIcon, mediaURLString, postID, requiresDownload, tracks, dateString, author, blurb, postURL, blurredImage;
 
 - (NSString*) findProperty: (NSString *)search
 {
@@ -153,6 +154,8 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
     //            newPost.requiresDownload = true;
     NSDictionary *authorDict = [post objectForKey:@"author"];
     author = [authorDict objectForKey:@"name"];
+    
+    postURL = [post objectForKey:@"url"];
     
     NSArray *attachments = [post objectForKey:@"attachments"];
     NSString *fullContent = @"";
@@ -485,5 +488,12 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
     requiresDownload = false;
     }
 }
+
+- (void) updateImage:(UIImage *)image
+{
+    appIcon = image;
+    blurredImage = [image applyLightEffect];
+}
+
 
 @end

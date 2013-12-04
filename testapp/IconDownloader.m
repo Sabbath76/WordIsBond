@@ -87,7 +87,8 @@ static NSMutableDictionary *s_downloadingImagesByID = NULL;
     // Set appIcon and clear temporary data/image
     UIImage *image = [[UIImage alloc] initWithData:self.activeDownload];
     
-    self.appRecord.appIcon = image;
+    [self.appRecord updateImage:image];
+//    self.appRecord.appIcon = image;
     self.activeDownload = nil;
     
     // Release the connection now that it's finished

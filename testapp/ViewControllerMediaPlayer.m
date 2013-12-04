@@ -51,7 +51,7 @@
         }
     }
     
-    UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead_off"];
+    UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead"];
     [sldrPosition setThumbImage:sliderThumb forState:UIControlStateNormal];
     [sldrPosition setThumbImage:sliderThumb forState:UIControlStateHighlighted];
     
@@ -65,7 +65,7 @@
     self->bottomOffset = 47;
     self->midOffset = 149;
 
-    float parentHeight = self.view.superview.superview.frame.size.height;
+    float parentHeight = self.view.superview.superview.frame.origin.y + self.view.superview.superview.frame.size.height;
     CGRect rect = self.view.superview.frame;
     rect.origin.y = parentHeight - self->bottomOffset;
 //    rect.origin.y = rect.size.height - self->bottomOffset;
@@ -157,7 +157,7 @@
     
     _labelTitle.textColor = [UIColor grayColor];
     
-    UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead_off"];
+    UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead"];
     [sldrPosition setThumbImage:sliderThumb forState:UIControlStateNormal];
     [sldrPosition setThumbImage:sliderThumb forState:UIControlStateHighlighted];
 
@@ -201,7 +201,8 @@
 
 - (void)setItem:(CRSSItem *) rssItem
 {
-    currentImage.image = [rssItem requestImage:self];
+    [rssItem requestImage:self];
+    currentImage.image = rssItem.blurredImage;
     [miniImage setImage:rssItem.appIcon forState:UIControlStateNormal];
     [miniImage setImage:rssItem.appIcon forState:UIControlStateSelected];
     _labelTitle.text = rssItem.title;
@@ -247,7 +248,8 @@
 
             CRSSItem *rssItem = m_audioItems[currentItem];
             currentTrack = rssItem.tracks.count - 1;
-            currentImage.image = [rssItem requestImage:self];
+            [rssItem requestImage:self];
+            currentImage.image = rssItem.blurredImage;
             [miniImage setImage:rssItem.appIcon forState:UIControlStateNormal];
             [miniImage setImage:rssItem.appIcon forState:UIControlStateSelected];
             _labelTitle.text = rssItem.title;
@@ -291,7 +293,7 @@
     {
         if (((CRSSItem*)m_audioItems[currentItem]).postID == iconDownloader.postID)
         {
-            currentImage.image = iconDownloader.appRecord.appIcon;
+            currentImage.image = iconDownloader.appRecord.blurredImage;
             [miniImage setImage:iconDownloader.appRecord.appIcon forState:UIControlStateNormal];
             [miniImage setImage:iconDownloader.appRecord.appIcon forState:UIControlStateSelected];
         }
@@ -305,7 +307,7 @@
     {
         if (m_audioItems[currentItem] == item)
         {
-            currentImage.image = item.appIcon;
+            currentImage.image = item.blurredImage;
             [miniImage setImage:item.appIcon forState:UIControlStateNormal];
             [miniImage setImage:item.appIcon forState:UIControlStateSelected];
         }
@@ -446,7 +448,8 @@ struct STrackIdx
     currentTrack = newTrack.trackID;
     if (itemChanged)
     {
-        currentImage.image = [newItem requestImage:self];
+        [newItem requestImage:self];
+        currentImage.image = newItem.blurredImage;
         [miniImage setImage:newItem.appIcon forState:UIControlStateNormal];
         [miniImage setImage:newItem.appIcon forState:UIControlStateSelected];
         _labelTitle.text = newItem.title;
@@ -483,7 +486,7 @@ struct STrackIdx
     [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
     
 //    [m_player removeItem:[m_player items][0]];
-    int count = [m_player items].count;
+//    int count = [m_player items].count;
 }
 
 - (void)playerItemDidReachEnd:(NSNotification *)notification
@@ -698,7 +701,7 @@ struct STrackIdx
                     [btnPlay setImage:[UIImage imageNamed:@"icon_opt"] forState:UIControlStateNormal];
                     [btnPlay setImage:[UIImage imageNamed:@"icon_opt"] forState:UIControlStateSelected];
 
-                    UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead_off"];
+                    UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead"];
                     [sldrPosition setThumbImage:sliderThumb forState:UIControlStateNormal];
                     [sldrPosition setThumbImage:sliderThumb forState:UIControlStateHighlighted];
 
@@ -708,8 +711,8 @@ struct STrackIdx
                 case AVPlayerItemStatusReadyToPlay:
                 {
                     [btnPlay.layer removeAllAnimations];
-                    [btnPlay setImage:[UIImage imageNamed:@"simplePlay"] forState:UIControlStateNormal];
-                    [btnPlay setImage:[UIImage imageNamed:@"simplePlayOn"] forState:UIControlStateSelected];
+                    [btnPlay setImage:[UIImage imageNamed:@"player_play_off"] forState:UIControlStateNormal];
+                    [btnPlay setImage:[UIImage imageNamed:@"player_play_on"] forState:UIControlStateSelected];
 
                     CRSSItem *post = m_audioItems[currentItem];
                     TrackInfo *trackInfo = post.tracks[currentTrack];
@@ -793,8 +796,8 @@ struct STrackIdx
         [btnPlay.layer removeAllAnimations];
         if (m_audioPlayer)
         {
-            [btnPlay setImage:[UIImage imageNamed:@"simplePlay"] forState:UIControlStateNormal];
-            [btnPlay setImage:[UIImage imageNamed:@"simplePlayOn"] forState:UIControlStateSelected];
+            [btnPlay setImage:[UIImage imageNamed:@"player_play_off"] forState:UIControlStateNormal];
+            [btnPlay setImage:[UIImage imageNamed:@"player_play_on"] forState:UIControlStateSelected];
             
             CRSSItem *item = m_audioItems[currentItem];
             TrackInfo *trackInfo = item.tracks[currentTrack];
@@ -869,11 +872,11 @@ struct STrackIdx
 {
     if (m_isPlaying && (currentTrack == trackID))
     {
-        return [UIImage imageNamed:@"simplePlayOn"];
+        return [UIImage imageNamed:@"player_play_on"];
     }
     else if (currentTrack == trackID)
     {
-        return [UIImage imageNamed:@"simplePlay"];
+        return [UIImage imageNamed:@"player_play_off"];
     }
     else
     {

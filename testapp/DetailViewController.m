@@ -18,6 +18,7 @@
     PostHeaderController *m_nextPage;
     int m_itemPos;
     NSArray *m_sourceList;
+    bool m_loading;
 }
 
 @property (strong, nonatomic) UIPopoverController *masterPopoverController;
@@ -82,6 +83,7 @@
 //            NSString *fullString = [NSString stringWithFormat:@"<div style='text-align:justify; font-size:45px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>", [self.detailItem description]];
 //            [_webView loadHTMLString:fullString baseURL:nil];
             [_webView loadHTMLString:[self.detailItem blurb] baseURL:nil];
+            m_loading = true;
         }
         
         NSMutableSet *favourites = [[UserData get] favourites];
@@ -129,13 +131,15 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     
-    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Bond_logo132"]];
+    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"top_banner_logo"]];
 
     m_currentPage = [[PostHeaderController alloc] initWithNibName:@"PostHeader" bundle:nil];
 	m_nextPage = [[PostHeaderController alloc] initWithNibName:@"PostHeader" bundle:nil];
     
 	[m_header addSubview:m_currentPage.view];
 	[m_header addSubview:m_nextPage.view];
+    
+    [_webView setDelegate:self];
     
     [self configureView];
     
@@ -147,6 +151,12 @@
     {
         m_header.contentOffset = CGPointMake(m_header.frame.size.width*m_itemPos, 0);
     }
+}
+
+- (void) webViewDidFinishLoad:(UIWebView *)webView
+{
+    [UIView animateWithDuration:0.5f animations:^{[_webView setAlpha:1.0f];}];
+    m_loading = false;
 }
 
 - (void)didReceiveMemoryWarning
@@ -304,18 +314,24 @@
 	[m_currentPage updateTextViews:NO];
 	[m_nextPage updateTextViews:NO];
     
+        bool isPrev = (lowerNumber == m_itemPos);
         float pageFract = (fractionalPage - lowerNumber);
-        float pageAlpha = fabsf(0.5f - pageFract) * 2.0f;
-        [self.webView setAlpha:pageAlpha];
+        float pageAlpha = isPrev ? (0.5f - pageFract) * 2.0f : (pageFract - 0.5f) * 2.0f;// fabsf(0.5f - pageFract) * 2.0f;
+        pageAlpha = MAX(pageAlpha, 0.0f);
+        if (!m_loading)
+            [self.webView setAlpha:pageAlpha];
         
-        if ((lowerNumber == m_itemPos) && (pageFract > 0.6f))
+        if (isPrev && (pageFract > 0.6f))
         {
+            [UIView animateWithDuration:0.25f animations:^{[_webView setAlpha:0.0f];}];
+
             m_itemPos = upperNumber;
             _detailItem = m_sourceList[upperNumber];
             [self configureView];
         }
-        else if (pageFract < 0.4f)
+        else if (!isPrev && (pageFract < 0.4f))
         {
+            [UIView animateWithDuration:0.25f animations:^{[_webView setAlpha:0.0f];}];
             m_itemPos = lowerNumber;
             _detailItem = m_sourceList[lowerNumber];
             [self configureView];

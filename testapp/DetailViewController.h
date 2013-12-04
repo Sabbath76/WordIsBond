@@ -10,7 +10,7 @@
 #import "CRSSItem.h"
 
 
-@interface DetailViewController : UIViewController <UISplitViewControllerDelegate, PostRequestDelegate, UIScrollViewDelegate, IconDownloaderDelegate>
+@interface DetailViewController : UIViewController <UISplitViewControllerDelegate, PostRequestDelegate, UIScrollViewDelegate, IconDownloaderDelegate, UIWebViewDelegate>
 @property (weak, nonatomic) IBOutlet UIWebView *webView;
 
 @property (strong, nonatomic) id detailItem;
