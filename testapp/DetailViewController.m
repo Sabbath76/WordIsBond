@@ -11,18 +11,27 @@
 #import "PostHeaderController.h"
 #import "RSSFeed.h"
 
+#import <Social/Social.h>
+
+#import <Accounts/Accounts.h>
+
 @interface DetailViewController ()
 {
     __weak IBOutlet UIScrollView *m_header;
+    __weak IBOutlet UIToolbar *m_toolbar;
+    __weak IBOutlet UIView *m_titleRoot;
+    __weak IBOutlet UILabel *m_title;
+    __weak IBOutlet UILabel *m_date;
     PostHeaderController *m_currentPage;
     PostHeaderController *m_nextPage;
     int m_itemPos;
     NSArray *m_sourceList;
+    int m_toolbarOffset;
     bool m_loading;
 }
 
 @property (strong, nonatomic) UIPopoverController *masterPopoverController;
-- (void)configureView;
+- (void)configureView:(bool)updateScroller;
 @end
 
 @implementation DetailViewController
@@ -55,7 +64,7 @@
         }
 
         // Update the view.
-        [self configureView];
+        [self configureView:true];
     }
 
     if (self.masterPopoverController != nil) {
@@ -63,7 +72,7 @@
     }
 }
 
-- (void)configureView
+- (void)configureView :(bool) updateScroller
 {
     // Update the user interface for the detail item.
 
@@ -96,6 +105,11 @@
             _btnFavourite.tintColor = [UIColor blackColor];
         }
         
+        m_title.text = [self.detailItem title];
+        m_date.text = [self.detailItem dateString];
+        
+        if (updateScroller)
+        {
         if (m_currentPage)
         {
             [m_currentPage setSourceArray:m_sourceList];
@@ -115,6 +129,7 @@
                    m_header.frame.size.width * numItems,
                    m_header.frame.size.height);
             //m_header.contentOffset = CGPointMake(0, 0);
+        }
         }
 
     }
@@ -141,7 +156,7 @@
     
     [_webView setDelegate:self];
     
-    [self configureView];
+    [self configureView:true];
     
     self.webView.scrollView.delegate = self;
     float headerBottom = /*m_header.frame.origin.y +*/ m_header.frame.size.height;
@@ -151,11 +166,13 @@
     {
         m_header.contentOffset = CGPointMake(m_header.frame.size.width*m_itemPos, 0);
     }
+    
+    m_toolbarOffset = 0;
 }
 
 - (void) webViewDidFinishLoad:(UIWebView *)webView
 {
-    [UIView animateWithDuration:0.5f animations:^{[_webView setAlpha:1.0f];}];
+    [UIView animateWithDuration:0.5f animations:^{[_webView setAlpha:1.0f]; [m_currentPage.blurredImage setAlpha:0.0f];}];
     m_loading = false;
 }
 
@@ -318,8 +335,19 @@
         float pageFract = (fractionalPage - lowerNumber);
         float pageAlpha = isPrev ? (0.5f - pageFract) * 2.0f : (pageFract - 0.5f) * 2.0f;// fabsf(0.5f - pageFract) * 2.0f;
         pageAlpha = MAX(pageAlpha, 0.0f);
+        float curAlpha = MIN(2.0f * pageFract, 1.0f);
+        float nextAlpha = MIN(2.0f * (1.0f-pageFract), 1.0f);
+        if (lowerNumber == m_nextPage.pageIndex)
+        {
+            nextAlpha = MIN(pageFract * 2.0f, 1.0f);
+            curAlpha = MIN((1.0f-pageFract) * 2.0f, 1.0f);
+        }
         if (!m_loading)
+        {
             [self.webView setAlpha:pageAlpha];
+            [m_currentPage.blurredImage setAlpha:curAlpha];
+            [m_nextPage.blurredImage setAlpha:nextAlpha];
+        }
         
         if (isPrev && (pageFract > 0.6f))
         {
@@ -327,20 +355,21 @@
 
             m_itemPos = upperNumber;
             _detailItem = m_sourceList[upperNumber];
-            [self configureView];
+            [self configureView:false];
         }
         else if (!isPrev && (pageFract < 0.4f))
         {
             [UIView animateWithDuration:0.25f animations:^{[_webView setAlpha:0.0f];}];
             m_itemPos = lowerNumber;
             _detailItem = m_sourceList[lowerNumber];
-            [self configureView];
+            [self configureView:false];
         }
     }
     else if (sender == _webView.scrollView)
     {
+        float senderOffset  = sender.contentOffset.y;
         float headerPos = m_header.frame.origin.y + m_header.frame.size.height;
-        float delta = sender.contentOffset.y+headerPos;
+        float delta = senderOffset+headerPos;
         float factor = 1.0f - (delta / (m_header.frame.size.height * 0.5f));
         if (factor <= 0.0f)
         {
@@ -350,6 +379,68 @@
         {
             [m_header setAlpha:MIN(factor, 1.0f)];
         }
+        
+        
+        CGRect titleFrame = [m_titleRoot frame];
+        titleFrame.origin.y = MAX(-senderOffset, m_header.frame.origin.y);
+        [m_titleRoot setFrame:titleFrame];
+        CGRect tbFrame = [m_toolbar frame];
+        tbFrame.origin.y = MAX(-senderOffset + titleFrame.size.height, 0);
+        [m_toolbar setFrame:tbFrame];
+    }
+}
+
+- (IBAction)onFacebook:(id)sender
+{
+    if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeFacebook])
+    {
+        SLComposeViewController *mySLComposerSheet = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeFacebook];
+        CRSSItem *item = self.detailItem;
+        
+        [mySLComposerSheet setInitialText:@"Found a dope post on WIB"];
+        
+  //      [mySLComposerSheet addImage:item.appIcon];
+        
+        [mySLComposerSheet addURL:[NSURL URLWithString:item.postURL]];
+        
+        [self presentViewController:mySLComposerSheet animated:YES completion:nil];
+    }
+    else
+    {
+        UIAlertView *alertView = [[UIAlertView alloc]
+                                  initWithTitle:@"Cannot connect to Facebook"
+                                  message:@"Please ensure that you are connected to the internet and have a valid Facebook account on this device."
+                                  delegate:self
+                                  cancelButtonTitle:@"OK"
+                                  otherButtonTitles:nil];
+        [alertView show];
+    }
+}
+
+- (IBAction)onTweet:(id)sender
+{
+    if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter])
+    {
+        SLComposeViewController *mySLComposerSheet = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
+        CRSSItem *item = self.detailItem;
+        
+        [mySLComposerSheet setInitialText:@"Found a dope post on WIB"];
+        
+ //       [mySLComposerSheet addImage:item.appIcon];
+        
+        [mySLComposerSheet addURL:[NSURL URLWithString:item.postURL]];
+        
+        [self presentViewController:mySLComposerSheet animated:YES completion:nil];
+    }
+    else
+    {
+        UIAlertView *alertView = [[UIAlertView alloc]
+                                  initWithTitle:@"Cannot connect to Twitter"
+                                  message:@"Please ensure that you are connected to the internet and have a valid Twitter account on this device."
+                                  delegate:self
+                                  cancelButtonTitle:@"OK"
+                                  otherButtonTitles:nil];
+        [alertView show];
     }
 }
 

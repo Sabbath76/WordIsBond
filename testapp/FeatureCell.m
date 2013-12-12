@@ -15,6 +15,10 @@
 #import <QuartzCore/QuartzCore.h>
 
 @implementation FeatureCell
+{
+    __weak IBOutlet UIImageView *m_imgHighlight;
+    NSArray *m_thumbnails;
+}
 
 @synthesize scrollView, rssFeed, detailViewController;
 @synthesize imageView1, imageView2, imageView3, imageView4;
@@ -64,6 +68,8 @@
     [imageView2.layer setMask:_maskingLayer2];
     [imageView3.layer setMask:_maskingLayer3];
     [imageView4.layer setMask:_maskingLayer4];
+    
+    m_thumbnails = [[NSArray alloc] initWithObjects:imageView1, imageView2, imageView3, imageView4, nil];
 }
 
 - (void) viewDidAppear
@@ -83,6 +89,19 @@
 {
     int index = leftMostFeature+[sender tag];
     [scrollView scrollRectToVisible:CGRectMake(scrollView.frame.size.width*index, 0, scrollView.frame.size.width , scrollView.frame.size.height) animated:YES];
+    [self updateHighlight:index];
+}
+
+- (void)updateHighlight:(int)index
+{
+    if ((index >= 0) && (index < m_thumbnails.count))
+    {
+    UIButton *button = (UIButton*) m_thumbnails[index];
+    [UIView animateWithDuration:0.4f animations:^
+        {
+        [m_imgHighlight setFrame:[button frame]];
+         }];
+    }
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -137,7 +156,7 @@
 	}
     
 	pageController.pageIndex = newIndex;
-        
+
     int maxFeatures = rssFeed.features.count;
     int newleftmost = MAX(MIN(leftMostFeature, newIndex-1), newIndex-2);
     newleftmost = MAX(MIN(maxFeatures - 4, newleftmost), 0);
@@ -263,6 +282,8 @@
 		currentPage = nextPage;
 		nextPage = swapController;
 	}
+    
+    [self updateHighlight:currentPage.pageIndex];
     
 	[currentPage updateTextViews:YES];
 }

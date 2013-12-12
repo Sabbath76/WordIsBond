@@ -36,6 +36,7 @@
         if (rssItem.postID == iconDownloader.postID)
         {
             _imageView.image = rssItem.appIcon;
+            _blurredImage.image = rssItem.blurredImage;
         }
     }
 }
@@ -49,6 +50,7 @@
         CRSSItem *rssItem = m_sourceArray[pageIndex];
 
         _imageView.image = rssItem.appIcon;
+        _blurredImage.image = rssItem.blurredImage;
         label.text = rssItem.title;
         dateView.text = rssItem.dateString;
         author.text = rssItem.author;

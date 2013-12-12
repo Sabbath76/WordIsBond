@@ -26,6 +26,7 @@
 
 @property NSInteger pageIndex;
 @property (weak, nonatomic) IBOutlet UIImageView *imageView;
+@property (weak, nonatomic) IBOutlet UIImageView *blurredImage;
 
 - (void)updateTextViews:(BOOL)force;
 - (void)setSourceArray:(NSArray*)array;

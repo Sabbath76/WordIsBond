@@ -38,8 +38,10 @@ typedef enum
 
 const int SectionSize[Total_Sections] =
 {
-    30, 183, 80, 40
+    30, 210, 80, 40
 };
+
+const int ExpandedSectionSize = 120;
 
 @interface MasterViewController ()
 {
@@ -60,6 +62,8 @@ const int SectionSize[Total_Sections] =
     int m_currentQuickMenuItem;
     
     bool m_isLoadingMoreData;
+    
+    NSIndexPath *m_expandedIndexPath;
 }
 
 
@@ -164,6 +168,9 @@ const int SectionSize[Total_Sections] =
     
     self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"top_banner_logo"]];
     
+    UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"WIB_BG"]];
+    self.tableView.backgroundView = imageView;
+    
     [super awakeFromNib];
     
     self.navigationController.view.layer.shadowOffset = CGSizeMake(-15, 10);
@@ -238,11 +245,11 @@ const int SectionSize[Total_Sections] =
     [refresh addTarget:self action:@selector(loadNewer) forControlEvents:UIControlEventValueChanged];
     self.refreshControl = refresh;
     
-    UISwipeGestureRecognizer *swipeRecognizerLeft = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+    UISwipeGestureRecognizer *swipeRecognizerLeft = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipePost:)];
     [swipeRecognizerLeft setDirection:(UISwipeGestureRecognizerDirectionLeft)];
     [self.tableView addGestureRecognizer:swipeRecognizerLeft];
 
-    UISwipeGestureRecognizer *swipeRecognizerRight = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+    UISwipeGestureRecognizer *swipeRecognizerRight = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(expandPost:)];
     [swipeRecognizerRight setDirection:(UISwipeGestureRecognizerDirectionRight)];
     [self.tableView addGestureRecognizer:swipeRecognizerRight];
 
@@ -473,18 +480,33 @@ const int SectionSize[Total_Sections] =
 
 - (IBAction)onFavourite:(id)sender
 {
+    UIButton *favBtn = (UIButton *)sender;
     if (m_currentQuickMenuItem != -1)
     {
         CRSSItem *item = _feed.items[m_currentQuickMenuItem];
         NSMutableSet *favourites = [[UserData get] favourites];
         if ([favourites containsObject:item])
         {
-            [m_btnFavourite setSelected:false];
+            if (favBtn == m_btnFavourite)
+            {
+                [m_btnFavourite setSelected:false];
+            }
+            else
+            {
+                [favBtn setTintColor:[UIColor blackColor]];
+            }
             [favourites removeObject:item];
         }
         else
         {
-            [m_btnFavourite setSelected:true];
+            if (favBtn == m_btnFavourite)
+            {
+                [m_btnFavourite setSelected:true];
+            }
+            else
+            {
+                [favBtn setTintColor:[UIColor whiteColor]];
+            }
             [favourites addObject:item];
         }
         [[UserData get] onChanged];
@@ -542,6 +564,14 @@ const int SectionSize[Total_Sections] =
                                   cancelButtonTitle:@"OK"
                                   otherButtonTitles:nil];
         [alertView show];
+    }
+}
+
+- (IBAction)onViewPost:(id)sender
+{
+    if (m_currentQuickMenuItem >= 0)
+    {
+        [self displayPost:m_currentQuickMenuItem];
     }
 }
 
@@ -669,6 +699,10 @@ const int SectionSize[Total_Sections] =
 
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if ([indexPath isEqual:m_expandedIndexPath])
+    {
+        return ExpandedSectionSize;
+    }
     return SectionSize[indexPath.section];
 }
 
@@ -712,6 +746,161 @@ const int SectionSize[Total_Sections] =
     }
 }
 
+-(void)doExpandPost:(NSIndexPath*)indexPath
+{
+    if(indexPath && (indexPath.section == Posts))
+    {
+        if (![indexPath isEqual:m_expandedIndexPath])
+        {
+            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+            
+            UIToolbar *toolbarMenu = (UIToolbar *) [cell viewWithTag:6];
+            [toolbarMenu setHidden:false];
+            UIButton *favourite = [toolbarMenu items][1];
+//            UIBarButtonItem *favourite = (UIBarButtonItem*)[toolbarMenu viewWithTag:7];
+            if (favourite)
+            {
+                bool isFavourite = [[[UserData get] favourites] containsObject:_feed.items[indexPath.row]];
+
+                if (isFavourite)
+                {
+                    [favourite setTintColor:[UIColor whiteColor]];
+                }
+                else
+                {
+                    [favourite setTintColor:[UIColor blackColor]];
+                }
+            }
+
+            m_currentQuickMenuItem = indexPath.row;
+            m_expandedIndexPath = indexPath;
+            [self.tableView beginUpdates];
+            [self.tableView endUpdates];
+        }
+        else
+        {
+            m_currentQuickMenuItem = -1;
+            m_expandedIndexPath = nil;
+            [self.tableView beginUpdates];
+            [self.tableView endUpdates];
+        }
+    }
+}
+
+-(void)displayPost:(int)postID
+{
+    SelectedItem *item = [SelectedItem alloc];
+    item->isFavourite = false;
+    item->item = _feed.items[postID];
+    
+    m_forcedDetailItem = item;
+    
+    [self performSegueWithIdentifier: @"showDetailManual" sender:self];
+}
+
+-(void)swipePost:(UISwipeGestureRecognizer *)gestureRecognizer
+{
+    CGPoint p = [gestureRecognizer locationInView:self.tableView];
+    
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:p];
+    
+    if(indexPath && (indexPath.section == Posts))
+    {
+        if (gestureRecognizer.direction == UISwipeGestureRecognizerDirectionLeft)
+        {
+            [self displayPost:indexPath.row];
+        }
+    }
+}
+
+
+-(void)expandPost:(UISwipeGestureRecognizer *)gestureRecognizer
+{
+    CGPoint p = [gestureRecognizer locationInView:self.tableView];
+    
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:p];
+    
+    if(indexPath && (indexPath.section == Posts))
+    {
+        if (gestureRecognizer.direction == UISwipeGestureRecognizerDirectionRight)
+        {
+            if (![indexPath isEqual:m_expandedIndexPath])
+            {
+                UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+                
+                [[cell viewWithTag:6] setHidden:false];
+                
+/*                [cell.contentView insertSubview:m_quickMenu atIndex:0];
+//                [cell insertSubview:m_quickMenu aboveSubview:<#(UIView *)#>
+//                [self.tableView insertSubview:m_quickMenu belowSubview:cell];
+                
+                CGRect initialFrame = cell.frame;
+                initialFrame.origin.y = cell.frame.size.height + cell.frame.origin.y;
+                initialFrame.size.height = 0;
+                CGRect newFrame = initialFrame;
+                newFrame.size.height = 40.0f;
+                
+                
+                NSLayoutConstraint *myConstraint =[NSLayoutConstraint
+                                                   constraintWithItem:m_quickMenu
+                                                   attribute:NSLayoutAttributeBottom
+                                                   relatedBy:NSLayoutRelationEqual
+                                                   toItem:cell.contentView
+                                                   attribute:NSLayoutAttributeBottom
+                                                   multiplier:1.0                                                                      
+                                                   constant:0];
+                [cell.contentView addConstraint:myConstraint];
+                
+                NSLayoutConstraint *myConstraint2 =[NSLayoutConstraint
+                                                   constraintWithItem:m_quickMenu
+                                                   attribute:NSLayoutAttributeTop
+                                                   relatedBy:NSLayoutRelationEqual
+                                                   toItem:[cell.contentView viewWithTag:5]
+                                                   attribute:NSLayoutAttributeBottom
+                                                   multiplier:1.0
+                                                   constant:0];
+                [cell.contentView addConstraint:myConstraint2];*/
+                //                [m_quickMenu addConstraint:[NSLayoutAttributeBaseline ]
+
+//                m_quickMenu.frame = initialFrame;
+//                [UIView animateWithDuration:0.3f animations:^{[cell setFrame:newFrame];[m_quickMenu setFrame:newFrame];}];
+
+                m_currentQuickMenuItem = indexPath.row;
+                m_expandedIndexPath = indexPath;
+                [self.tableView beginUpdates];
+                [self.tableView endUpdates]; //Yeah, that old trick to animate cell expand/collapse
+            }
+
+/*            if (![indexPath isEqual:m_expandedIndexPath])
+            {
+                NSMutableArray *updatedCells = [[NSMutableArray alloc] init];
+                if (m_expandedIndexPath != nil)
+                {
+                    [updatedCells addObject:m_expandedIndexPath];
+                }
+
+                m_expandedIndexPath = indexPath;
+                [updatedCells addObject:indexPath];
+
+                [self.tableView reloadRowsAtIndexPaths:updatedCells withRowAnimation:UITableViewRowAnimationFade];
+            }*/
+        }
+        else
+        {
+            NSIndexPath *oldIndexPath = m_expandedIndexPath;
+            m_expandedIndexPath = nil;
+            m_currentQuickMenuItem = -1;
+
+            if (oldIndexPath)
+            {
+                [self.tableView beginUpdates];
+                [self.tableView endUpdates]; //Yeah, that old trick to animate cell expand/collapse
+//                [self.tableView reloadRowsAtIndexPaths:@[oldIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+            }
+        }
+    }
+}
+
 -(void)handleLongPress:(UISwipeGestureRecognizer *)gestureRecognizer
 {
     CGPoint p = [gestureRecognizer locationInView:self.tableView];
@@ -725,7 +914,7 @@ const int SectionSize[Total_Sections] =
         }
         else
         {
-            NSLog(@"long press on table view at row %d", indexPath.row);
+//            NSLog(@"long press on table view at row %d", indexPath.row);
             UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
             if (cell)
             {
@@ -811,6 +1000,8 @@ const int SectionSize[Total_Sections] =
 //            [_feed LoadPage:[_feed GetPage]+1];
             break;
         case Posts:
+            [self doExpandPost:indexPath];
+            
             if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
             {
                 CRSSItem *object = _feed.items[indexPath.row];
