@@ -800,6 +800,10 @@
                                             <action selector="togglePlay:" destination="jaJ-hr-n2n" eventType="touchUpInside" id="GHq-eE-kuC"/>
                                         </connections>
                                     </button>
+                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="LcZ-Gz-lcq">
+                                        <rect key="frame" x="32" y="10" width="20" height="20"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    </activityIndicatorView>
                                 </subviews>
                                 <color key="backgroundColor" red="0.90980392160000001" green="0.90980392160000001" blue="0.90980392160000001" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
@@ -859,6 +863,7 @@
                         <outlet property="btnPlay" destination="Wae-Xn-452" id="GwE-jn-bOE"/>
                         <outlet property="currentImage" destination="u1G-Uj-Och" id="Ddn-nA-28v"/>
                         <outlet property="labelTitle" destination="V96-PY-beH" id="RCw-9U-9L7"/>
+                        <outlet property="m_playSpinner" destination="LcZ-Gz-lcq" id="pUz-cg-UaF"/>
                         <outlet property="miniImage" destination="f4c-5n-WDc" id="UMm-h7-W63"/>
                         <outlet property="sldrPosition" destination="MZd-YD-wVN" id="Izz-Dv-qXH"/>
                         <outlet property="tableView" destination="yxc-hi-and" id="O1i-zg-uYk"/>

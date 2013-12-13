@@ -31,6 +31,9 @@
     __weak IBOutlet UIToolbarDragger *btnPlay;
     __weak IBOutlet UISlider *sldrPosition;
     __weak IBOutlet UIButton *miniImage;
+    
+    __weak IBOutlet UIActivityIndicatorView *m_playSpinner;
+//    UIActivityIndicatorView *m_spinner;
 }
 
 @end
@@ -54,6 +57,8 @@
     UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead"];
     [sldrPosition setThumbImage:sliderThumb forState:UIControlStateNormal];
     [sldrPosition setThumbImage:sliderThumb forState:UIControlStateHighlighted];
+    
+
     
     return self;
 }
@@ -175,6 +180,9 @@
         [miniImage.layer setMask:_maskingLayer];
     }
 
+//    m_spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+//    [m_spinner startAnimating];
+    
 //    _bar.layer.masksToBounds = false;
 //    _bar.layer.shadowOffset = CGSizeMake(0, 15);
 //    _bar.layer.shadowRadius = 8;
@@ -332,16 +340,22 @@
         
         NSString* resourcePath = trackInfo ? trackInfo->url : item.mediaURLString;
 
-        [btnPlay setImage:[UIImage imageNamed:@"streaming"] forState:UIControlStateNormal];
-        [btnPlay setImage:[UIImage imageNamed:@"streamingOn"] forState:UIControlStateSelected];
+        [m_playSpinner setHidden:false];
+//        m_spinner.frame = btnPlay.frame;
+        [btnPlay setHidden:true];
+//        [btnPlay addSubview:m_spinner];
+//        [btnPlay setImage:nil forState:UIControlStateNormal];
+//        [btnPlay setImage:nil forState:UIControlStateSelected];
+//        [btnPlay setImage:[UIImage imageNamed:@"streaming"] forState:UIControlStateNormal];
+//        [btnPlay setImage:[UIImage imageNamed:@"streamingOn"] forState:UIControlStateSelected];
 
-        CABasicAnimation *fullRotation = [CABasicAnimation animationWithKeyPath: @"transform.rotation"];
+/*        CABasicAnimation *fullRotation = [CABasicAnimation animationWithKeyPath: @"transform.rotation"];
         fullRotation.fromValue = [NSNumber numberWithFloat:0];
         fullRotation.toValue = [NSNumber numberWithFloat:((360*M_PI)/180)];
         fullRotation.duration = 0.5;
         fullRotation.repeatCount = INFINITY;
         [btnPlay.layer addAnimation:fullRotation forKey:@"360"];
-        
+*/
         NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
         for (NSIndexPath *indexPath in visiblePaths)
         {
@@ -349,7 +363,7 @@
             {
                 UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
                 UIImageView *imgView = (UIImageView *)[cell viewWithTag:4];
-                [imgView.layer addAnimation:fullRotation forKey:@"360"];
+//                [imgView.layer addAnimation:fullRotation forKey:@"360"];
                 imgView.image = m_isPlaying ? [UIImage imageNamed:@"streamingOn"] : [UIImage imageNamed:@"streaming"];
             }
         }
@@ -697,22 +711,33 @@ struct STrackIdx
             {
                 case AVPlayerItemStatusFailed:
                 {
-                    [btnPlay.layer removeAllAnimations];
+                    [m_playSpinner setHidden:true];
+
+//                    [m_spinner removeFromSuperview];
+
+//                    [btnPlay.layer removeAllAnimations];
                     [btnPlay setImage:[UIImage imageNamed:@"icon_opt"] forState:UIControlStateNormal];
                     [btnPlay setImage:[UIImage imageNamed:@"icon_opt"] forState:UIControlStateSelected];
+                    [btnPlay setHidden:false];
 
                     UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead"];
                     [sldrPosition setThumbImage:sliderThumb forState:UIControlStateNormal];
                     [sldrPosition setThumbImage:sliderThumb forState:UIControlStateHighlighted];
 
                     NSLog(@"player item status failed");
+                    
+                    [self onNextTrack];
                     break;
                 }
                 case AVPlayerItemStatusReadyToPlay:
                 {
-                    [btnPlay.layer removeAllAnimations];
+                    [m_playSpinner setHidden:true];
+
+//                    [m_spinner removeFromSuperview];
+//                    [btnPlay.layer removeAllAnimations];
                     [btnPlay setImage:[UIImage imageNamed:@"player_play_off"] forState:UIControlStateNormal];
                     [btnPlay setImage:[UIImage imageNamed:@"player_play_on"] forState:UIControlStateSelected];
+                    [btnPlay setHidden:false];
 
                     CRSSItem *post = m_audioItems[currentItem];
                     TrackInfo *trackInfo = post.tracks[currentTrack];
@@ -731,7 +756,7 @@ struct STrackIdx
                     sldrPosition.maximumValue = trackInfo->duration;
                     sldrPosition.value = 0.0;
 
-                    NSLog(@"player item status is ready to play");
+//                    NSLog(@"player item status is ready to play");
                 }
                     break;
                 case AVPlayerItemStatusUnknown:
