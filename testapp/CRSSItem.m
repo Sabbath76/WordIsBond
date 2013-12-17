@@ -259,7 +259,15 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
             {
                 NSRange rangeToSearchWithin2 = NSMakeRange(range.location, media.length - range.location);
                 NSRange range2 = [media rangeOfString:@"&" options:0 range:rangeToSearchWithin2];
-                NSRange urlRange = NSMakeRange(range.location+4, range2.location-(range.location+4));
+                NSRange urlRange;
+                if (range2.location == NSNotFound)
+                {
+                    urlRange = NSMakeRange(range.location+4, [media length]-(range.location+4));
+                }
+                else
+                {
+                    urlRange = NSMakeRange(range.location+4, range2.location-(range.location+4));
+                }
                 mediaURLString = [media substringWithRange:urlRange];
 //                mediaURLString = [media substringFromIndex:range.location+4];
                 mediaURLString = [mediaURLString stringByReplacingOccurrencesOfString:@"%3A" withString:@":"];

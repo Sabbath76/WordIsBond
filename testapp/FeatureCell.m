@@ -94,9 +94,10 @@
 
 - (void)updateHighlight:(int)index
 {
-    if ((index >= 0) && (index < m_thumbnails.count))
+    int thumb = index-leftMostFeature;
+    if ((thumb >= 0) && (thumb < m_thumbnails.count))
     {
-    UIButton *button = (UIButton*) m_thumbnails[index];
+    UIButton *button = (UIButton*) m_thumbnails[thumb];
     [UIView animateWithDuration:0.4f animations:^
         {
         [m_imgHighlight setFrame:[button frame]];
@@ -183,6 +184,8 @@
             CRSSItem *rssItem4 = rssFeed.features[leftMostFeature+3];
             [imageView4 setImage:[rssItem4 requestImage:self] forState:UIControlStateNormal];
         }
+
+       [self updateHighlight:currentPage.pageIndex];
     }
 
 }

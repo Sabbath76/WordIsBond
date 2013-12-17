@@ -11,7 +11,7 @@
 
 @class DetailViewController;
 
-@interface MasterViewController : UITableViewController <IconDownloaderDelegate, UIGestureRecognizerDelegate>
+@interface MasterViewController : UITableViewController <IconDownloaderDelegate, UIGestureRecognizerDelegate, UISearchBarDelegate>
 
 @property (strong, nonatomic) DetailViewController *detailViewController;
 @property (nonatomic, retain) NSMutableDictionary *imageDownloadsInProgress;

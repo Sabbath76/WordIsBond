@@ -67,15 +67,25 @@
 {
     [super viewDidAppear:animated];
 
-    self->bottomOffset = 47;
-    self->midOffset = 149;
+    UIView *myView = self.view.superview;
+    UIView *parentView = myView.superview;
+//    NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:myView attribute:NSLayoutAttributeTop
+//                                 relatedBy:NSLayoutRelationEqual toItem:parentView
+//                                 attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-bottomOffset];
+//    [myView addConstraint:constraint];
 
-    float parentHeight = self.view.superview.superview.frame.origin.y + self.view.superview.superview.frame.size.height;
-    CGRect rect = self.view.superview.frame;
+
+    CGRect parentRect = parentView.frame;
+    float parentHeight = parentRect.origin.y + parentRect.size.height;
+    CGRect rect = myView.frame;
     rect.origin.y = parentHeight - self->bottomOffset;
 //    rect.origin.y = rect.size.height - self->bottomOffset;
-    self.view.superview.frame = rect;
+ ///   [UIView animateWithDuration:0.3f animations:^{[myView setFrame:rect];}];
+//    myView.frame = rect;
     
+    [UIView beginAnimations:@"Dragging A DraggableView" context:nil];
+    myView.frame = rect;
+    [UIView commitAnimations];
     //Once the view has loaded then we can register to begin recieving controls and we can become the first responder
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     [self becomeFirstResponder];
@@ -179,6 +189,16 @@
         
         [miniImage.layer setMask:_maskingLayer];
     }
+    
+    self->bottomOffset = 47;
+    self->midOffset = 149;
+    
+//    UIView *myView = self.view.superview;
+//    UIView *parentView = myView.superview;
+//    [NSLayoutConstraint constraintWithItem:myView attribute:NSLayoutAttributeTop
+//                                 relatedBy:NSLayoutRelationEqual toItem:parentView
+//                                 attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-bottomOffset];
+
 
 //    m_spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
 //    [m_spinner startAnimating];
@@ -555,13 +575,16 @@ struct STrackIdx
             [UIView beginAnimations:@"Dragging A DraggableView" context:nil];
             moveView.frame = CGRectMake(moveView.frame.origin.x, parentFrame.size.height - bottomOffset,
                                         moveView.frame.size.width, moveView.frame.size.height);
+            
             [UIView commitAnimations];
         }
         else
         {
             [UIView beginAnimations:@"Dragging A DraggableView" context:nil];
-            moveView.frame = CGRectMake(moveView.frame.origin.x, parentFrame.size.height - midOffset,
-                                        moveView.frame.size.width, moveView.frame.size.height);
+            moveView.frame = CGRectMake(moveView.frame.origin.x, parentFrame.origin.y,
+                                        moveView.frame.size.width, parentFrame.size.height);
+//            self.view.frame = CGRectMake(self.view.frame.origin.x, self.view.frame.origin.y,
+//                                         self.view.frame.size.width, parentFrame.size.height);
             [UIView commitAnimations];
         }
     }

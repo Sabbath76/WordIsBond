@@ -41,6 +41,10 @@ const int SectionSize[Total_Sections] =
     30, 210, 80, 40
 };
 
+const float PAN_CLOSED_X = 0;
+const float PAN_OPEN_X = -250;
+const float FAST_ANIMATION_DURATION = 0.5f;
+
 const int ExpandedSectionSize = 120;
 
 @interface MasterViewController ()
@@ -64,6 +68,11 @@ const int ExpandedSectionSize = 120;
     bool m_isLoadingMoreData;
     
     NSIndexPath *m_expandedIndexPath;
+    
+    NSIndexPath *m_lastPannedIndexPath;
+    float m_lastPannedX;
+    
+    bool m_searchShouldBeginEditing;
 }
 
 
@@ -109,7 +118,6 @@ const int ExpandedSectionSize = 120;
     return UIStatusBarStyleLightContent;
 }
 
-
 - (IBAction)onMenu:(id)sender
 {
     CGRect destination = self.navigationController.view.superview.superview.frame;
@@ -121,7 +129,13 @@ const int ExpandedSectionSize = 120;
 
 - (IBAction)onSearch:(id)sender
 {
-    [self setMenuOpen:true];
+    UISearchBar *searchBar = [[UISearchBar alloc] initWithFrame:CGRectZero];
+    [searchBar sizeToFit];
+    searchBar.delegate = self;
+    self.navigationItem.titleView = searchBar;
+
+    m_searchShouldBeginEditing = true;
+    [searchBar becomeFirstResponder];
 }
 
 - (void)awakeFromNib
@@ -245,9 +259,13 @@ const int ExpandedSectionSize = 120;
     [refresh addTarget:self action:@selector(loadNewer) forControlEvents:UIControlEventValueChanged];
     self.refreshControl = refresh;
     
-    UISwipeGestureRecognizer *swipeRecognizerLeft = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipePost:)];
-    [swipeRecognizerLeft setDirection:(UISwipeGestureRecognizerDirectionLeft)];
-    [self.tableView addGestureRecognizer:swipeRecognizerLeft];
+//    UISwipeGestureRecognizer *swipeRecognizerLeft = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipePost:)];
+//    [swipeRecognizerLeft setDirection:(UISwipeGestureRecognizerDirectionLeft)];
+//    [self.tableView addGestureRecognizer:swipeRecognizerLeft];
+    
+    UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(onPan:)];
+    [panRecognizer setDelegate:self];
+    [self.tableView addGestureRecognizer:panRecognizer];
 
     UISwipeGestureRecognizer *swipeRecognizerRight = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(expandPost:)];
     [swipeRecognizerRight setDirection:(UISwipeGestureRecognizerDirectionRight)];
@@ -571,7 +589,30 @@ const int ExpandedSectionSize = 120;
 {
     if (m_currentQuickMenuItem >= 0)
     {
-        [self displayPost:m_currentQuickMenuItem];
+        CRSSItem *post = _feed.items[m_currentQuickMenuItem];
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:m_currentQuickMenuItem inSection:Posts];
+        UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+        UIView *view = [cell viewWithTag:8];
+        UIImageView *imageView = (UIImageView *)[cell viewWithTag:9];
+        imageView.image = [post appIcon];
+        [view setTransform:CGAffineTransformMakeTranslation(PAN_CLOSED_X, 0)];
+        [imageView setAlpha:0.0f];
+        [imageView setHidden:false];
+        [UIView animateWithDuration:FAST_ANIMATION_DURATION
+                              delay:0.0f
+                            options:UIViewAnimationOptionCurveEaseInOut|UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+                             [view setTransform:CGAffineTransformMakeTranslation(PAN_OPEN_X, 0)];
+                             [imageView setAlpha:1.0f];
+                         }
+                         completion:^(BOOL finished) {
+                             [self displayPost:m_currentQuickMenuItem];
+                             [view setTransform:CGAffineTransformMakeTranslation(PAN_CLOSED_X, 0)];
+                             [imageView setAlpha:0.0f];
+                             [imageView setHidden:true];
+                         }];
+
+//        [self displayPost:m_currentQuickMenuItem];
     }
 }
 
@@ -743,6 +784,131 @@ const int ExpandedSectionSize = 120;
             [self startIconDownload:appRecord forIndexPath:indexPath];
         }*/
 
+    }
+}
+
+-(void)snapView:(UIView *)view toX:(float)x animated:(BOOL)animated
+{
+    if (animated) {
+        [UIView beginAnimations:nil context:nil];
+        [UIView setAnimationCurve:UIViewAnimationCurveEaseOut];
+        [UIView setAnimationDuration:FAST_ANIMATION_DURATION];
+    }
+    
+    [view setTransform:CGAffineTransformMakeTranslation(x, 0)];
+    
+    if (animated) {
+        [UIView commitAnimations];
+    }
+}
+
+#pragma mark - Gesture recognizer delegate
+- (BOOL)gestureRecognizerShouldBegin:(UIPanGestureRecognizer *)panGestureRecognizer
+{
+    UITableViewCell *cell = (UITableViewCell *)[panGestureRecognizer view];
+    CGPoint translation = [panGestureRecognizer translationInView:[cell superview] ];
+    return (fabs(translation.x) / fabs(translation.y) > 1) ? YES : NO;
+}
+
+- (IBAction)onPan:(UIPanGestureRecognizer *)sender
+{
+    CGPoint p = [sender locationInView:self.tableView];
+    //CGPoint delta = [sender translationInView:self.view];
+//    CGPoint delta = [sender velocityInView:self.view];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:p];
+    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    UIView *view = [cell viewWithTag:8];
+    UIImageView *imageView = (UIImageView *)[cell viewWithTag:9];
+    float threshold = (PAN_OPEN_X+PAN_CLOSED_X)/2.0;
+    float vX = 0.0;
+    float compare;
+
+    {
+        if (m_lastPannedIndexPath && (m_lastPannedIndexPath.section != indexPath.section || m_lastPannedIndexPath.row != indexPath.row))
+        {
+            UITableViewCell *oldCell = [self.tableView cellForRowAtIndexPath:m_lastPannedIndexPath];
+            UIView *oldView = [oldCell viewWithTag:8];
+            [self snapView:oldView toX:PAN_CLOSED_X animated:YES];
+            UIImageView *oldImageView = (UIImageView *)[oldCell viewWithTag:9];
+            [oldImageView setAlpha:0.0f];
+            [oldImageView setHidden:true];
+            m_lastPannedIndexPath = nil;
+            m_lastPannedX = 0;
+        }
+        
+        switch (sender.state)
+        {
+            case UIGestureRecognizerStateBegan:
+                break;
+            case UIGestureRecognizerStateEnded:
+                if (indexPath.section == Posts)
+                {
+                vX = (FAST_ANIMATION_DURATION/2.0)*[sender velocityInView:self.view].x;
+                compare = view.transform.tx + vX;
+                if (compare > threshold)
+                {
+                    [self snapView:view toX:PAN_CLOSED_X animated:YES];
+                    [imageView setAlpha:0.0f];
+                    [imageView setHidden:true];
+                    m_lastPannedIndexPath = nil;
+                    m_lastPannedX = 0;
+                }
+                else
+                {
+                    [imageView setHidden:false];
+                    [UIView animateWithDuration:FAST_ANIMATION_DURATION
+                            delay:0.0f
+                            options:UIViewAnimationOptionCurveEaseInOut
+                            animations:^{
+                                         [view setTransform:CGAffineTransformMakeTranslation(PAN_OPEN_X, 0)];
+                                         [imageView setAlpha:1.0f];
+                                     }
+                                     completion:^(BOOL finished) {
+                                        [self displayPost:indexPath.row];
+                                         [view setTransform:CGAffineTransformMakeTranslation(PAN_CLOSED_X, 0)];
+                                         [imageView setAlpha:0.0f];
+                                         [imageView setHidden:true];
+                                     }];
+//                    [self snapView:view toX:PAN_OPEN_X animated:YES];
+//                    [imageView setAlpha:1.0f];
+//                    [imageView setHidden:false];
+                    m_lastPannedIndexPath = indexPath;
+                    m_lastPannedX = view.transform.tx;
+//                    [UIView setAnimationDidStopSelector:@selector(displayPost:(indexPath.row):)];
+
+//                    [self displayPost:indexPath.row];
+                }
+                }
+                break;
+            case UIGestureRecognizerStateChanged:
+                if (indexPath.section == Posts)
+                {
+                    CRSSItem *curItem = _feed.items[indexPath.row];
+                    imageView.image = curItem.appIcon;
+                    [imageView setHidden:false];
+                    
+                    compare = /*m_lastPannedX+*/[sender translationInView:self.view].x;
+                    if (compare > PAN_CLOSED_X)
+                        compare = PAN_CLOSED_X;
+                    else if (compare < PAN_OPEN_X)
+                        compare = PAN_OPEN_X;
+                    float alpha = compare / PAN_OPEN_X;
+                    [view setTransform:CGAffineTransformMakeTranslation(compare, 0)];
+                    [imageView setAlpha:alpha];
+                    
+                    m_lastPannedIndexPath = indexPath;
+                }
+                break;
+            default:
+                break;
+        }
+/*        UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+        if (cell)
+        {
+            CGRect newFrame = cell.frame;
+            newFrame.origin.x += delta.x;
+            cell.frame = newFrame;
+        }*/
     }
 }
 
@@ -1011,6 +1177,24 @@ const int ExpandedSectionSize = 120;
     }
 }
 
+-(void)move:(UIPanGestureRecognizer *)sender
+{
+    CGPoint p = [sender locationInView:self.tableView];
+    CGPoint delta = [sender translationInView:self.view];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:p];
+    
+    if (indexPath.section == Posts)
+    {
+        UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+        if (cell)
+        {
+            CGRect newFrame = cell.frame;
+            newFrame.origin.x += delta.x;
+            cell.frame = newFrame;
+        }
+    }
+}
+
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if ([[segue identifier] isEqualToString:@"showDetail"])
@@ -1073,5 +1257,66 @@ const int ExpandedSectionSize = 120;
 {
     [self loadImagesForOnscreenRows];
 }
+
+// Search bar functionality
+
+- (void)searchBar:(UISearchBar *)bar textDidChange:(NSString *)searchText {
+//    NSLog(@"searchBar:textDidChange: isFirstResponder: %i", [bar isFirstResponder]);
+    if(![bar isFirstResponder])
+    {
+        // user tapped the 'clear' button
+        m_searchShouldBeginEditing = NO;
+        
+        [_feed LoadFeed];
+//        [[RSSFeed getInstance] Filter:filter showAudio:true showVideo:true showText:true];
+        
+        [[NSNotificationCenter defaultCenter]
+         postNotificationName:@"NewRSSFeed"
+         object:self];
+        
+        self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"top_banner_logo"]];
+
+}
+}
+
+
+- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)bar {
+    // reset the shouldBeginEditing BOOL ivar to YES, but first take its value and use it to return it from the method call
+    BOOL boolToReturn = m_searchShouldBeginEditing;
+    m_searchShouldBeginEditing = YES;
+    return boolToReturn;
+}
+
+- (void) searchBarSearchButtonClicked:(UISearchBar *)searchBar
+{
+    [searchBar resignFirstResponder];
+    
+//    showAudio = [_filterAudio isOn];
+//    showVideo = [_filterVideo isOn];
+//    showText  = [_filterText isOn];
+    
+    [[RSSFeed getInstance] FilterJSON:searchBar.text showAudio:true showVideo:true showText:true];
+    
+//    [[NSNotificationCenter defaultCenter]
+//     postNotificationName:@"CloseMenu"
+//     object:self];
+    
+//    [tableFavourites setEditing:true];
+    //    [masterViewController setMenuOpen:false];
+}
+
+- (void) searchBarCancelButtonClicked:(UISearchBar *)searchBar
+{
+    [searchBar resignFirstResponder];
+    
+    [_feed LoadFeed];
+    
+    [[NSNotificationCenter defaultCenter]
+     postNotificationName:@"NewRSSFeed"
+     object:self];
+    
+    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"top_banner_logo"]];
+}
+
 
 @end

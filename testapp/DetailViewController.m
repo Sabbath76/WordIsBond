@@ -24,10 +24,12 @@
     __weak IBOutlet UILabel *m_date;
     PostHeaderController *m_currentPage;
     PostHeaderController *m_nextPage;
+    UIBarButtonItem *m_btnFavourite;
     int m_itemPos;
     NSArray *m_sourceList;
     int m_toolbarOffset;
     bool m_loading;
+    bool m_extendedNavBar;
 }
 
 @property (strong, nonatomic) UIPopoverController *masterPopoverController;
@@ -98,11 +100,11 @@
         NSMutableSet *favourites = [[UserData get] favourites];
         if ([favourites containsObject:self.detailItem])
         {
-            _btnFavourite.tintColor = [UIColor whiteColor];
+            m_btnFavourite.tintColor = [UIColor whiteColor];
         }
         else
         {
-            _btnFavourite.tintColor = [UIColor blackColor];
+            m_btnFavourite.tintColor = [UIColor blackColor];
         }
         
         m_title.text = [self.detailItem title];
@@ -159,7 +161,7 @@
     [self configureView:true];
     
     self.webView.scrollView.delegate = self;
-    float headerBottom = /*m_header.frame.origin.y +*/ m_header.frame.size.height;
+    float headerBottom = m_header.frame.origin.y + m_header.frame.size.height;
     [[self.webView scrollView] setContentInset:UIEdgeInsetsMake(headerBottom, 0, 0, 0)];
     
     if (m_itemPos > 0)
@@ -168,6 +170,8 @@
     }
     
     m_toolbarOffset = 0;
+    
+    m_btnFavourite = self.btnFavourite;
 }
 
 - (void) webViewDidFinishLoad:(UIWebView *)webView
@@ -227,12 +231,12 @@
     NSMutableSet *favourites = [[UserData get] favourites];
     if ([favourites containsObject:self.detailItem])
     {
-        _btnFavourite.tintColor = [UIColor blackColor];
+        m_btnFavourite.tintColor = [UIColor blackColor];
         [favourites removeObject:self.detailItem];
     }
     else
     {
-        _btnFavourite.tintColor = [UIColor whiteColor];
+        m_btnFavourite.tintColor = [UIColor whiteColor];
         [favourites addObject:self.detailItem];
     }
     [[UserData get] onChanged];
@@ -264,6 +268,50 @@
 	pageController.pageIndex = newIndex;
 }
 
+-(void) enableExtendedNavigationBar:(bool)enable
+{
+    if (enable != m_extendedNavBar)
+    {
+        m_extendedNavBar = enable;
+        if (enable)
+        {
+//            UIToolbar *toolbar = [[UIToolbar alloc] init];
+            UIBarButtonItem *commentButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"comment"] style:UIBarButtonItemStylePlain target:self action:@selector(onComment:)];
+            UIBarButtonItem *fbButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"social_fb"] style:UIBarButtonItemStylePlain target:self action:@selector(onFacebook:)];
+            UIBarButtonItem *twButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"social_tw"] style:UIBarButtonItemStylePlain target:self action:@selector(onTweet:)];
+            UIBarButtonItem *favButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_fav"] style:UIBarButtonItemStylePlain target:self action:@selector(onFavourite:)];
+            UIBarButtonItem *flexibleItem1 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+            UIBarButtonItem *flexibleItem2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+            UIBarButtonItem *flexibleItem3 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+            UIBarButtonItem *flexibleItem4 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+//            toolbar.items = @[flexibleItem1, commentButton, flexibleItem2, fbButton, flexibleItem3, twButton, flexibleItem4];
+//            self.navigationItem.titleView = toolbar;
+            [UIView animateWithDuration:0.4f animations:^{
+            self.navigationItem.rightBarButtonItems = @[favButton, flexibleItem1, twButton, flexibleItem2, fbButton, flexibleItem3, commentButton, flexibleItem4 ];
+            self.navigationItem.titleView = nil;
+            self.navigationItem.title = @"";
+                [m_toolbar setAlpha:0.0f];
+            }];
+            m_btnFavourite = favButton;
+/*            [UIView animateWithDuration:0.4f animations:^{
+            UIBarButtonItem *fbButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"social_fb"] style:UIBarButtonItemStylePlain target:self action:@selector(onFacebook:)];
+            UIBarButtonItem *twButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"social_tw"] style:UIBarButtonItemStylePlain target:self action:@selector(onTweet:)];
+            UIBarButtonItem *favButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_fav"] style:UIBarButtonItemStylePlain target:self action:@selector(onFavourite:)];
+            self.navigationItem.rightBarButtonItems = @[favButton, fbButton,twButton];
+                self.navigationItem.titleView = nil;}];*/
+        }
+        else
+        {
+            UIBarButtonItem *favButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_fav"] style:UIBarButtonItemStylePlain target:self action:@selector(onFavourite:)];
+            [UIView animateWithDuration:0.4f animations:^{
+            self.navigationItem.rightBarButtonItems = @[favButton];
+            self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"top_banner_logo"]];
+                [m_toolbar setAlpha:1.0f];
+            }];
+            m_btnFavourite = favButton;
+        }
+    }
+}
 
 // called by our ImageDownloader when an icon is ready to be displayed
 - (void)appImageDidLoad:(IconDownloader *)iconDownloader
@@ -368,7 +416,7 @@
     else if (sender == _webView.scrollView)
     {
         float senderOffset  = sender.contentOffset.y;
-        float headerPos = m_header.frame.origin.y + m_header.frame.size.height;
+        float headerPos = /*m_header.frame.origin.y + */m_header.frame.size.height;
         float delta = senderOffset+headerPos;
         float factor = 1.0f - (delta / (m_header.frame.size.height * 0.5f));
         if (factor <= 0.0f)
@@ -385,9 +433,23 @@
         titleFrame.origin.y = MAX(-senderOffset, m_header.frame.origin.y);
         [m_titleRoot setFrame:titleFrame];
         CGRect tbFrame = [m_toolbar frame];
-        tbFrame.origin.y = MAX(-senderOffset + titleFrame.size.height, 0);
+        tbFrame.origin.y = -senderOffset + titleFrame.size.height;
         [m_toolbar setFrame:tbFrame];
+        
+        [self enableExtendedNavigationBar:(senderOffset > 0)];
     }
+}
+
+- (IBAction)onComment:(id)sender
+{
+    UIAlertView *alertView = [[UIAlertView alloc]
+                              initWithTitle:@"TODO"
+                              message:@"Implement Comments."
+                              delegate:self
+                              cancelButtonTitle:@"OK"
+                              otherButtonTitles:nil];
+    [alertView show];
+
 }
 
 - (IBAction)onFacebook:(id)sender
