@@ -129,13 +129,32 @@ const int ExpandedSectionSize = 120;
 
 - (IBAction)onSearch:(id)sender
 {
-    UISearchBar *searchBar = [[UISearchBar alloc] initWithFrame:CGRectZero];
-    [searchBar sizeToFit];
-    searchBar.delegate = self;
-    self.navigationItem.titleView = searchBar;
+    if (m_searchShouldBeginEditing)
+    {
+        [self.navigationItem.titleView resignFirstResponder];
+        
+        self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"top_banner_logo"]];
+        
+        m_searchShouldBeginEditing = FALSE;
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
+                                                                                               target:self
+                                                                                               action:@selector(onSearch:)];
+        
+        [_feed clearSearch];
+    }
+    else
+    {
+        UISearchBar *searchBar = [[UISearchBar alloc] initWithFrame:CGRectZero];
+        [searchBar sizeToFit];
+        searchBar.delegate = self;
+        self.navigationItem.titleView = searchBar;
 
-    m_searchShouldBeginEditing = true;
-    [searchBar becomeFirstResponder];
+        m_searchShouldBeginEditing = true;
+        [searchBar becomeFirstResponder];
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
+                                                                         target:self
+                                                                         action:@selector(onSearch:)];
+    }
 }
 
 - (void)awakeFromNib
@@ -319,7 +338,7 @@ const int ExpandedSectionSize = 120;
                 UIImageView *imgView = (UIImageView *)[cell viewWithTag:2];
                 UIImageView *imgViewMini = (UIImageView *)[cell viewWithTag:4];
                 imgView.image = iconDownloader.appRecord.blurredImage;
-                imgViewMini.image = iconDownloader.appRecord.appIcon;
+                imgViewMini.image = iconDownloader.appRecord.iconImage;
 
                 break;
             }
@@ -685,7 +704,7 @@ const int ExpandedSectionSize = 120;
             labelDate.text = object.dateString;
 
             imgView.image = object.blurredImage;
-            imgViewMini.image = object.appIcon;
+            imgViewMini.image = object.iconImage;
             
             if (imgViewMini)
             {
@@ -1260,23 +1279,21 @@ const int ExpandedSectionSize = 120;
 
 // Search bar functionality
 
-- (void)searchBar:(UISearchBar *)bar textDidChange:(NSString *)searchText {
-//    NSLog(@"searchBar:textDidChange: isFirstResponder: %i", [bar isFirstResponder]);
+- (void)searchBar:(UISearchBar *)bar textDidChange:(NSString *)searchText
+{
     if(![bar isFirstResponder])
     {
         // user tapped the 'clear' button
         m_searchShouldBeginEditing = NO;
         
-        [_feed LoadFeed];
-//        [[RSSFeed getInstance] Filter:filter showAudio:true showVideo:true showText:true];
-        
-        [[NSNotificationCenter defaultCenter]
-         postNotificationName:@"NewRSSFeed"
-         object:self];
+        [_feed clearSearch];
         
         self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"top_banner_logo"]];
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
+                                                                                               target:self
+                                                                                               action:@selector(onSearch:)];
 
-}
+    }
 }
 
 

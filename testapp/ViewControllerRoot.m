@@ -7,12 +7,16 @@
 //
 
 #import "ViewControllerRoot.h"
+#import "ViewControllerMediaPlayer.h"
 
 @interface ViewControllerRoot ()
 
 @end
 
 @implementation ViewControllerRoot
+{
+    __weak IBOutlet NSLayoutConstraint *mediaPlayerPosition;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -35,4 +39,14 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    NSString * segueName = segue.identifier;
+    if ([segueName isEqualToString: @"mediaplayer_embed"])
+    {
+        ViewControllerMediaPlayer * childViewController = (ViewControllerMediaPlayer *) [segue destinationViewController];
+        // do something with the AlertView's subviews here...
+        [childViewController setSlideConstraint:mediaPlayerPosition];
+    }
+}
 @end

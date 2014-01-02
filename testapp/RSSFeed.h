@@ -25,5 +25,6 @@
 - (int) GetNumPages;
 - (void) LoadPage:(int) pageNum;
 - (void) LoadFeed;
+- (void) clearSearch;
 
 @end

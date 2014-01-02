@@ -26,6 +26,7 @@
 @property (nonatomic, retain) IBOutlet UIButton *imageView2;
 @property (nonatomic, retain) IBOutlet UIButton *imageView3;
 @property (nonatomic, retain) IBOutlet UIButton *imageView4;
+@property (weak, nonatomic) IBOutlet UIButton *imageView5;
 @property (nonatomic, retain) RSSFeed *rssFeed;
 @property (strong, nonatomic) DetailViewController *detailViewController;
 

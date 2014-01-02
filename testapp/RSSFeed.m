@@ -23,6 +23,7 @@
     NSString *m_lastSearch;
     Boolean m_insertFront;
     bool m_resetFeatures;
+    bool m_hasSearch;
 }
 
 @synthesize items, features, numNewBack, numNewFront, reset;
@@ -355,6 +356,7 @@ I want my mummee
     [self QueryAPI:url reset:true];
     [self QueryAPIFeatures:urlFeatures reset:true];
     m_page = 0;
+    m_hasSearch = false;
 }
 
 - (void) FilterJSON:(NSString *)filter showAudio:(bool)showAudio showVideo:(bool)showVideo showText:(bool)showText
@@ -363,9 +365,17 @@ I want my mummee
     NSString *urlFeatures = [@"http://www.thewordisbond.com/?json=appqueries.get_search_feature_results&count=5&search=" stringByAppendingString:filter];
     m_lastSearch = url;
     m_insertFront = false;
+    
+    if(!m_hasSearch)
+    {
+        sourceItems = self.items;
+        sourceFeatures = self.features;
+    }
+    
     [self QueryAPI:url reset:true];
     [self QueryAPIFeatures:urlFeatures reset:true];
     m_page = 0;
+    m_hasSearch = true;
 }
 
 - (int) GetPage
@@ -384,6 +394,22 @@ I want my mummee
     [self QueryAPI:url reset:false];
     m_insertFront = pageNum <= m_page;
     m_page = pageNum;
+}
+
+- (void) clearSearch
+{
+    if (m_hasSearch)
+    {
+        self.items = sourceItems;
+        self.features = sourceFeatures;
+        m_hasSearch = true;
+        
+        [[NSNotificationCenter defaultCenter]
+         postNotificationName:@"NewRSSFeed"
+         object:self];
+        
+        reset = true;
+    }
 }
 
 

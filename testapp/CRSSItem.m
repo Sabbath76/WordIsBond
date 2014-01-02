@@ -8,6 +8,7 @@
 
 #import "CRSSItem.h"
 #import "UIImage+ImageEffects.h"
+#import "AVFoundation/AVUtilities.h"
 
 @implementation CRSSItem
 {
@@ -17,13 +18,15 @@
     NSMutableData *m_receivedData;
     NSURLConnection *m_tracksQuery;
     NSMutableData *m_receivedDataTracks;
+    
+    UIImage *m_listImage;
 }
 
 static NSString * BAND_CAMP_KEY = @"godsthannlitanpalafreyregna";
 static NSString * BAND_CAMP_ALBUM_QUERY = @"http://api.bandcamp.com/api/album/2/info?key=godsthannlitanpalafreyregna&album_id=";
 static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download/track?enc=mp3-128&id=%@&stream=1";
 
-@synthesize title, description, imageURLString, appIcon, mediaURLString, postID, requiresDownload, tracks, dateString, author, blurb, postURL, blurredImage;
+@synthesize title, description, imageURLString, appIcon, iconImage, mediaURLString, postID, requiresDownload, tracks, dateString, author, blurb, postURL, blurredImage;
 
 - (NSString*) findProperty: (NSString *)search
 {
@@ -226,8 +229,88 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
 //    %@\
 //    <div style='text-align:justify; font-size:30px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>";
     description = [NSString stringWithFormat:postFormat, title, author, dateString, fullContent, description];
+    /*
+    NSString *disqusBlock = @"<<div id=\"disqus_thread\"></div>\
+    <script type=\"text/javascript\">\
+    var disqus_url = '%@';\
+    var disqus_identifier = '%d http://www.thewordisbond.com/?p=%d';\
+    var disqus_container_id = 'disqus_thread';\
+    var disqus_domain = 'disqus.com';\
+    var disqus_shortname = 'wordisbond';\
+    var disqus_title = \"%@\";\
+    var disqus_config = function () {\
+        var config = this; // Access to the config object\
+        config.language = '';\
+        config.callbacks.preData.push(function() {\
+            // clear out the container (its filled for SEO/legacy purposes)\
+            document.getElementById(disqus_container_id).innerHTML = '';\
+        });\
+        config.callbacks.onReady.push(function() {\
+            // sync comments in the background so we don't block the page\
+            var script = document.createElement('script');\
+            script.async = true;\
+            script.src = '?cf_action=sync_comments&post_id=%d';\
+\
+            var firstScript = document.getElementsByTagName( \"script\" )[0];\
+            firstScript.parentNode.insertBefore(script, firstScript);\
+        });\
+    };\
+    </script>\
+    <noscript>Please enable JavaScript to view the <a href=\"http://disqus.com/?ref_noscript\">comments powered by Disqus.</a></noscript>\
+    <a href=\"http://disqus.com\" class=\"dsq-brlink\">blog comments powered by <span class=\"logo-disqus\">Disqus</span></a>";
+    */
+//    description = [description stringByAppendingFormat:disqusBlock, postURL, postID, postID, title, postURL];
     
+//    blurb = [blurb stringByAppendingFormat:disqusBlock, postURL, postID, postID, title, postURL];
+    
+    NSString *disqusCommentBlock = @"<a name=\"comments\"/> <div id=\"disqus_thread\"></div>\
+    <script type=\"text/javascript\">\
+    var disqus_shortname = 'wordisbond';\
+    (function() {\
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;\
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';\
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);\
+    })();\
+    </script>\
+    <noscript>Please enable JavaScript to view the <a href=\"http://disqus.com/?ref_noscript\">comments powered by Disqus.</a></noscript>\
+    <a href=\"http://disqus.com\" class=\"dsq-brlink\">blog comments powered by <span class=\"logo-disqus\">Disqus</span></a>";
+ 
+    blurb = [blurb stringByAppendingString:disqusCommentBlock];
+
     [self setup];
+}
+
+- (UIImage *)resizeImage:(UIImage*)image newSize:(CGSize)newSize
+{
+    CGRect newRect = CGRectIntegral(CGRectMake(0, 0, newSize.width, newSize.height));
+  
+    float aspect = image.size.width / image.size.height;
+    newRect.size.width *= aspect;
+    newRect.origin.x -= (newRect.size.width - newSize.width) * 0.5f;
+    // calculate resize ratio, and apply to rect
+//    newRect = AVMakeRectWithAspectRatioInsideRect(image.size, newRect);
+    
+    CGImageRef imageRef = image.CGImage;
+    
+    UIGraphicsBeginImageContextWithOptions(newSize, NO, 0);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    // Set the quality level to use when rescaling
+    CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
+    CGAffineTransform flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, newSize.height);
+    
+    CGContextConcatCTM(context, flipVertical);
+    // Draw into the context; this scales the image
+    CGContextDrawImage(context, newRect, imageRef);
+    
+    // Get the resized image from the context and a UIImage
+    CGImageRef newImageRef = CGBitmapContextCreateImage(context);
+    UIImage *newImage = [UIImage imageWithCGImage:newImageRef];
+    
+    CGImageRelease(newImageRef);
+    UIGraphicsEndImageContext();
+    
+    return newImage;
 }
 
 - (void) setup
@@ -277,6 +360,7 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
                 TrackInfo *newTrack = [TrackInfo alloc];
                 newTrack->title = self.title;
                 newTrack->url = mediaURLString;
+                newTrack->duration = 0.0f;
                 [self addTrack:newTrack];
                 
                 _type = Audio;
@@ -300,6 +384,7 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
                     TrackInfo *newTrack = [TrackInfo alloc];
                     newTrack->title = self.title;
                     newTrack->url = mediaURLString;
+                    newTrack->duration = 0.0f;
                     [self addTrack:newTrack];
 
                     _type = Audio;
@@ -399,6 +484,16 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
     }
 
     return appIcon;
+}
+
+- (UIImage *) requestIcon:(id<IconDownloaderDelegate>)delegate;
+{
+    if ((iconImage == NULL) && (imageURLString != NULL))
+    {
+        [IconDownloader download:self delegate:delegate];
+    }
+    
+    return iconImage;
 }
 
 - (void) requestFullFeed:(id<PostRequestDelegate>)delegate
@@ -505,6 +600,7 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
 {
     appIcon = image;
     blurredImage = [image applyLightEffect];
+    iconImage = [self resizeImage:image newSize:CGSizeMake(55.0f, 55.0f)];
 }
 
 

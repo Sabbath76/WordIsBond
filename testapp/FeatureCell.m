@@ -21,7 +21,7 @@
 }
 
 @synthesize scrollView, rssFeed, detailViewController;
-@synthesize imageView1, imageView2, imageView3, imageView4;
+@synthesize imageView1, imageView2, imageView3, imageView4, imageView5;
 
 - (void)awakeFromNib
 {
@@ -45,6 +45,7 @@
     CALayer *_maskingLayer2 = [CALayer layer];
     CALayer *_maskingLayer3 = [CALayer layer];
     CALayer *_maskingLayer4 = [CALayer layer];
+    CALayer *_maskingLayer5 = [CALayer layer];
     
     _maskingLayer1.frame = imageView1.bounds;
     _maskingLayer1.contents = (id)stretchableImage.CGImage;
@@ -63,13 +64,18 @@
     _maskingLayer4.contents = (id)stretchableImage.CGImage;
     _maskingLayer4.contentsScale = [UIScreen mainScreen].scale; //<-needed for the retina display, otherwise our image will not be scaled properly
     _maskingLayer4.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
+    _maskingLayer5.frame = imageView4.bounds;
+    _maskingLayer5.contents = (id)stretchableImage.CGImage;
+    _maskingLayer5.contentsScale = [UIScreen mainScreen].scale; //<-needed for the retina display, otherwise our image will not be scaled properly
+    _maskingLayer5.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
 
     [imageView1.layer setMask:_maskingLayer1];
     [imageView2.layer setMask:_maskingLayer2];
     [imageView3.layer setMask:_maskingLayer3];
     [imageView4.layer setMask:_maskingLayer4];
+    [imageView5.layer setMask:_maskingLayer5];
     
-    m_thumbnails = [[NSArray alloc] initWithObjects:imageView1, imageView2, imageView3, imageView4, nil];
+    m_thumbnails = [[NSArray alloc] initWithObjects:imageView1, imageView2, imageView3, imageView4, imageView5, nil];
 }
 
 - (void) viewDidAppear
@@ -160,29 +166,19 @@
 
     int maxFeatures = rssFeed.features.count;
     int newleftmost = MAX(MIN(leftMostFeature, newIndex-1), newIndex-2);
-    newleftmost = MAX(MIN(maxFeatures - 4, newleftmost), 0);
+    newleftmost = MIN(maxFeatures - m_thumbnails.count, newleftmost);
+    newleftmost = MAX(newleftmost, 0);
     if (newleftmost != leftMostFeature)
     {
         leftMostFeature = newleftmost;
-        if ((self.imageView1 != NULL) && (leftMostFeature < pageCount))
+        for (int i=0; i<m_thumbnails.count; i++)
         {
-            CRSSItem *rssItem1 = rssFeed.features[leftMostFeature];
-            [imageView1 setImage:[rssItem1 requestImage:self] forState:UIControlStateNormal];
-        }
-        if ((self.imageView2 != NULL) && (leftMostFeature+1 < pageCount))
-        {
-            CRSSItem *rssItem2 = rssFeed.features[leftMostFeature+1];
-            [imageView2 setImage:[rssItem2 requestImage:self] forState:UIControlStateNormal];
-        }
-        if ((self.imageView3 != NULL) && (leftMostFeature+2 < pageCount))
-        {
-            CRSSItem *rssItem3 = rssFeed.features[leftMostFeature+2];
-            [imageView3 setImage:[rssItem3 requestImage:self] forState:UIControlStateNormal];
-        }
-        if ((self.imageView4 != NULL) && (leftMostFeature+3 < pageCount))
-        {
-            CRSSItem *rssItem4 = rssFeed.features[leftMostFeature+3];
-            [imageView4 setImage:[rssItem4 requestImage:self] forState:UIControlStateNormal];
+            UIButton *imageView = m_thumbnails[i];
+            if (imageView && leftMostFeature + i < pageCount)
+            {
+                CRSSItem *rssItem = rssFeed.features[leftMostFeature+i];
+                [imageView setImage:[rssItem requestIcon:self] forState:UIControlStateNormal];
+            }
         }
 
        [self updateHighlight:currentPage.pageIndex];
@@ -208,21 +204,15 @@
             currentPage.imageView.image = newImage;
         }
         
-        if (((CRSSItem *)rssFeed.features[leftMostFeature]).postID == iconDownloader.postID)
+        for (int i=0; i<m_thumbnails.count; i++)
         {
-            [imageView1 setImage:newImage forState:UIControlStateNormal];
-        }
-        else if (((CRSSItem *)rssFeed.features[leftMostFeature+1]).postID == iconDownloader.postID)
-        {
-            [imageView2 setImage:newImage forState:UIControlStateNormal];
-        }
-        else if (((CRSSItem *)rssFeed.features[leftMostFeature+2]).postID == iconDownloader.postID)
-        {
-            [imageView3 setImage:newImage forState:UIControlStateNormal];
-        }
-        else if (((CRSSItem *)rssFeed.features[leftMostFeature+3]).postID == iconDownloader.postID)
-        {
-            [imageView4 setImage:newImage forState:UIControlStateNormal];
+            CRSSItem *featureThumb = rssFeed.features[leftMostFeature + i];
+            
+            if (featureThumb.postID == iconDownloader.postID)
+            {
+                UIButton *button = m_thumbnails[i];
+                [button setImage:iconDownloader.appRecord.iconImage forState:UIControlStateNormal];
+            }
         }
         
 //        [IconDownloader removeDownload:iconDownloader.indexPathInTableView];

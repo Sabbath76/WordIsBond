@@ -18,22 +18,38 @@
 @interface ViewControllerMediaPlayer ()
 {
     NSMutableData *m_receivedData;
-    AVAudioPlayer *m_audioPlayer;
     AVQueuePlayer *m_player;
     NSMutableArray *m_audioItems;
     NSURLConnection *m_currentConnection;
-    float midOffset;
-    float bottomOffset;
+    NSArray *m_fullItems;
+    NSArray *m_reducedItems;
+    float m_slideInitialPos;
+    float m_scrollStartPoint;
     int currentItem;
     int currentTrack;
     bool m_isPlaying;
     bool m_autoPlay;
-    __weak IBOutlet UIToolbarDragger *btnPlay;
+    
+    __weak IBOutlet UIBarButtonItem *btnPlay;
+    __weak IBOutlet UIBarButtonItem *btnPlay2;
     __weak IBOutlet UISlider *sldrPosition;
+    __weak IBOutlet UISlider *sldrPosition2;
     __weak IBOutlet UIButton *miniImage;
+    __weak IBOutlet UIToolbar *toolbar;
+    __weak IBOutlet UIToolbar *topToolbar;
+    __weak IBOutlet UIView *m_playerDock;
+    
+    __weak IBOutlet UIBarButtonItem *m_currentTitle;
+    __weak IBOutlet UILabel *m_labelCurTime;
+    __weak IBOutlet UILabel *m_labelDuration;
     
     __weak IBOutlet UIActivityIndicatorView *m_playSpinner;
+//    __weak IBOutlet NSLayoutConstraint *m_topConstraint;
+    __weak NSLayoutConstraint *m_topConstraint;
 //    UIActivityIndicatorView *m_spinner;
+    __weak IBOutlet NSLayoutConstraint *m_toolbarContraint;
+    
+    NSIndexPath *m_displayedTrack;
 }
 
 @end
@@ -42,23 +58,22 @@
 
 @synthesize currentImage;
 
+float bottomOffset  = 47;
+float midOffset     = 149;
+float topOffset     = 25;
+
+float BLUR_IMAGE_RANGE = 100.0f;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
-        
-        if (btnPlay)
-        {
-            btnPlay.owningView = [self view];
-        }
     }
     
     UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead"];
     [sldrPosition setThumbImage:sliderThumb forState:UIControlStateNormal];
     [sldrPosition setThumbImage:sliderThumb forState:UIControlStateHighlighted];
-    
-
     
     return self;
 }
@@ -67,7 +82,7 @@
 {
     [super viewDidAppear:animated];
 
-    UIView *myView = self.view.superview;
+/*    UIView *myView = self.view.superview;
     UIView *parentView = myView.superview;
 //    NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:myView attribute:NSLayoutAttributeTop
 //                                 relatedBy:NSLayoutRelationEqual toItem:parentView
@@ -85,7 +100,7 @@
     
     [UIView beginAnimations:@"Dragging A DraggableView" context:nil];
     myView.frame = rect;
-    [UIView commitAnimations];
+    [UIView commitAnimations];*/
     //Once the view has loaded then we can register to begin recieving controls and we can become the first responder
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     [self becomeFirstResponder];
@@ -98,6 +113,20 @@
     
     m_player = [[AVQueuePlayer alloc] init];
     m_player.actionAtItemEnd = AVPlayerActionAtItemEndAdvance;
+    
+    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1)
+    {
+        topOffset = 8;
+    }
+    else
+    {
+        topOffset = 55;
+    }
+
+    CGRect imageFrame = currentImage.frame;
+    CGRect toolFrame = m_playerDock.frame;
+    float headerBottom = (toolFrame.origin.y + toolFrame.size.height) - imageFrame.origin.y;
+    [self.tableView setContentInset:UIEdgeInsetsMake(headerBottom, 0, 0, 0)];
 }
 
 -(void) viewWillDisappear:(BOOL)animated
@@ -147,11 +176,6 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
 
-    if (btnPlay)
-    {
-        UIView *thisView = self.view;
-        btnPlay.owningView = thisView;
-    }
     currentItem = 0;
     m_isPlaying = false;
     m_autoPlay = false;
@@ -190,9 +214,6 @@
         [miniImage.layer setMask:_maskingLayer];
     }
     
-    self->bottomOffset = 47;
-    self->midOffset = 149;
-    
 //    UIView *myView = self.view.superview;
 //    UIView *parentView = myView.superview;
 //    [NSLayoutConstraint constraintWithItem:myView attribute:NSLayoutAttributeTop
@@ -215,10 +236,10 @@
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    float parentHeight = self.view.superview.superview.frame.size.height;
-    CGRect rect = self.view.superview.frame;
-    rect.origin.y = parentHeight - self->bottomOffset;
-    self.view.superview.frame = rect;
+//    float parentHeight = self.view.superview.superview.frame.size.height;
+//    CGRect rect = self.view.superview.frame;
+//    rect.origin.y = parentHeight - self->bottomOffset;
+//    self.view.superview.frame = rect;
 }
 
 - (void)didReceiveMemoryWarning
@@ -230,12 +251,12 @@
 - (void)setItem:(CRSSItem *) rssItem
 {
     [rssItem requestImage:self];
-    currentImage.image = rssItem.blurredImage;
+/*    currentImage.image = rssItem.blurredImage;
     [miniImage setImage:rssItem.appIcon forState:UIControlStateNormal];
     [miniImage setImage:rssItem.appIcon forState:UIControlStateSelected];
     _labelTitle.text = rssItem.title;
     [_tableView reloadData];
-
+*/
     currentTrack = 0;
     [self prepareMusic];
 }
@@ -273,18 +294,9 @@
             {
                 currentItem = (m_audioItems.count-1);
             }
-
-            CRSSItem *rssItem = m_audioItems[currentItem];
-            currentTrack = rssItem.tracks.count - 1;
-            [rssItem requestImage:self];
-            currentImage.image = rssItem.blurredImage;
-            [miniImage setImage:rssItem.appIcon forState:UIControlStateNormal];
-            [miniImage setImage:rssItem.appIcon forState:UIControlStateSelected];
-            _labelTitle.text = rssItem.title;
-            [_tableView reloadData];
-
         }
         
+        [self updateCurrentTrack:currentItem track:currentTrack];
         [self prepareMusic];
     }
 }
@@ -311,7 +323,11 @@
     {
         CRSSItem *rssItem = m_audioItems[0];
         [self setItem:rssItem];
+        
+        [self updateCurrentTrack:currentItem track:currentTrack];
     }
+    
+    [self.tableView reloadData];
 }
 
 // called by our ImageDownloader when an icon is ready to be displayed
@@ -324,6 +340,18 @@
             currentImage.image = iconDownloader.appRecord.blurredImage;
             [miniImage setImage:iconDownloader.appRecord.appIcon forState:UIControlStateNormal];
             [miniImage setImage:iconDownloader.appRecord.appIcon forState:UIControlStateSelected];
+        }
+    }
+    
+    NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
+    for (NSIndexPath *indexPath in visiblePaths)
+    {
+        CRSSItem *cellItem = m_audioItems[indexPath.section];
+        if (cellItem.postID == iconDownloader.postID)
+        {
+            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+            UIImageView *imgView = (UIImageView *)[cell viewWithTag:4];
+            imgView.image = cellItem.iconImage;
         }
     }
 }
@@ -340,6 +368,19 @@
             [miniImage setImage:item.appIcon forState:UIControlStateSelected];
         }
     }
+    
+    NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
+    for (NSIndexPath *indexPath in visiblePaths)
+    {
+        CRSSItem *cellItem = m_audioItems[indexPath.section];
+        if (cellItem.postID == item.postID)
+        {
+            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+            UIImageView *imgView = (UIImageView *)[cell viewWithTag:4];
+            imgView.image = item.iconImage;
+        }
+    }
+
 }
 
 - (IBAction)toggleAutoPlay:(id)sender
@@ -360,9 +401,9 @@
         
         NSString* resourcePath = trackInfo ? trackInfo->url : item.mediaURLString;
 
-        [m_playSpinner setHidden:false];
+////        [m_playSpinner setHidden:false];
 //        m_spinner.frame = btnPlay.frame;
-        [btnPlay setHidden:true];
+ ////       [btnPlay setHidden:true];
 //        [btnPlay addSubview:m_spinner];
 //        [btnPlay setImage:nil forState:UIControlStateNormal];
 //        [btnPlay setImage:nil forState:UIControlStateSelected];
@@ -376,7 +417,7 @@
         fullRotation.repeatCount = INFINITY;
         [btnPlay.layer addAnimation:fullRotation forKey:@"360"];
 */
-        NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
+/*        NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
         for (NSIndexPath *indexPath in visiblePaths)
         {
             if ((indexPath.section == 0) && (indexPath.row == currentTrack))
@@ -387,7 +428,7 @@
                 imgView.image = m_isPlaying ? [UIImage imageNamed:@"streamingOn"] : [UIImage imageNamed:@"streaming"];
             }
         }
-
+*/
         [m_player removeAllItems];
         [self streamData:resourcePath];
         TrackInfo *nextTrack = [self getNextTrack];
@@ -400,7 +441,7 @@
                                                  selector:@selector(playerItemDidReachEnd:)
                                                      name:AVPlayerItemDidPlayToEndTimeNotification object:[m_player currentItem]];
         
-
+/*
         NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
         [songInfo setObject:trackInfo->title forKey:MPMediaItemPropertyTitle];
         [songInfo setObject:item.title forKey:MPMediaItemPropertyArtist];
@@ -414,25 +455,10 @@
         }
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
         
- /*       NSError *error;
-        NSData *_objectData = [NSData dataWithContentsOfURL:[NSURL URLWithString:resourcePath]];
-        @try
-        {
-            m_audioPlayer = [[AVAudioPlayer alloc] initWithData:_objectData error:&error];
-            m_audioPlayer.numberOfLoops = 0;
-            m_audioPlayer.volume = 5.0f;  //set volume here
-            m_audioPlayer.delegate = self;
-            [m_audioPlayer prepareToPlay];
-            
-            if (m_isPlaying)
-            {
-                [m_audioPlayer play];
-            }
-        }
-        @catch (NSException *exception)
-        {
-        }*/
-    }
+        m_currentTitle.title = trackInfo->title;
+        self.labelTitle.text = trackInfo->title;
+*/
+     }
 }
 
 struct STrackIdx
@@ -475,7 +501,8 @@ struct STrackIdx
     //--- Update UI
     struct STrackIdx newTrack = [self getNextTrackIdx];
 
-    CRSSItem *newItem = m_audioItems[newTrack.itemID];
+    [self updateCurrentTrack:newTrack.itemID track:newTrack.trackID];
+/*    CRSSItem *newItem = m_audioItems[newTrack.itemID];
     bool itemChanged = newTrack.itemID != currentItem;
     
     currentItem = newTrack.itemID;
@@ -486,10 +513,10 @@ struct STrackIdx
         currentImage.image = newItem.blurredImage;
         [miniImage setImage:newItem.appIcon forState:UIControlStateNormal];
         [miniImage setImage:newItem.appIcon forState:UIControlStateSelected];
-        _labelTitle.text = newItem.title;
-        [_tableView reloadData];
-    }
-  
+//        [_tableView reloadData];
+    }*/
+
+
     //--- Queue up the next track
     TrackInfo *nextTrack = [self getNextTrack];
     if (nextTrack)
@@ -501,23 +528,7 @@ struct STrackIdx
                                               name:AVPlayerItemDidPlayToEndTimeNotification object:[m_player currentItem]];
     }
     
-    [self updateTracks];
-    
-    //--- Update control centre display
-    TrackInfo *curTrack = newItem.tracks[currentTrack];
-    NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
-    [songInfo setObject:curTrack->title forKey:MPMediaItemPropertyTitle];
-    [songInfo setObject:newItem.title forKey:MPMediaItemPropertyArtist];
-    [songInfo setObject:newItem.title forKey:MPMediaItemPropertyAlbumTitle];
-    [songInfo setObject:[NSNumber numberWithFloat:curTrack->duration] forKey:MPMediaItemPropertyPlaybackDuration];
-    [songInfo setObject:[NSNumber numberWithInt:1] forKey:MPNowPlayingInfoPropertyPlaybackRate];
-    
-    if ([newItem appIcon] != nil)
-    {
-        MPMediaItemArtwork *albumArt = [[MPMediaItemArtwork alloc] initWithImage: [newItem appIcon]];
-        [songInfo setObject:albumArt forKey:MPMediaItemPropertyArtwork];
-    }
-    [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
+//    [self updateTracks];
     
 //    [m_player removeItem:[m_player items][0]];
 //    int count = [m_player items].count;
@@ -530,12 +541,40 @@ struct STrackIdx
 
 }
 
-
-- (void)setTrack:(int)newTrack
+- (void)updateCurrentTrack:(int)item track:(int)track
 {
-    currentTrack = newTrack;
-    [self prepareMusic];
-//    [self updateTracks];
+    currentItem = item;
+    currentTrack = track;
+    
+    if (m_displayedTrack != nil)
+    {
+        [self updateTrackCell:m_displayedTrack];
+    }
+    m_displayedTrack = [NSIndexPath indexPathForRow:currentTrack inSection:currentItem];
+    [self updateTrackCell:m_displayedTrack];
+    
+    CRSSItem *newItem = m_audioItems[currentItem];
+    [newItem requestImage:self];
+    currentImage.image = newItem.blurredImage;
+    [miniImage setImage:newItem.appIcon forState:UIControlStateNormal];
+    [miniImage setImage:newItem.appIcon forState:UIControlStateSelected];
+    
+    //--- Update trackInfo centre display
+    TrackInfo *trackInfo = newItem.tracks[currentTrack];
+    NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
+    [songInfo setObject:trackInfo->title forKey:MPMediaItemPropertyTitle];
+    [songInfo setObject:newItem.title forKey:MPMediaItemPropertyArtist];
+    [songInfo setObject:newItem.title forKey:MPMediaItemPropertyAlbumTitle];
+    [songInfo setObject:[NSNumber numberWithFloat:trackInfo->duration] forKey:MPMediaItemPropertyPlaybackDuration];
+    [songInfo setObject:[NSNumber numberWithInt:1] forKey:MPNowPlayingInfoPropertyPlaybackRate];
+    _labelTitle.text = trackInfo->title;
+    
+    if ([newItem appIcon] != nil)
+    {
+        MPMediaItemArtwork *albumArt = [[MPMediaItemArtwork alloc] initWithImage: [newItem appIcon]];
+        [songInfo setObject:albumArt forKey:MPMediaItemPropertyArtwork];
+    }
+    [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
 }
 
 - (TrackInfo *)getNextTrack
@@ -545,23 +584,13 @@ struct STrackIdx
     return item.tracks[newTrack.trackID];
 }
 
-- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
+- (void) setSlideConstraint:(NSLayoutConstraint*)constraint
 {
-    CRSSItem *item = m_audioItems[currentItem];
-    currentTrack++;
-    if (currentTrack < item.tracks.count)
-    {
-        [self setTrack:currentTrack];
-    }
-    else if (m_autoPlay)
-    {
-        [self onNext:0];
-    }
-    else
-    {
-        [btnPlay setSelected:FALSE];
-        m_isPlaying = false;
-    }
+    m_topConstraint = constraint;
+    
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    float max = screenRect.size.height - bottomOffset;
+    [m_topConstraint setConstant:max];
 }
 
 - (IBAction)onPlayList:(id)sender
@@ -569,7 +598,25 @@ struct STrackIdx
     UIView *moveView = self.view.superview;
     if (moveView)
     {
-        CGRect parentFrame = moveView.superview.frame;
+        CGRect screenRect = [[UIScreen mainScreen] bounds];
+        float min = topOffset;
+        float max = screenRect.size.height - bottomOffset;
+        float threshold = (min+max)/2.0;
+
+        bool isAtBottom = [m_topConstraint constant] < threshold;
+        [self setTopToolbarActive:isAtBottom];
+        if (isAtBottom)
+        {
+            [m_topConstraint setConstant:max];
+            [sldrPosition setHidden:false];
+        }
+        else
+        {
+            [m_topConstraint setConstant:min];
+            [sldrPosition setHidden:true];
+        }
+        [UIView animateWithDuration:0.5f animations:^{[moveView layoutIfNeeded];}];
+/*        CGRect parentFrame = moveView.superview.frame;
         if (moveView.frame.origin.y < (parentFrame.origin.y + (parentFrame.size.height - ((midOffset + bottomOffset) * 0.5))))
         {
             [UIView beginAnimations:@"Dragging A DraggableView" context:nil];
@@ -586,7 +633,7 @@ struct STrackIdx
 //            self.view.frame = CGRectMake(self.view.frame.origin.x, self.view.frame.origin.y,
 //                                         self.view.frame.size.width, parentFrame.size.height);
             [UIView commitAnimations];
-        }
+        }*/
     }
 }
 
@@ -617,21 +664,19 @@ struct STrackIdx
                 [m_player pause];
             }
 
-            [btnPlay setSelected:m_isPlaying];
-            [self updateTracks];
+            [btnPlay setTintColor:m_isPlaying?[self getActiveColour]:[UIColor lightGrayColor]];
+            [btnPlay2 setTintColor:m_isPlaying?[self getActiveColour]:[UIColor lightGrayColor]];
+            [self updateTrackCell:m_displayedTrack];
         }
     }
 }
 
 - (IBAction)togglePlay:(id)sender
 {
-    if (btnPlay.isDragging == false)
-    {
-        [self setPlaying:!m_isPlaying];
-    }
-}
+   [self setPlaying:!m_isPlaying];
+ }
 
-
+/*
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
     [super touchesMoved:touches withEvent:event];
@@ -691,7 +736,7 @@ struct STrackIdx
             [UIView commitAnimations];
         }
     }
-}
+}*/
 
 
 - (void) streamData:(NSString *)url
@@ -739,9 +784,9 @@ struct STrackIdx
 //                    [m_spinner removeFromSuperview];
 
 //                    [btnPlay.layer removeAllAnimations];
-                    [btnPlay setImage:[UIImage imageNamed:@"icon_opt"] forState:UIControlStateNormal];
-                    [btnPlay setImage:[UIImage imageNamed:@"icon_opt"] forState:UIControlStateSelected];
-                    [btnPlay setHidden:false];
+//                    [btnPlay setImage:[UIImage imageNamed:@"icon_opt"] forState:UIControlStateNormal];
+//                    [btnPlay setImage:[UIImage imageNamed:@"icon_opt"] forState:UIControlStateSelected];
+//                    [btnPlay setHidden:false];
 
                     UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead"];
                     [sldrPosition setThumbImage:sliderThumb forState:UIControlStateNormal];
@@ -758,9 +803,9 @@ struct STrackIdx
 
 //                    [m_spinner removeFromSuperview];
 //                    [btnPlay.layer removeAllAnimations];
-                    [btnPlay setImage:[UIImage imageNamed:@"player_play_off"] forState:UIControlStateNormal];
-                    [btnPlay setImage:[UIImage imageNamed:@"player_play_on"] forState:UIControlStateSelected];
-                    [btnPlay setHidden:false];
+//                    [btnPlay setImage:[UIImage imageNamed:@"player_play_off"] forState:UIControlStateNormal];
+//                    [btnPlay setImage:[UIImage imageNamed:@"player_play_on"] forState:UIControlStateSelected];
+//                    [btnPlay setHidden:false];
 
                     CRSSItem *post = m_audioItems[currentItem];
                     TrackInfo *trackInfo = post.tracks[currentTrack];
@@ -778,6 +823,11 @@ struct STrackIdx
                     
                     sldrPosition.maximumValue = trackInfo->duration;
                     sldrPosition.value = 0.0;
+                    sldrPosition2.maximumValue = trackInfo->duration;
+                    sldrPosition2.value = 0.0f;
+                    
+                    m_labelCurTime.text = @"0:00";
+                    m_labelDuration.text = [NSString stringWithFormat:@"%d:%02d", (int)(trackInfo->duration / 60.0f), (int)(trackInfo)%60];
 
 //                    NSLog(@"player item status is ready to play");
                 }
@@ -798,121 +848,13 @@ struct STrackIdx
     }
 }
 
-
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
-{
-    if(connection == m_currentConnection)
-    {
-        //Reset the data as this could be fired if a redirect or other response occurs
-        [m_receivedData setLength:0];
-    }
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
-{
-    if (connection == m_currentConnection)
-    {
-        //Append the received data each time this is called
-        [m_receivedData appendData:data];
-    }
-}
-
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
-{
-    
-}
-
-
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection
-{
-    if (connection == m_currentConnection)
-    {
-    NSError *error;
-    @try
-    {
-        m_audioPlayer = [[AVAudioPlayer alloc] initWithData:m_receivedData error:&error];
-        
-        if (error)
-        {
-            NSLog(@"%@", [error localizedDescription]);
-        }
-        m_audioPlayer.numberOfLoops = 0;
-        m_audioPlayer.volume = 5.0f;  //set volume here
-        m_audioPlayer.delegate = self;
-        [m_audioPlayer prepareToPlay];
-
-        [btnPlay.layer removeAllAnimations];
-        if (m_audioPlayer)
-        {
-            [btnPlay setImage:[UIImage imageNamed:@"player_play_off"] forState:UIControlStateNormal];
-            [btnPlay setImage:[UIImage imageNamed:@"player_play_on"] forState:UIControlStateSelected];
-            
-            CRSSItem *item = m_audioItems[currentItem];
-            TrackInfo *trackInfo = item.tracks[currentTrack];
-            trackInfo->duration = [m_audioPlayer duration];
-            
-            UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead"];
-            [sldrPosition setThumbImage:sliderThumb forState:UIControlStateNormal];
-            [sldrPosition setThumbImage:sliderThumb forState:UIControlStateHighlighted];
-            
-            sldrPosition.maximumValue = [m_audioPlayer duration];
-            sldrPosition.value = 0.0;
-            
-            [self updateTracks];
-        }
-        else
-        {
-            [btnPlay setImage:[UIImage imageNamed:@"icon_opt"] forState:UIControlStateNormal];
-            [btnPlay setImage:[UIImage imageNamed:@"icon_opt"] forState:UIControlStateSelected];
-            
-            UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead_off"];
-            [sldrPosition setThumbImage:sliderThumb forState:UIControlStateNormal];
-            [sldrPosition setThumbImage:sliderThumb forState:UIControlStateHighlighted];
-        }
-
-        if (m_isPlaying)
-        {
-            [m_audioPlayer play];
-            
-            float duration = [m_audioPlayer duration];
-
-            [UIView animateWithDuration:0.1 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
-                [sldrPosition setValue:0.0];
-  //          }];
-            }              completion:^(BOOL finished) {
-                [UIView animateWithDuration:duration-0.1 animations:^{
-                    [sldrPosition setValue:duration];
-                }];
-            }];
-
-//            [sldrPosition.layer removeAllAnimations];
-//            [sldrPosition setValue:0.0];
-//            [UIView animateWithDuration:m_audioPlayer.duration animations:^{
-//                [sldrPosition setValue:m_audioPlayer.duration];
-//            }];
-        }
-    }
-    @catch (NSException *exception)
-    {
-    }
-    }
-}
-
 //--- Tracks list
 
-- (IBAction)slideTIme:(id)sender
+- (IBAction)slideTIme:(UISlider *)sender
 {
     if (m_player)
     {
-        [m_player seekToTime:CMTimeMakeWithSeconds(sldrPosition.value, 10)];
-    }
-    if (m_audioPlayer)
-    {
-        m_audioPlayer.currentTime = sldrPosition.value;
-        
-//        [UIView animateWithDuration:m_audioPlayer.duration-m_audioPlayer.currentTime animations:^{
-//            [sldrPosition setValue:m_audioPlayer.duration];
-//        }];
+        [m_player seekToTime:CMTimeMakeWithSeconds(sender.value, 10)];
     }
 }
 
@@ -932,16 +874,58 @@ struct STrackIdx
     }
 }
 
+- (UIColor *) getActiveColour
+{
+    return [UIColor colorWithRed:1.0f green:0.5f blue:0.3f alpha:1.0f];
+}
+
+- (UIColor *)getTextColourForTrack:(NSIndexPath*) trackID
+{
+    bool isCurrent = (trackID.section == currentItem) && (trackID.row == currentTrack);
+    if (m_isPlaying && isCurrent)
+    {
+        return [self getActiveColour];
+    }
+    else if (isCurrent)
+    {
+        return [UIColor lightGrayColor];
+    }
+    else
+    {
+        return [UIColor darkGrayColor];
+    }
+}
+
+- (void) updateTrackCell:(NSIndexPath*) indexPath
+{
+    CRSSItem *curItem = m_audioItems[indexPath.section];
+    TrackInfo *trackInfo = curItem.tracks[indexPath.row];
+    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    UILabel *lblTitle    = (UILabel*)[cell viewWithTag:1];
+    UILabel *lblDuration = (UILabel*)[cell viewWithTag:2];
+    if (trackInfo->duration == 0.0f)
+    {
+        lblDuration.text = @"--:--";
+    }
+    else
+    {
+        lblDuration.text = [NSString stringWithFormat:@"%d:%02d", (int)(trackInfo->duration / 60.0f), (int)(trackInfo)%60];
+    }
+    [lblTitle setTextColor:[self getTextColourForTrack:indexPath]];
+}
+
 - (void) updateTracks
 {
-    NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
+    //TODO!
+/*    NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
     CRSSItem *curItem = m_audioItems[currentItem];
     for (NSIndexPath *indexPath in visiblePaths)
     {
         if (indexPath.section == 0)
         {
             UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-            UIImageView *imgView = (UIImageView *)[cell viewWithTag:4];
+//            UIImageView *imgView = (UIImageView *)[cell viewWithTag:4];
+            UILabel *lblTitle    = (UILabel*)[cell viewWithTag:1];
             UILabel *lblDuration = (UILabel*)[cell viewWithTag:2];
             TrackInfo *trackInfo = curItem.tracks[indexPath.row];
             if (trackInfo->duration == 0.0f)
@@ -952,18 +936,24 @@ struct STrackIdx
             {
                 lblDuration.text = [NSString stringWithFormat:@"%d:%02d", (int)(trackInfo->duration / 60.0f), (int)(trackInfo)%60];
             }
-            imgView.image = [self getImageForTrack:indexPath.row];
-            [imgView.layer removeAllAnimations];
+            //imgView.image = [self getImageForTrack:indexPath.row];
+            [lblTitle setTextColor:[self getTextColourForTrack:indexPath.row]];
+//            [imgView.layer removeAllAnimations];
 
         }
-    }
+    }*/
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return m_audioItems.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if ((section == 0) && (m_audioItems.count > 0))
+    if (section < m_audioItems.count)
     {
-        CRSSItem *curItem = m_audioItems[currentItem];
+        CRSSItem *curItem = m_audioItems[section];
         return curItem.tracks.count;
     }
     return 0;
@@ -971,9 +961,9 @@ struct STrackIdx
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (m_audioItems.count > 0)
+    if (indexPath.section < m_audioItems.count)
     {
-        CRSSItem *curItem = m_audioItems[currentItem];
+        CRSSItem *curItem = m_audioItems[indexPath.section];
         
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Track" forIndexPath:indexPath];
         TrackInfo *trackInfo = curItem.tracks[indexPath.row];
@@ -989,7 +979,8 @@ struct STrackIdx
         {
             lblDuration.text = [NSString stringWithFormat:@"%d:%02d", (int)(trackInfo->duration / 60.0f), (int)(trackInfo)%60];
         }
-        imgView.image = [self getImageForTrack:indexPath.row];
+        imgView.image = [curItem requestIcon:self];
+        [lblTitle setTextColor:[self getTextColourForTrack:indexPath]];
 
         return cell;
     }
@@ -999,8 +990,108 @@ struct STrackIdx
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self setTrack:indexPath.row];
+    [self updateCurrentTrack:indexPath.section track:indexPath.row];
+    [self prepareMusic];
 }
 
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    m_scrollStartPoint = 0;//scrollView.contentOffset.y;
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    float senderOffset  = m_scrollStartPoint-scrollView.contentOffset.y;
+    float headerPos = m_playerDock.frame.size.height;
+
+    float toolbarPos = MAX(senderOffset - headerPos, self.currentImage.frame.origin.y);
+    [m_toolbarContraint setConstant:toolbarPos];
+    
+    float targetAlpha = 1.0f - MIN((toolbarPos - self.currentImage.frame.origin.y) / BLUR_IMAGE_RANGE, 1.0f);
+    
+    [UIView animateWithDuration:0.2f animations:^
+     {
+         [self.view layoutIfNeeded];
+         [self.currentImage setAlpha:targetAlpha];
+     }];
+}
+
+-(void) setTopToolbarActive:(bool) active
+{
+    [sldrPosition setHidden:active];
+//    [btnPlay setHidden:active];
+
+    if (m_fullItems == nil)
+    {
+        self.labelTitle.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
+        self.labelTitle.superview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
+//        self.labelTitle.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
+        m_fullItems = [topToolbar items];
+        m_reducedItems = @[m_fullItems[3], m_fullItems[4], m_fullItems[5], m_fullItems[6]];
+    }
+    
+    topToolbar.items = active ? m_fullItems : m_reducedItems;
+}
+
+float MP_ANIMATION_DURATION = 0.5f;
+float MP_FAST_ANIMATION_DURATION = 0.1f;
+
+- (IBAction)onDrag:(UIPanGestureRecognizer *)sender
+{
+    float vX = 0.0;
+    float compare;
+    
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    float min = topOffset;
+    float max = screenRect.size.height - bottomOffset;
+    float threshold = (min+max)/2.0;
+    
+    switch (sender.state)
+    {
+        case UIGestureRecognizerStateBegan:
+            m_slideInitialPos = [m_topConstraint constant];
+            break;
+        case UIGestureRecognizerStateEnded:
+        {
+            vX = [m_topConstraint constant] + (MP_ANIMATION_DURATION/2.0)*[sender velocityInView:self.view].y;
+            compare = vX;//view.transform.tx + vX;
+            bool top = (compare < threshold);
+            if (top)
+            {
+                [m_topConstraint setConstant:min];
+            }
+            else
+            {
+                [m_topConstraint setConstant:max];
+            }
+
+            [self setTopToolbarActive:!top];
+
+            [UIView animateWithDuration:MP_ANIMATION_DURATION animations:^
+            {
+                [self.view.superview layoutIfNeeded];
+                [sldrPosition setHidden:top];
+//                [btnPlay setHidden:top];
+            }];
+
+            break;
+        }
+            
+        case UIGestureRecognizerStateChanged:
+        {
+            compare = m_slideInitialPos+[sender translationInView:self.view].y;
+            compare = MAX(compare, min);
+            compare = MIN(compare, max);
+
+            [m_topConstraint setConstant:compare];
+
+            [UIView animateWithDuration:MP_FAST_ANIMATION_DURATION animations:^{[self.view.superview layoutIfNeeded];}];
+            break;
+        }
+            
+        default:
+            break;
+    }
+}
 
 @end

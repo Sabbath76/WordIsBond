@@ -20,4 +20,6 @@
 @property (weak, nonatomic) IBOutlet UIView *bar;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
+- (void) setSlideConstraint:(NSLayoutConstraint*)constraint;
+
 @end

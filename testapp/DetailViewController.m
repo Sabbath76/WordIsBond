@@ -14,6 +14,7 @@
 #import <Social/Social.h>
 
 #import <Accounts/Accounts.h>
+#import "UIViewController+BackButtonHandler.h"
 
 @interface DetailViewController ()
 {
@@ -93,7 +94,7 @@
         {
 //            NSString *fullString = [NSString stringWithFormat:@"<div style='text-align:justify; font-size:45px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>", [self.detailItem description]];
 //            [_webView loadHTMLString:fullString baseURL:nil];
-            [_webView loadHTMLString:[self.detailItem blurb] baseURL:nil];
+            [_webView loadHTMLString:[self.detailItem blurb] baseURL:[NSURL URLWithString:[self.detailItem postURL]]];
             m_loading = true;
         }
         
@@ -172,6 +173,19 @@
     m_toolbarOffset = 0;
     
     m_btnFavourite = self.btnFavourite;
+}
+
+-(BOOL) navigationShouldPopOnBackButton
+{
+    if([_webView canGoBack])
+    {
+        [_webView goBack];
+        return NO;
+    }
+    else
+    {
+        return YES;
+    }
 }
 
 - (void) webViewDidFinishLoad:(UIWebView *)webView
@@ -381,7 +395,7 @@
     
         bool isPrev = (lowerNumber == m_itemPos);
         float pageFract = (fractionalPage - lowerNumber);
-        float pageAlpha = isPrev ? (0.5f - pageFract) * 2.0f : (pageFract - 0.5f) * 2.0f;// fabsf(0.5f - pageFract) * 2.0f;
+        float pageAlpha = isPrev ? (0.5f - pageFract) * 4.0f : (pageFract - 0.5f) * 4.0f;// fabsf(0.5f - pageFract) * 2.0f;
         pageAlpha = MAX(pageAlpha, 0.0f);
         float curAlpha = MIN(2.0f * pageFract, 1.0f);
         float nextAlpha = MIN(2.0f * (1.0f-pageFract), 1.0f);
@@ -442,6 +456,8 @@
 
 - (IBAction)onComment:(id)sender
 {
+    [_webView stringByEvaluatingJavaScriptFromString:@"window.location.hash='comments';"];
+/*
     UIAlertView *alertView = [[UIAlertView alloc]
                               initWithTitle:@"TODO"
                               message:@"Implement Comments."
@@ -449,7 +465,7 @@
                               cancelButtonTitle:@"OK"
                               otherButtonTitles:nil];
     [alertView show];
-
+*/
 }
 
 - (IBAction)onFacebook:(id)sender
@@ -532,6 +548,5 @@
 	[self scrollViewDidEndScrollingAnimation:sender];
     }
 }
-
 
 @end
