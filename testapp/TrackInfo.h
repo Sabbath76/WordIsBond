@@ -8,12 +8,15 @@
 
 #import <Foundation/Foundation.h>
 
+@class CRSSItem;
+
 @interface TrackInfo : NSObject
 {
     @public
     NSString *title;
     NSString *url;
     float duration;
+    CRSSItem *pItem;
 }
 
 @end

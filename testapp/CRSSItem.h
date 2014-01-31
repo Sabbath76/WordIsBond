@@ -10,7 +10,6 @@
 #import "IconDownloader.h"
 #import "TrackInfo.h"
 
-
 typedef enum
 {
     Text, Audio, Video
@@ -45,6 +44,7 @@ typedef enum
 - (void) addTrack:(TrackInfo *) track;
 - (void) initWithDictionary:(NSDictionary*)post;
 - (void) updateImage:(UIImage *)image;
+- (Boolean) waitingOnTracks;
 
 @end
 

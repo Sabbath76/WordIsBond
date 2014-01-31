@@ -403,12 +403,13 @@ I want my mummee
         self.items = sourceItems;
         self.features = sourceFeatures;
         m_hasSearch = true;
-        
+
+        reset = true;
+
         [[NSNotificationCenter defaultCenter]
          postNotificationName:@"NewRSSFeed"
          object:self];
         
-        reset = true;
     }
 }
 

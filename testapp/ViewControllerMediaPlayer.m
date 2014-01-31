@@ -15,21 +15,28 @@
 #import "CRSSItem.h"
 #import "SelectedItem.h"
 
+#import "MediaTrackController.h"
+
+
 @interface ViewControllerMediaPlayer ()
 {
+    MediaTrackController *m_currentPage;
+    MediaTrackController *m_nextPage;
     NSMutableData *m_receivedData;
     AVQueuePlayer *m_player;
     NSMutableArray *m_audioItems;
+    NSMutableArray *m_audioTracks;
     NSURLConnection *m_currentConnection;
     NSArray *m_fullItems;
     NSArray *m_reducedItems;
     float m_slideInitialPos;
     float m_scrollStartPoint;
-    int currentItem;
+//    int currentItem;
     int currentTrack;
     bool m_isPlaying;
     bool m_autoPlay;
     
+    __weak IBOutlet UIScrollView *m_scrollTrackHeader;
     __weak IBOutlet UIBarButtonItem *btnPlay;
     __weak IBOutlet UIBarButtonItem *btnPlay2;
     __weak IBOutlet UISlider *sldrPosition;
@@ -49,7 +56,7 @@
 //    UIActivityIndicatorView *m_spinner;
     __weak IBOutlet NSLayoutConstraint *m_toolbarContraint;
     
-    NSIndexPath *m_displayedTrack;
+    int m_displayedTrack;
 }
 
 @end
@@ -58,9 +65,9 @@
 
 @synthesize currentImage;
 
-float bottomOffset  = 47;
+float bottomOffset  = 44;
 float midOffset     = 149;
-float topOffset     = 25;
+float topOffset     = 20;
 
 float BLUR_IMAGE_RANGE = 100.0f;
 
@@ -116,17 +123,17 @@ float BLUR_IMAGE_RANGE = 100.0f;
     
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1)
     {
-        topOffset = 8;
+        topOffset = 20;
     }
     else
     {
-        topOffset = 55;
+        topOffset = 60;
     }
 
-    CGRect imageFrame = currentImage.frame;
-    CGRect toolFrame = m_playerDock.frame;
-    float headerBottom = (toolFrame.origin.y + toolFrame.size.height) - imageFrame.origin.y;
-    [self.tableView setContentInset:UIEdgeInsetsMake(headerBottom, 0, 0, 0)];
+//    CGRect imageFrame = currentImage.frame;
+//    CGRect toolFrame = m_playerDock.frame;
+//    float headerBottom = (toolFrame.origin.y + toolFrame.size.height) - imageFrame.origin.y;
+//    [self.tableView setContentInset:UIEdgeInsetsMake(headerBottom, 0, 0, 0)];
 }
 
 -(void) viewWillDisappear:(BOOL)animated
@@ -176,7 +183,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
 
-    currentItem = 0;
+    currentTrack = 0;
     m_isPlaying = false;
     m_autoPlay = false;
     
@@ -193,6 +200,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
                                                  name:@"NewTrackInfo"
                                                object:nil];
     m_audioItems = [[NSMutableArray alloc] init];
+    m_audioTracks = [[NSMutableArray alloc] init];
     
     _labelTitle.textColor = [UIColor grayColor];
     
@@ -214,6 +222,12 @@ float BLUR_IMAGE_RANGE = 100.0f;
         [miniImage.layer setMask:_maskingLayer];
     }
     
+    m_currentPage = [[MediaTrackController alloc] initWithNibName:@"MediaPlayerHeader" bundle:nil];
+	m_nextPage = [[MediaTrackController alloc] initWithNibName:@"MediaPlayerHeader" bundle:nil];
+
+    [m_scrollTrackHeader addSubview:m_currentPage.view];
+	[m_scrollTrackHeader addSubview:m_nextPage.view];
+
 //    UIView *myView = self.view.superview;
 //    UIView *parentView = myView.superview;
 //    [NSLayoutConstraint constraintWithItem:myView attribute:NSLayoutAttributeTop
@@ -248,18 +262,18 @@ float BLUR_IMAGE_RANGE = 100.0f;
     // Dispose of any resources that can be recreated.
 }
 
-- (void)setItem:(CRSSItem *) rssItem
+/*- (void)setItem:(CRSSItem *) rssItem
 {
     [rssItem requestImage:self];
-/*    currentImage.image = rssItem.blurredImage;
-    [miniImage setImage:rssItem.appIcon forState:UIControlStateNormal];
-    [miniImage setImage:rssItem.appIcon forState:UIControlStateSelected];
-    _labelTitle.text = rssItem.title;
-    [_tableView reloadData];
-*/
+//    currentImage.image = rssItem.blurredImage;
+//    [miniImage setImage:rssItem.appIcon forState:UIControlStateNormal];
+//    [miniImage setImage:rssItem.appIcon forState:UIControlStateSelected];
+//    _labelTitle.text = rssItem.title;
+//    [_tableView reloadData];
+
     currentTrack = 0;
     [self prepareMusic];
-}
+}*/
 
 - (IBAction)onNext:(id)sender
 {
@@ -281,22 +295,18 @@ float BLUR_IMAGE_RANGE = 100.0f;
 
 - (IBAction)onPrev:(id)sender
 {
-    if (m_audioItems.count > 0)
+    if (m_audioTracks.count > 0)
     {
-        if (currentTrack > 0)
+        if (currentTrack == 0)
         {
-            currentTrack--;
+            currentTrack = m_audioTracks.count - 1;
         }
         else
         {
-            currentItem--;
-            if (currentItem < 0)
-            {
-                currentItem = (m_audioItems.count-1);
-            }
+            currentTrack--;
         }
-        
-        [self updateCurrentTrack:currentItem track:currentTrack];
+
+        [self updateCurrentTrack:currentTrack updateListItems:true];
         [self prepareMusic];
     }
 }
@@ -305,12 +315,24 @@ float BLUR_IMAGE_RANGE = 100.0f;
 {
     RSSFeed *feed = [RSSFeed getInstance];
 
+    for (CRSSItem *item in feed.items)
+    {
+        if ([item waitingOnTracks])
+            return;
+    }
+
     [m_audioItems removeAllObjects];
+    [m_audioTracks removeAllObjects];
     for (CRSSItem *item in feed.items)
     {
         if (item.tracks)
         {
             [m_audioItems addObject:item];
+            
+            for (TrackInfo *trackInfo in item.tracks)
+            {
+                [m_audioTracks addObject:trackInfo];
+            }
         }
         else if (item.mediaURLString)
         {
@@ -318,22 +340,44 @@ float BLUR_IMAGE_RANGE = 100.0f;
         }
     }
 
-    currentItem = 0;
-    if (m_audioItems.count > 0)
+    m_displayedTrack = 0;
+    currentTrack = 0;
+    if (m_audioTracks.count > 0)
     {
-        CRSSItem *rssItem = m_audioItems[0];
-        [self setItem:rssItem];
+        [self prepareMusic];
         
-        [self updateCurrentTrack:currentItem track:currentTrack];
+        [self updateCurrentTrack:currentTrack updateListItems:false];
     }
     
     [self.tableView reloadData];
+    
+    if (m_currentPage)
+    {
+        [m_currentPage setSourceArray:m_audioTracks];
+        [self applyNewIndex:currentTrack pageController:m_currentPage];
+    }
+    if (m_nextPage)
+    {
+        [m_nextPage setSourceArray:m_audioTracks];
+        [self applyNewIndex:currentTrack+1 pageController:m_nextPage];
+    }
+
+    if (m_scrollTrackHeader)
+    {
+        int numItems = m_audioItems ? m_audioItems.count : 1;
+        m_scrollTrackHeader.contentSize =
+        CGSizeMake(
+                   m_scrollTrackHeader.frame.size.width * numItems,
+                   m_scrollTrackHeader.frame.size.height);
+    }
+
+    
 }
 
 // called by our ImageDownloader when an icon is ready to be displayed
 - (void)appImageDidLoad:(IconDownloader *)iconDownloader
 {
-    if (m_audioItems.count > 0)
+/*    if (m_audioItems.count > 0)
     {
         if (((CRSSItem*)m_audioItems[currentItem]).postID == iconDownloader.postID)
         {
@@ -341,7 +385,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
             [miniImage setImage:iconDownloader.appRecord.appIcon forState:UIControlStateNormal];
             [miniImage setImage:iconDownloader.appRecord.appIcon forState:UIControlStateSelected];
         }
-    }
+    }*/
     
     NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
     for (NSIndexPath *indexPath in visiblePaths)
@@ -358,26 +402,27 @@ float BLUR_IMAGE_RANGE = 100.0f;
 
 - (void) onIconLoaded:(NSNotification *) notification
 {
-    CRSSItem *item = [[notification userInfo] valueForKey:@"item"];
+/*    CRSSItem *item = [[notification userInfo] valueForKey:@"item"];
     if (m_audioItems.count > 0)
     {
         if (m_audioItems[currentItem] == item)
         {
-            currentImage.image = item.blurredImage;
+            currentImage.image = item.appIcon;
             [miniImage setImage:item.appIcon forState:UIControlStateNormal];
             [miniImage setImage:item.appIcon forState:UIControlStateSelected];
         }
-    }
+    }*/
     
     NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
     for (NSIndexPath *indexPath in visiblePaths)
     {
+        TrackInfo *trackInfo = m_audioTracks[indexPath.row];
         CRSSItem *cellItem = m_audioItems[indexPath.section];
-        if (cellItem.postID == item.postID)
+        if (cellItem.postID == trackInfo->pItem.postID)
         {
             UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
             UIImageView *imgView = (UIImageView *)[cell viewWithTag:4];
-            imgView.image = item.iconImage;
+            imgView.image = trackInfo->pItem.iconImage;
         }
     }
 
@@ -393,11 +438,10 @@ float BLUR_IMAGE_RANGE = 100.0f;
 
 - (void) prepareMusic
 {
-    if (currentItem < m_audioItems.count)
+    if (currentTrack < m_audioTracks.count)
     {
-        CRSSItem *item = m_audioItems[currentItem];
-        
-        TrackInfo *trackInfo = item.tracks[currentTrack];
+        TrackInfo *trackInfo = m_audioTracks[currentTrack];
+        CRSSItem *item = trackInfo->pItem;
         
         NSString* resourcePath = trackInfo ? trackInfo->url : item.mediaURLString;
 
@@ -461,28 +505,9 @@ float BLUR_IMAGE_RANGE = 100.0f;
      }
 }
 
-struct STrackIdx
+- (int) getNextTrackIdx
 {
-    int itemID;
-    int trackID;
-};
-
-- (struct STrackIdx)getNextTrackIdx
-{
-    struct STrackIdx trackIdx;
-    CRSSItem *item = m_audioItems[currentItem];
-    if (currentTrack+1 < item.tracks.count)
-    {
-        trackIdx.itemID = currentItem;
-        trackIdx.trackID = currentTrack+1;
-    }
-    else
-    {
-        trackIdx.itemID = (currentItem+1)%m_audioItems.count;
-        trackIdx.trackID = 0;
-    }
-    
-    return trackIdx;
+    return (currentTrack + 1)%m_audioTracks.count;
 }
 
 - (IBAction)onPostClick:(id)sender
@@ -491,7 +516,8 @@ struct STrackIdx
     {
         SelectedItem *item = [SelectedItem alloc];
         item->isFavourite = false;
-        item->item = m_audioItems[currentItem];
+        TrackInfo *track = m_audioTracks[currentTrack];
+        item->item = track->pItem;
         [[NSNotificationCenter defaultCenter] postNotificationName:@"ViewPost" object:item];
     }
 }
@@ -499,9 +525,9 @@ struct STrackIdx
 - (void)onNextTrack
 {
     //--- Update UI
-    struct STrackIdx newTrack = [self getNextTrackIdx];
+    int newTrack = [self getNextTrackIdx];
 
-    [self updateCurrentTrack:newTrack.itemID track:newTrack.trackID];
+    [self updateCurrentTrack:newTrack updateListItems:true];
 /*    CRSSItem *newItem = m_audioItems[newTrack.itemID];
     bool itemChanged = newTrack.itemID != currentItem;
     
@@ -541,26 +567,30 @@ struct STrackIdx
 
 }
 
-- (void)updateCurrentTrack:(int)item track:(int)track
-{
-    currentItem = item;
+- (void)updateCurrentTrack:(int)track updateListItems:(Boolean)updateListItems
+ {
     currentTrack = track;
     
-    if (m_displayedTrack != nil)
+    if (updateListItems)
     {
+        if (m_displayedTrack != -1)
+        {
+            [self updateTrackCell:m_displayedTrack];
+        }
+        m_displayedTrack = currentTrack;
         [self updateTrackCell:m_displayedTrack];
+        
+        [m_scrollTrackHeader scrollRectToVisible:CGRectMake(m_scrollTrackHeader.frame.size.width*track, 0, m_scrollTrackHeader.frame.size.width , m_scrollTrackHeader.frame.size.height) animated:YES];
     }
-    m_displayedTrack = [NSIndexPath indexPathForRow:currentTrack inSection:currentItem];
-    [self updateTrackCell:m_displayedTrack];
     
-    CRSSItem *newItem = m_audioItems[currentItem];
+    TrackInfo *trackInfo = m_audioTracks[currentTrack];
+    CRSSItem *newItem = trackInfo->pItem;
     [newItem requestImage:self];
     currentImage.image = newItem.blurredImage;
     [miniImage setImage:newItem.appIcon forState:UIControlStateNormal];
     [miniImage setImage:newItem.appIcon forState:UIControlStateSelected];
     
     //--- Update trackInfo centre display
-    TrackInfo *trackInfo = newItem.tracks[currentTrack];
     NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
     [songInfo setObject:trackInfo->title forKey:MPMediaItemPropertyTitle];
     [songInfo setObject:newItem.title forKey:MPMediaItemPropertyArtist];
@@ -579,9 +609,8 @@ struct STrackIdx
 
 - (TrackInfo *)getNextTrack
 {
-    struct STrackIdx newTrack = [self getNextTrackIdx];
-    CRSSItem *item = m_audioItems[newTrack.itemID];
-    return item.tracks[newTrack.trackID];
+    int newTrack = [self getNextTrackIdx];
+    return m_audioTracks[newTrack];
 }
 
 - (void) setSlideConstraint:(NSLayoutConstraint*)constraint
@@ -744,10 +773,13 @@ struct STrackIdx
     NSURL *streamURL = [NSURL URLWithString:url];
     AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:streamURL];
     
-    [playerItem addObserver:self forKeyPath:@"status" options:0
-                    context:nil];
-    
-    [m_player insertItem:playerItem afterItem:nil];
+    if (playerItem != nil)
+    {
+        [playerItem addObserver:self forKeyPath:@"status" options:0
+                        context:nil];
+        
+        [m_player insertItem:playerItem afterItem:nil];
+    }
     //m_player = [AVPlayer playerWithPlayerItem:playerItem];
     
 /*
@@ -794,7 +826,7 @@ struct STrackIdx
 
                     NSLog(@"player item status failed");
                     
-                    [self onNextTrack];
+//////TODO                    [self onNextTrack];
                     break;
                 }
                 case AVPlayerItemStatusReadyToPlay:
@@ -807,8 +839,7 @@ struct STrackIdx
 //                    [btnPlay setImage:[UIImage imageNamed:@"player_play_on"] forState:UIControlStateSelected];
 //                    [btnPlay setHidden:false];
 
-                    CRSSItem *post = m_audioItems[currentItem];
-                    TrackInfo *trackInfo = post.tracks[currentTrack];
+                    TrackInfo *trackInfo = m_audioTracks[currentTrack];
                     trackInfo->duration = CMTimeGetSeconds(item.duration);
 
                     if (m_isPlaying)
@@ -879,9 +910,9 @@ struct STrackIdx
     return [UIColor colorWithRed:1.0f green:0.5f blue:0.3f alpha:1.0f];
 }
 
-- (UIColor *)getTextColourForTrack:(NSIndexPath*) trackID
+- (UIColor *)getTextColourForTrack:(int) trackID
 {
-    bool isCurrent = (trackID.section == currentItem) && (trackID.row == currentTrack);
+    bool isCurrent = (trackID == currentTrack);
     if (m_isPlaying && isCurrent)
     {
         return [self getActiveColour];
@@ -896,11 +927,10 @@ struct STrackIdx
     }
 }
 
-- (void) updateTrackCell:(NSIndexPath*) indexPath
+- (void) updateTrackCell:(int) trackIdx
 {
-    CRSSItem *curItem = m_audioItems[indexPath.section];
-    TrackInfo *trackInfo = curItem.tracks[indexPath.row];
-    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    TrackInfo *trackInfo = m_audioTracks[trackIdx];
+    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:trackIdx inSection:0]];
     UILabel *lblTitle    = (UILabel*)[cell viewWithTag:1];
     UILabel *lblDuration = (UILabel*)[cell viewWithTag:2];
     if (trackInfo->duration == 0.0f)
@@ -911,7 +941,7 @@ struct STrackIdx
     {
         lblDuration.text = [NSString stringWithFormat:@"%d:%02d", (int)(trackInfo->duration / 60.0f), (int)(trackInfo)%60];
     }
-    [lblTitle setTextColor:[self getTextColourForTrack:indexPath]];
+    [lblTitle setTextColor:[self getTextColourForTrack:trackIdx]];
 }
 
 - (void) updateTracks
@@ -946,27 +976,26 @@ struct STrackIdx
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return m_audioItems.count;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (section < m_audioItems.count)
+    if (section == 0)
     {
-        CRSSItem *curItem = m_audioItems[section];
-        return curItem.tracks.count;
+        return m_audioTracks.count;
     }
     return 0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section < m_audioItems.count)
+    if (indexPath.section == 0)
     {
-        CRSSItem *curItem = m_audioItems[indexPath.section];
+        TrackInfo *trackInfo = m_audioTracks[indexPath.row];
+        CRSSItem *curItem = trackInfo->pItem;
         
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Track" forIndexPath:indexPath];
-        TrackInfo *trackInfo = curItem.tracks[indexPath.row];
         UIImageView *imgView = (UIImageView *)[cell viewWithTag:4];
         UILabel *lblTitle    = (UILabel*)[cell viewWithTag:1];
         UILabel *lblDuration = (UILabel*)[cell viewWithTag:2];
@@ -980,7 +1009,7 @@ struct STrackIdx
             lblDuration.text = [NSString stringWithFormat:@"%d:%02d", (int)(trackInfo->duration / 60.0f), (int)(trackInfo)%60];
         }
         imgView.image = [curItem requestIcon:self];
-        [lblTitle setTextColor:[self getTextColourForTrack:indexPath]];
+        [lblTitle setTextColor:[self getTextColourForTrack:indexPath.row]];
 
         return cell;
     }
@@ -990,8 +1019,11 @@ struct STrackIdx
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self updateCurrentTrack:indexPath.section track:indexPath.row];
-    [self prepareMusic];
+    if (indexPath.section == 0)
+    {
+        [self updateCurrentTrack:indexPath.row updateListItems:true];
+        [self prepareMusic];
+    }
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
@@ -999,9 +1031,92 @@ struct STrackIdx
     m_scrollStartPoint = 0;//scrollView.contentOffset.y;
 }
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+- (void)applyNewIndex:(NSInteger)newIndex pageController:(MediaTrackController *)pageController
 {
-    float senderOffset  = m_scrollStartPoint-scrollView.contentOffset.y;
+	NSInteger pageCount = m_audioTracks ? m_audioTracks.count : 1;
+	BOOL outOfBounds = newIndex >= pageCount || newIndex < 0;
+    
+	if (!outOfBounds)
+	{
+		CGRect pageFrame = pageController.view.frame;
+		pageFrame.origin.y = 0;
+		pageFrame.origin.x = m_scrollTrackHeader.frame.size.width * newIndex;
+		pageController.view.frame = pageFrame;
+        
+	    TrackInfo *trackInfo = m_audioTracks[newIndex];
+        [trackInfo->pItem requestImage:self];
+    }
+	else
+	{
+		CGRect pageFrame = pageController.view.frame;
+		pageFrame.origin.y = m_scrollTrackHeader.frame.size.height;
+		pageController.view.frame = pageFrame;
+	}
+    
+	pageController.pageIndex = newIndex;
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)sender
+{
+    if (sender == m_scrollTrackHeader)
+    {
+        CGFloat pageWidth = m_scrollTrackHeader.frame.size.width;
+        float fractionalPage = m_scrollTrackHeader.contentOffset.x / pageWidth;
+        
+        NSInteger lowerNumber = floor(fractionalPage);
+        NSInteger upperNumber = lowerNumber + 1;
+        
+        if (lowerNumber == m_currentPage.pageIndex)
+        {
+            if (upperNumber != m_nextPage.pageIndex)
+            {
+                [self applyNewIndex:upperNumber pageController:m_nextPage];
+            }
+        }
+        else if (upperNumber == m_currentPage.pageIndex)
+        {
+            if (lowerNumber != m_nextPage.pageIndex)
+            {
+                [self applyNewIndex:lowerNumber pageController:m_nextPage];
+            }
+        }
+        else
+        {
+            if (lowerNumber == m_nextPage.pageIndex)
+            {
+                [self applyNewIndex:upperNumber pageController:m_currentPage];
+            }
+            else if (upperNumber == m_nextPage.pageIndex)
+            {
+                [self applyNewIndex:lowerNumber pageController:m_currentPage];
+            }
+            else
+            {
+                [self applyNewIndex:lowerNumber pageController:m_currentPage];
+                [self applyNewIndex:upperNumber pageController:m_nextPage];
+            }
+        }
+        
+        [m_currentPage updateTextViews:NO];
+        [m_nextPage updateTextViews:NO];
+        
+        bool isPrev = (lowerNumber == currentTrack);
+        float pageFract = (fractionalPage - lowerNumber);
+        
+        if (isPrev && (pageFract > 0.6f))
+        {
+///            [self updateCurrentTrack:upperNumber updateListItems:true];
+//            _detailItem = m_sourceList[upperNumber];
+//            [self configureView:false];
+        }
+        else if (!isPrev && (pageFract < 0.4f))
+        {
+///            [self updateCurrentTrack:lowerNumber updateListItems:true];
+//            _detailItem = m_sourceList[lowerNumber];
+//            [self configureView:false];
+        }
+    }
+/*    float senderOffset  = m_scrollStartPoint-scrollView.contentOffset.y;
     float headerPos = m_playerDock.frame.size.height;
 
     float toolbarPos = MAX(senderOffset - headerPos, self.currentImage.frame.origin.y);
@@ -1014,6 +1129,38 @@ struct STrackIdx
          [self.view layoutIfNeeded];
          [self.currentImage setAlpha:targetAlpha];
      }];
+ */
+}
+
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)sender
+{
+    if (sender == m_scrollTrackHeader)
+    {
+        CGFloat pageWidth = m_scrollTrackHeader.frame.size.width;
+        float fractionalPage = m_scrollTrackHeader.contentOffset.x / pageWidth;
+        NSInteger nearestNumber = lround(fractionalPage);
+        
+        if (m_currentPage.pageIndex != nearestNumber)
+        {
+            MediaTrackController *swapController = m_currentPage;
+            m_currentPage = m_nextPage;
+            m_nextPage = swapController;
+        }
+
+        [self updateCurrentTrack:nearestNumber updateListItems:true];
+
+        
+        [m_currentPage updateTextViews:YES];
+    }
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)sender
+{
+    if (sender == m_scrollTrackHeader)
+    {
+        [self scrollViewDidEndScrollingAnimation:sender];
+    }
 }
 
 -(void) setTopToolbarActive:(bool) active
@@ -1027,10 +1174,11 @@ struct STrackIdx
         self.labelTitle.superview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
 //        self.labelTitle.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
         m_fullItems = [topToolbar items];
-        m_reducedItems = @[m_fullItems[3], m_fullItems[4], m_fullItems[5], m_fullItems[6]];
+        m_reducedItems = @[m_fullItems[1], m_fullItems[2]];
     }
     
     topToolbar.items = active ? m_fullItems : m_reducedItems;
+    [topToolbar updateConstraints];
 }
 
 float MP_ANIMATION_DURATION = 0.5f;

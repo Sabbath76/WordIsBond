@@ -136,6 +136,8 @@
 		0ED1D2D617BFED4E006FC6D4 /* play_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0ED1D2D117BFED4E006FC6D4 /* play_icon.png */; };
 		0ED1D2D717BFED4E006FC6D4 /* RSSFeed.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ED1D2D317BFED4E006FC6D4 /* RSSFeed.m */; };
 		0ED1D2D817BFED4E006FC6D4 /* RSSParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ED1D2D517BFED4E006FC6D4 /* RSSParser.m */; };
+		0ED4E2D8189BAF6C001EF0B7 /* MediaPlayerHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0ED4E2D7189BAF6C001EF0B7 /* MediaPlayerHeader.xib */; };
+		0ED4E2DB189BDF53001EF0B7 /* MediaTrackController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ED4E2DA189BDF53001EF0B7 /* MediaTrackController.m */; };
 		0ED70D76184D0AE500B24A7C /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0ED70D75184D0AE500B24A7C /* Social.framework */; };
 		0ED77FC317DB855C001923B2 /* Plus_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 0ED77FC217DB855C001923B2 /* Plus_button.png */; };
 		0EE620D417EB89B000D11B3B /* FeatureController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EE620D317EB89B000D11B3B /* FeatureController.m */; };
@@ -307,6 +309,9 @@
 		0ED1D2D317BFED4E006FC6D4 /* RSSFeed.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RSSFeed.m; sourceTree = "<group>"; };
 		0ED1D2D417BFED4E006FC6D4 /* RSSParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RSSParser.h; sourceTree = "<group>"; };
 		0ED1D2D517BFED4E006FC6D4 /* RSSParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RSSParser.m; sourceTree = "<group>"; };
+		0ED4E2D7189BAF6C001EF0B7 /* MediaPlayerHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MediaPlayerHeader.xib; sourceTree = "<group>"; };
+		0ED4E2D9189BDF53001EF0B7 /* MediaTrackController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MediaTrackController.h; sourceTree = "<group>"; };
+		0ED4E2DA189BDF53001EF0B7 /* MediaTrackController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MediaTrackController.m; sourceTree = "<group>"; };
 		0ED70D75184D0AE500B24A7C /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		0ED77FC217DB855C001923B2 /* Plus_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Plus_button.png; sourceTree = "<group>"; };
 		0EE620D217EB89B000D11B3B /* FeatureController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeatureController.h; sourceTree = "<group>"; };
@@ -380,6 +385,8 @@
 		0E98F6231706E30F006E9857 /* testapp */ = {
 			isa = PBXGroup;
 			children = (
+				0ED4E2D9189BDF53001EF0B7 /* MediaTrackController.h */,
+				0ED4E2DA189BDF53001EF0B7 /* MediaTrackController.m */,
 				0ECF92E018685AAF00BA91A5 /* UIViewController+BackButtonHandler.h */,
 				0ECF92E118685AAF00BA91A5 /* UIViewController+BackButtonHandler.m */,
 				0E639688184FBCC800868311 /* UIImage+ImageEffects.h */,
@@ -434,6 +441,7 @@
 				0EBAC3DA17FF548700DCD6A5 /* ViewControllerMenu.m */,
 				0EA5FA9618126EAC00133EC8 /* UserData.h */,
 				0EA5FA9718126EAC00133EC8 /* UserData.m */,
+				0ED4E2D7189BAF6C001EF0B7 /* MediaPlayerHeader.xib */,
 			);
 			path = testapp;
 			sourceTree = "<group>";
@@ -691,6 +699,7 @@
 				0E9596DA182ADA3C0088A61B /* topbondlogo.png in Resources */,
 				0EA877DA184A489B003A0B82 /* icon_fav_sel@2x.png in Resources */,
 				0EA877DC184A4F86003A0B82 /* top_banner_logo.png in Resources */,
+				0ED4E2D8189BAF6C001EF0B7 /* MediaPlayerHeader.xib in Resources */,
 				0EBEA2AF17D88AA9001CE110 /* WiB_playMedia@2x.png in Resources */,
 				0EA877E6184A5375003A0B82 /* top_banner_logo@2x.png in Resources */,
 				0E5D2CA0182E4B610036870A /* simplePlayOn.png in Resources */,
@@ -769,6 +778,7 @@
 				0EAC77AC1837396F0084CE8C /* PostHeaderController.m in Sources */,
 				0E98F6401706E30F006E9857 /* DetailViewController.m in Sources */,
 				0EA5FA9818126EAD00133EC8 /* UserData.m in Sources */,
+				0ED4E2DB189BDF53001EF0B7 /* MediaTrackController.m in Sources */,
 				0ED1D2C317BFED27006FC6D4 /* CRSSItem.m in Sources */,
 				0ECF92E218685AAF00BA91A5 /* UIViewController+BackButtonHandler.m in Sources */,
 				0ED1D2CD17BFED3C006FC6D4 /* FeatureCell.m in Sources */,

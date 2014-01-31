@@ -8,6 +8,9 @@
 
 #import "AppDelegate.h"
 #import "UserData.h"
+//#import "AFHTTPClient.h"
+
+const NSString *notificationURL = @"http://www.thewordisbond.com/?json=register_notifications";
 
 @implementation AppDelegate
 
@@ -51,7 +54,126 @@
 
     [self customiseAppearance];
     
+    application.applicationIconBadgeNumber = 0;
+    
     return YES;
+}
+
+- (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken
+{
+    NSString *host = @"wordisbond.co/wp-content/plugins/push-notifications-ios";
+
+//    http://64.207.153.141/httpdocs/wp-content/plugins/push-notifications-ios/register_user_device.php	NSLog(@"My token is: %@", deviceToken);
+    //http://64.207.153.141/wordisbond/wp-content/plugins/push-notifications-ios/register_user_device.php
+    
+	NSString *newToken = [deviceToken description];
+	newToken = [newToken stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]];
+	newToken = [newToken stringByReplacingOccurrencesOfString:@" " withString:@""];
+
+//#if !TARGET_IPHONE_SIMULATOR
+    
+    NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
+    NSString *appVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+    
+    NSUInteger rntypes = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
+    
+    NSString *pushBadge = @"disabled";
+    NSString *pushAlert = @"disabled";
+    NSString *pushSound = @"disabled";
+    
+    if(rntypes == UIRemoteNotificationTypeBadge){
+        pushBadge = @"enabled";
+    }
+    else if(rntypes == UIRemoteNotificationTypeAlert){
+        pushAlert = @"enabled";
+    }
+    else if(rntypes == UIRemoteNotificationTypeSound){
+        pushSound = @"enabled";
+    }
+    else if(rntypes == ( UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert)){
+        pushBadge = @"enabled";
+        pushAlert = @"enabled";
+    }
+    else if(rntypes == ( UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)){
+        pushBadge = @"enabled";
+        pushSound = @"enabled";
+    }
+    else if(rntypes == ( UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)){
+        pushAlert = @"enabled";
+        pushSound = @"enabled";
+    }
+    else if(rntypes == ( UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)){
+        pushBadge = @"enabled";
+        pushAlert = @"enabled";
+        pushSound = @"enabled";
+    }
+    
+    UIDevice *dev = [UIDevice currentDevice];
+    NSString *deviceUuid = dev.identifierForVendor.UUIDString;//dev.uniqueIdentifier is deprecated
+    NSString *deviceName = dev.name;
+    NSString *deviceModel = dev.model;
+    NSString *deviceSystemVersion = dev.systemVersion;
+    
+//    NSString *deviceToken = [[[[devToken description]
+//                               stringByReplacingOccurrencesOfString:@"<"withString:@""]
+//                              stringByReplacingOccurrencesOfString:@">" withString:@""]
+//                             stringByReplacingOccurrencesOfString: @" " withString: @""];
+
+    NSString *urlString = [@"/register_user_device.php?"stringByAppendingString:@"task=register"];//when your app launch, it send request on this page to add devise in table
+
+    urlString = [urlString stringByAppendingString:@"&appname="];
+    urlString = [urlString stringByAppendingString:appName];
+    urlString = [urlString stringByAppendingString:@"&appversion="];
+    urlString = [urlString stringByAppendingString:appVersion];
+    urlString = [urlString stringByAppendingString:@"&deviceuid="];
+    urlString = [urlString stringByAppendingString:deviceUuid];
+    urlString = [urlString stringByAppendingString:@"&devicetoken="];
+    urlString = [urlString stringByAppendingString:newToken];
+    urlString = [urlString stringByAppendingString:@"&devicename="];
+    urlString = [urlString stringByAppendingString:deviceName];
+    urlString = [urlString stringByAppendingString:@"&devicemodel="];
+    urlString = [urlString stringByAppendingString:deviceModel];
+    urlString = [urlString stringByAppendingString:@"&deviceversion="];
+    urlString = [urlString stringByAppendingString:deviceSystemVersion];
+    urlString = [urlString stringByAppendingString:@"&pushbadge="];
+    urlString = [urlString stringByAppendingString:pushBadge];
+    urlString = [urlString stringByAppendingString:@"&pushalert="];
+    urlString = [urlString stringByAppendingString:pushAlert];
+    urlString = [urlString stringByAppendingString:@"&pushsound="];
+    urlString = [urlString stringByAppendingString:pushSound];
+    
+    NSURL *url = [[NSURL alloc] initWithScheme:@"http" host:host path:urlString];
+    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url];
+    NSError *error = nil;
+    NSURLResponse *response;
+    NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+    NSString *stringReply = (NSString *)[[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
+    NSLog(@"reply from server: %@", stringReply);
+    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+    int statusCode = [httpResponse statusCode];
+    NSLog(@"HTTP Response Headers %@", [httpResponse allHeaderFields]);
+    NSLog(@"HTTP Status code: %d", statusCode);
+    if(error != nil)
+    {
+        NSLog(@"Failed to connect for push notifications %@", [error localizedDescription]);
+    }
+    
+    
+//#endif
+/*    NSDictionary *params = @{@"cmd":@"update",
+                             @"user_id":@"TEST_ID",
+                             @"token":newToken};
+    AFHTTPClient *client = [AFHTTPClient clientWithBaseURL:[NSURL URLWithString:notificationURL]];
+    [client
+     postPath:@"/api.php"
+     parameters:params
+     success:nil failure:nil];
+*/
+}
+
+- (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error
+{
+	NSLog(@"Failed to get token, error: %@", error);
 }
 							
 - (void)applicationWillResignActive:(UIApplication *)application

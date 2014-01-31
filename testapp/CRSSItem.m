@@ -472,6 +472,7 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
         tracks = [[NSMutableArray alloc] init];
     }
     
+    track->pItem = self;
     [tracks addObject:track];
 }
 
@@ -537,7 +538,14 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-    
+    if (connection == m_tracksQuery)
+    {
+        m_tracksQuery = nil;
+        
+        [[NSNotificationCenter defaultCenter]
+         postNotificationName:@"NewTrackInfo"
+         object:self];
+    }
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
@@ -560,6 +568,8 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
             [self addTrack:newTrack];
         }
         _type = Audio;
+        
+        m_tracksQuery = nil;
         
         [[NSNotificationCenter defaultCenter]
          postNotificationName:@"NewTrackInfo"
@@ -603,5 +613,14 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
     iconImage = [self resizeImage:image newSize:CGSizeMake(55.0f, 55.0f)];
 }
 
+- (Boolean) waitingOnTracks;
+{
+    if (m_tracksQuery != nil)
+    {
+        return true;
+    }
+    
+    return false;
+}
 
 @end
