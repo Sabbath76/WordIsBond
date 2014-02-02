@@ -252,6 +252,13 @@ float BLUR_IMAGE_RANGE = 100.0f;
 
     [m_scrollTrackHeader addSubview:m_currentPage.view];
 	[m_scrollTrackHeader addSubview:m_nextPage.view];
+    
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(receiveViewPost:)
+                                                 name:@"ViewPost"
+                                               object:nil];
+
 
 //    UIView *myView = self.view.superview;
 //    UIView *parentView = myView.superview;
@@ -540,6 +547,13 @@ float BLUR_IMAGE_RANGE = 100.0f;
 {
     if (m_audioTracks)
     {
+        UIView *moveView = self.view.superview;
+        CGRect screenRect = [[UIScreen mainScreen] bounds];
+        float max = screenRect.size.height - bottomOffset;
+        [self setTopToolbarActive:true];
+        [m_topConstraint setConstant:max];
+        [UIView animateWithDuration:0.5f animations:^{[moveView layoutIfNeeded];}];
+
         SelectedItem *item = [SelectedItem alloc];
         item->isFavourite = false;
         TrackInfo *track = m_audioTracks[currentTrack];
@@ -547,6 +561,25 @@ float BLUR_IMAGE_RANGE = 100.0f;
         [[NSNotificationCenter defaultCenter] postNotificationName:@"ViewPost" object:item];
     }
 }
+
+
+- (void) receiveViewPost:(NSNotification *) notification
+{
+    UIView *moveView = self.view.superview;
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    float max = screenRect.size.height - bottomOffset;
+    float min = topOffset;
+    float threshold = (min+max)/2.0;
+    
+    bool isAtBottom = [m_topConstraint constant] > threshold;
+    if (!isAtBottom)
+    {
+        [self setTopToolbarActive:true];
+        [m_topConstraint setConstant:max];
+        [UIView animateWithDuration:0.5f animations:^{[moveView layoutIfNeeded];}];
+    }
+}
+
 
 - (void)onNextTrack
 {

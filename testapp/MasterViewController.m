@@ -199,6 +199,8 @@ const int ExpandedSectionSize = 120;
 //Huh?    [self setNeedsStatusBarAppearanceUpdate];
     
     m_isLoadingMoreData = false;
+    
+    m_currentQuickMenuItem = -1;
 
     [self createTopBanner];
     
@@ -724,6 +726,7 @@ const int ExpandedSectionSize = 120;
             cell.date.text = object.dateString;
             cell.blurredImage.image = object.blurredImage;
             cell.miniImage.image = object.iconImage;
+            cell.options.hidden = !(m_currentQuickMenuItem == indexPath.row);
 /*
             UILabel *label = (UILabel *)[cell viewWithTag:1];
             label.text = [object title];
@@ -736,7 +739,7 @@ const int ExpandedSectionSize = 120;
             imgView.image = object.blurredImage;
             imgViewMini.image = object.iconImage;
 */
-            if (cell.miniImage)
+  /*          if (cell.miniImage)
             {
                 CALayer *_maskingLayer = [CALayer layer];
                 _maskingLayer.frame = cell.miniImage.bounds;
@@ -747,7 +750,7 @@ const int ExpandedSectionSize = 120;
                 _maskingLayer.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
 
                 [cell.miniImage.layer setMask:_maskingLayer];
-            }
+            }*/
 
 
             switch (object.type)

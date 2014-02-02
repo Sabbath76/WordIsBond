@@ -17,6 +17,7 @@
 @property (nonatomic, weak, readonly) UIImageView *blurredImage; // 2
 @property (nonatomic, weak, readonly) UIView *animateView; // 8
 @property (nonatomic, weak, readonly) UIImageView *fullImage; // 9
+@property (nonatomic, weak, readonly) UIToolbar *options; // 9
 
 - (void) setupIfNeeded;
 

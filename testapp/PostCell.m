@@ -23,6 +23,7 @@
 @property (nonatomic, weak) IBOutlet UIImageView *blurredImage; // 2
 @property (nonatomic, weak) IBOutlet UIView *animateView; // 8
 @property (nonatomic, weak) IBOutlet UIImageView *fullImage; // 9
+@property (nonatomic, weak) IBOutlet UIToolbar *options; // 6
 
 @end
 
