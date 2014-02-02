@@ -36,10 +36,11 @@
     bool m_isPlaying;
     bool m_autoPlay;
     
+    id playbackObserver;
+    
     __weak IBOutlet UIScrollView *m_scrollTrackHeader;
     __weak IBOutlet UIBarButtonItem *btnPlay;
     __weak IBOutlet UIBarButtonItem *btnPlay2;
-    __weak IBOutlet UISlider *sldrPosition;
     __weak IBOutlet UISlider *sldrPosition2;
     __weak IBOutlet UIButton *miniImage;
     __weak IBOutlet UIToolbar *toolbar;
@@ -79,8 +80,8 @@ float BLUR_IMAGE_RANGE = 100.0f;
     }
     
     UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead"];
-    [sldrPosition setThumbImage:sliderThumb forState:UIControlStateNormal];
-    [sldrPosition setThumbImage:sliderThumb forState:UIControlStateHighlighted];
+    [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateNormal];
+    [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateHighlighted];
     
     return self;
 }
@@ -120,6 +121,30 @@ float BLUR_IMAGE_RANGE = 100.0f;
     
     m_player = [[AVQueuePlayer alloc] init];
     m_player.actionAtItemEnd = AVPlayerActionAtItemEndAdvance;
+    
+    CMTime interval = CMTimeMake(33, 1000);
+    __weak ViewControllerMediaPlayer *self_ = self;
+    self->playbackObserver = [m_player addPeriodicTimeObserverForInterval:interval queue:NULL usingBlock:^(CMTime time) {
+        if (self_ != nil)
+        {
+            ViewControllerMediaPlayer *sself = self_;
+//            CMTime endTime = CMTimeConvertScale (sself->m_player.currentItem.asset.duration, sself->m_player.currentTime.timescale, kCMTimeRoundingMethod_RoundHalfAwayFromZero);
+            Float64 currentSeconds = CMTimeGetSeconds(sself->m_player.currentTime);
+//            if (CMTimeCompare(endTime, kCMTimeZero) != 0)
+            {
+                if ([sself->sldrPosition2 isTracking] == false)
+                {
+//                    double normalizedTime = (double) sself->m_player.currentTime.value / (double) endTime.value;
+                    sself->sldrPosition2.value = currentSeconds;
+                }
+            }
+            int mins = currentSeconds/60.0;
+            int secs = fmodf(currentSeconds, 60.0);
+            NSString *minsString = mins < 10 ? [NSString stringWithFormat:@"%d", mins] :      [NSString stringWithFormat:@"%d", mins];
+            NSString *secsString = secs < 10 ? [NSString stringWithFormat:@"0%d", secs] : [NSString stringWithFormat:@"%d", secs];
+            sself->m_labelCurTime.text = [NSString stringWithFormat:@"%@:%@", minsString, secsString];
+        }
+    }];
     
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1)
     {
@@ -205,8 +230,8 @@ float BLUR_IMAGE_RANGE = 100.0f;
     _labelTitle.textColor = [UIColor grayColor];
     
     UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead"];
-    [sldrPosition setThumbImage:sliderThumb forState:UIControlStateNormal];
-    [sldrPosition setThumbImage:sliderThumb forState:UIControlStateHighlighted];
+    [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateNormal];
+    [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateHighlighted];
 
     
     if (miniImage)
@@ -277,7 +302,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
 
 - (IBAction)onNext:(id)sender
 {
-    if (m_audioItems.count > 0)
+    if (m_audioTracks.count > 0)
     {
         [m_player advanceToNextItem];
         [self onNextTrack];
@@ -364,7 +389,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
 
     if (m_scrollTrackHeader)
     {
-        int numItems = m_audioItems ? m_audioItems.count : 1;
+        int numItems = m_audioTracks ? m_audioTracks.count : 1;
         m_scrollTrackHeader.contentSize =
         CGSizeMake(
                    m_scrollTrackHeader.frame.size.width * numItems,
@@ -390,7 +415,8 @@ float BLUR_IMAGE_RANGE = 100.0f;
     NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
     for (NSIndexPath *indexPath in visiblePaths)
     {
-        CRSSItem *cellItem = m_audioItems[indexPath.section];
+        TrackInfo *trackInfo = m_audioTracks[indexPath.row];
+        CRSSItem *cellItem = trackInfo->pItem;
         if (cellItem.postID == iconDownloader.postID)
         {
             UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
@@ -417,12 +443,12 @@ float BLUR_IMAGE_RANGE = 100.0f;
     for (NSIndexPath *indexPath in visiblePaths)
     {
         TrackInfo *trackInfo = m_audioTracks[indexPath.row];
-        CRSSItem *cellItem = m_audioItems[indexPath.section];
+        CRSSItem *cellItem = trackInfo->pItem;
         if (cellItem.postID == trackInfo->pItem.postID)
         {
             UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
             UIImageView *imgView = (UIImageView *)[cell viewWithTag:4];
-            imgView.image = trackInfo->pItem.iconImage;
+            imgView.image = cellItem.iconImage;
         }
     }
 
@@ -512,7 +538,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
 
 - (IBAction)onPostClick:(id)sender
 {
-    if (m_audioItems)
+    if (m_audioTracks)
     {
         SelectedItem *item = [SelectedItem alloc];
         item->isFavourite = false;
@@ -637,12 +663,10 @@ float BLUR_IMAGE_RANGE = 100.0f;
         if (isAtBottom)
         {
             [m_topConstraint setConstant:max];
-            [sldrPosition setHidden:false];
         }
         else
         {
             [m_topConstraint setConstant:min];
-            [sldrPosition setHidden:true];
         }
         [UIView animateWithDuration:0.5f animations:^{[moveView layoutIfNeeded];}];
 /*        CGRect parentFrame = moveView.superview.frame;
@@ -674,19 +698,9 @@ float BLUR_IMAGE_RANGE = 100.0f;
     
         if (m_player)
         {
-            [sldrPosition.layer removeAllAnimations];
             if (m_isPlaying)
             {
                 [m_player play];
-                
-                AVPlayerItem *item = m_player.currentItem;
-                
-                float curTime = CMTimeGetSeconds(item.currentTime);
-                float duration = CMTimeGetSeconds(item.duration);
-                [sldrPosition setValue:curTime];
-                [UIView animateWithDuration:duration-curTime animations:^{
-                    [sldrPosition setValue:curTime];
-                }];
             }
             else
             {
@@ -821,8 +835,8 @@ float BLUR_IMAGE_RANGE = 100.0f;
 //                    [btnPlay setHidden:false];
 
                     UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead"];
-                    [sldrPosition setThumbImage:sliderThumb forState:UIControlStateNormal];
-                    [sldrPosition setThumbImage:sliderThumb forState:UIControlStateHighlighted];
+                    [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateNormal];
+                    [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateHighlighted];
 
                     NSLog(@"player item status failed");
                     
@@ -849,11 +863,9 @@ float BLUR_IMAGE_RANGE = 100.0f;
                     [self updateTracks];
 
                     UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead"];
-                    [sldrPosition setThumbImage:sliderThumb forState:UIControlStateNormal];
-                    [sldrPosition setThumbImage:sliderThumb forState:UIControlStateHighlighted];
+                    [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateNormal];
+                    [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateHighlighted];
                     
-                    sldrPosition.maximumValue = trackInfo->duration;
-                    sldrPosition.value = 0.0;
                     sldrPosition2.maximumValue = trackInfo->duration;
                     sldrPosition2.value = 0.0f;
                     
@@ -929,10 +941,10 @@ float BLUR_IMAGE_RANGE = 100.0f;
 
 - (void) updateTrackCell:(int) trackIdx
 {
-    TrackInfo *trackInfo = m_audioTracks[trackIdx];
+//    TrackInfo *trackInfo = m_audioTracks[trackIdx];
     UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:trackIdx inSection:0]];
     UILabel *lblTitle    = (UILabel*)[cell viewWithTag:1];
-    UILabel *lblDuration = (UILabel*)[cell viewWithTag:2];
+/*    UILabel *lblDuration = (UILabel*)[cell viewWithTag:2];
     if (trackInfo->duration == 0.0f)
     {
         lblDuration.text = @"--:--";
@@ -941,6 +953,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
     {
         lblDuration.text = [NSString stringWithFormat:@"%d:%02d", (int)(trackInfo->duration / 60.0f), (int)(trackInfo)%60];
     }
+ */
     [lblTitle setTextColor:[self getTextColourForTrack:trackIdx]];
 }
 
@@ -998,16 +1011,18 @@ float BLUR_IMAGE_RANGE = 100.0f;
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Track" forIndexPath:indexPath];
         UIImageView *imgView = (UIImageView *)[cell viewWithTag:4];
         UILabel *lblTitle    = (UILabel*)[cell viewWithTag:1];
-        UILabel *lblDuration = (UILabel*)[cell viewWithTag:2];
+        UILabel *lblArtist   = (UILabel*)[cell viewWithTag:2];
+//        UILabel *lblDuration = (UILabel*)[cell viewWithTag:2];
         lblTitle.text = trackInfo->title;
-        if (trackInfo->duration == 0.0f)
+        lblArtist.text = trackInfo->artist;
+/*        if (trackInfo->duration == 0.0f)
         {
             lblDuration.text = @"--:--";
         }
         else
         {
             lblDuration.text = [NSString stringWithFormat:@"%d:%02d", (int)(trackInfo->duration / 60.0f), (int)(trackInfo)%60];
-        }
+        }*/
         imgView.image = [curItem requestIcon:self];
         [lblTitle setTextColor:[self getTextColourForTrack:indexPath.row]];
 
@@ -1099,37 +1114,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
         
         [m_currentPage updateTextViews:NO];
         [m_nextPage updateTextViews:NO];
-        
-        bool isPrev = (lowerNumber == currentTrack);
-        float pageFract = (fractionalPage - lowerNumber);
-        
-        if (isPrev && (pageFract > 0.6f))
-        {
-///            [self updateCurrentTrack:upperNumber updateListItems:true];
-//            _detailItem = m_sourceList[upperNumber];
-//            [self configureView:false];
-        }
-        else if (!isPrev && (pageFract < 0.4f))
-        {
-///            [self updateCurrentTrack:lowerNumber updateListItems:true];
-//            _detailItem = m_sourceList[lowerNumber];
-//            [self configureView:false];
-        }
-    }
-/*    float senderOffset  = m_scrollStartPoint-scrollView.contentOffset.y;
-    float headerPos = m_playerDock.frame.size.height;
-
-    float toolbarPos = MAX(senderOffset - headerPos, self.currentImage.frame.origin.y);
-    [m_toolbarContraint setConstant:toolbarPos];
-    
-    float targetAlpha = 1.0f - MIN((toolbarPos - self.currentImage.frame.origin.y) / BLUR_IMAGE_RANGE, 1.0f);
-    
-    [UIView animateWithDuration:0.2f animations:^
-     {
-         [self.view layoutIfNeeded];
-         [self.currentImage setAlpha:targetAlpha];
-     }];
- */
+     }
 }
 
 
@@ -1148,8 +1133,16 @@ float BLUR_IMAGE_RANGE = 100.0f;
             m_nextPage = swapController;
         }
 
-        [self updateCurrentTrack:nearestNumber updateListItems:true];
-
+        if (nearestNumber == currentTrack+1)
+        {
+            [m_player advanceToNextItem];
+            [self onNextTrack];
+        }
+        else if (nearestNumber != currentTrack)
+        {
+            [self updateCurrentTrack:nearestNumber updateListItems:true];
+            [self prepareMusic];
+        }
         
         [m_currentPage updateTextViews:YES];
     }
@@ -1165,9 +1158,6 @@ float BLUR_IMAGE_RANGE = 100.0f;
 
 -(void) setTopToolbarActive:(bool) active
 {
-    [sldrPosition setHidden:active];
-//    [btnPlay setHidden:active];
-
     if (m_fullItems == nil)
     {
         self.labelTitle.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
@@ -1218,8 +1208,6 @@ float MP_FAST_ANIMATION_DURATION = 0.1f;
             [UIView animateWithDuration:MP_ANIMATION_DURATION animations:^
             {
                 [self.view.superview layoutIfNeeded];
-                [sldrPosition setHidden:top];
-//                [btnPlay setHidden:top];
             }];
 
             break;

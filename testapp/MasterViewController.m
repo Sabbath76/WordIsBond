@@ -14,6 +14,7 @@
 #import "RSSFeed.h"
 
 #import "FeatureCell.h"
+#import "PostCell.h"
 #import "UIToolbarDragger.h"
 
 #import "FeatureViewController.h"
@@ -132,8 +133,8 @@ const int ExpandedSectionSize = 120;
     if (m_searchShouldBeginEditing)
     {
         [self.navigationItem.titleView resignFirstResponder];
-        
-        self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"top_banner_logo"]];
+
+        [self createTopBanner];
         
         m_searchShouldBeginEditing = FALSE;
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
@@ -198,8 +199,8 @@ const int ExpandedSectionSize = 120;
 //Huh?    [self setNeedsStatusBarAppearanceUpdate];
     
     m_isLoadingMoreData = false;
-    
-    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"top_banner_logo"]];
+
+    [self createTopBanner];
     
     UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"WIB_BG"]];
     self.tableView.backgroundView = imageView;
@@ -289,6 +290,9 @@ const int ExpandedSectionSize = 120;
     UISwipeGestureRecognizer *swipeRecognizerRight = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(expandPost:)];
     [swipeRecognizerRight setDirection:(UISwipeGestureRecognizerDirectionRight)];
     [self.tableView addGestureRecognizer:swipeRecognizerRight];
+    
+//    [self.tableView registerClass:[PostCell class] forCellReuseIdentifier:@"ItemCell"];
+
 
 /*    UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc]
                                           initWithTarget:self action:@selector(handleLongPress:)];
@@ -299,10 +303,29 @@ const int ExpandedSectionSize = 120;
     m_quickMenu = [[[NSBundle mainBundle] loadNibNamed:@"PostQuickMenu" owner:self options:nil] objectAtIndex:0];
 }
 
+- (void) createTopBanner
+{
+    UIImageView *pImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"top_banner_logo"]];
+    self.navigationItem.titleView = pImageView;
+    
+    UITapGestureRecognizer *singleFingerTap =
+    [[UITapGestureRecognizer alloc] initWithTarget:self
+                                            action:@selector(onTapTitle:)];
+    singleFingerTap.numberOfTapsRequired = 1;
+    [pImageView addGestureRecognizer:singleFingerTap];
+    [pImageView setUserInteractionEnabled:true];
+}
+
 - (void) loadNewer
 {
     int newPage = MAX([_feed GetPage]-1, 0);
     [_feed LoadPage:newPage];
+}
+
+- (void)onTapTitle:(UITapGestureRecognizer *)recognizer
+{
+    //--- Pan list view up to the top
+   [self.tableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
 }
 
 - (void)startIconDownload:(CRSSItem *)appRecord forIndexPath:(NSIndexPath *)indexPath
@@ -334,11 +357,11 @@ const int ExpandedSectionSize = 120;
             {
             if (((CRSSItem *)_feed.items[indexPath.row]).postID == iconDownloader.postID)
             {
-                UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-                UIImageView *imgView = (UIImageView *)[cell viewWithTag:2];
-                UIImageView *imgViewMini = (UIImageView *)[cell viewWithTag:4];
-                imgView.image = iconDownloader.appRecord.blurredImage;
-                imgViewMini.image = iconDownloader.appRecord.iconImage;
+                PostCell *cell = (PostCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+//                UIImageView *imgView = (UIImageView *)[cell viewWithTag:2];
+//                UIImageView *imgViewMini = (UIImageView *)[cell viewWithTag:4];
+                cell.blurredImage.image = iconDownloader.appRecord.blurredImage;
+                cell.miniImage.image = iconDownloader.appRecord.iconImage;
 
                 break;
             }
@@ -689,12 +712,19 @@ const int ExpandedSectionSize = 120;
             
         case Posts:
         {
-            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ItemCell" forIndexPath:indexPath];
+            PostCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ItemCell" forIndexPath:indexPath];
+            
+            [cell setupIfNeeded];
             
             CRSSItem *object = _feed.items[indexPath.row];
             
 //            [cell.layer setMask:_maskingLayer];
 
+            cell.title.text = [object title];
+            cell.date.text = object.dateString;
+            cell.blurredImage.image = object.blurredImage;
+            cell.miniImage.image = object.iconImage;
+/*
             UILabel *label = (UILabel *)[cell viewWithTag:1];
             label.text = [object title];
             UIImageView *imgView = (UIImageView *)[cell viewWithTag:2];
@@ -705,31 +735,31 @@ const int ExpandedSectionSize = 120;
 
             imgView.image = object.blurredImage;
             imgViewMini.image = object.iconImage;
-            
-            if (imgViewMini)
+*/
+            if (cell.miniImage)
             {
                 CALayer *_maskingLayer = [CALayer layer];
-                _maskingLayer.frame = imgViewMini.bounds;
+                _maskingLayer.frame = cell.miniImage.bounds;
                 UIImage *stretchableImage = (id)[UIImage imageNamed:@"cornerfull"];
                 
                 _maskingLayer.contents = (id)stretchableImage.CGImage;
                 _maskingLayer.contentsScale = [UIScreen mainScreen].scale; //<-needed for the retina display, otherwise our image will not be scaled properly
                 _maskingLayer.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
 
-                [imgViewMini.layer setMask:_maskingLayer];
+                [cell.miniImage.layer setMask:_maskingLayer];
             }
 
 
             switch (object.type)
             {
                 case Audio:
-                    imgIcon.image = [UIImage imageNamed:@"audio"];
+                    cell.postTypeImage.image = [UIImage imageNamed:@"audio"];
                    break;
                 case Video:
-                    imgIcon.image = [UIImage imageNamed:@"video"];
+                    cell.postTypeImage.image = [UIImage imageNamed:@"video"];
                     break;
                 case Text:
-                    imgIcon.image = [UIImage imageNamed:@"text"];
+                    cell.postTypeImage.image = [UIImage imageNamed:@"text"];
                     break;
             }
             
@@ -835,99 +865,102 @@ const int ExpandedSectionSize = 120;
     //CGPoint delta = [sender translationInView:self.view];
 //    CGPoint delta = [sender velocityInView:self.view];
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:p];
-    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-    UIView *view = [cell viewWithTag:8];
-    UIImageView *imageView = (UIImageView *)[cell viewWithTag:9];
-    float threshold = (PAN_OPEN_X+PAN_CLOSED_X)/2.0;
-    float vX = 0.0;
-    float compare;
-
+    if (indexPath.section == Posts)
     {
-        if (m_lastPannedIndexPath && (m_lastPannedIndexPath.section != indexPath.section || m_lastPannedIndexPath.row != indexPath.row))
-        {
-            UITableViewCell *oldCell = [self.tableView cellForRowAtIndexPath:m_lastPannedIndexPath];
-            UIView *oldView = [oldCell viewWithTag:8];
-            [self snapView:oldView toX:PAN_CLOSED_X animated:YES];
-            UIImageView *oldImageView = (UIImageView *)[oldCell viewWithTag:9];
-            [oldImageView setAlpha:0.0f];
-            [oldImageView setHidden:true];
-            m_lastPannedIndexPath = nil;
-            m_lastPannedX = 0;
-        }
-        
-        switch (sender.state)
-        {
-            case UIGestureRecognizerStateBegan:
-                break;
-            case UIGestureRecognizerStateEnded:
-                if (indexPath.section == Posts)
-                {
-                vX = (FAST_ANIMATION_DURATION/2.0)*[sender velocityInView:self.view].x;
-                compare = view.transform.tx + vX;
-                if (compare > threshold)
-                {
-                    [self snapView:view toX:PAN_CLOSED_X animated:YES];
-                    [imageView setAlpha:0.0f];
-                    [imageView setHidden:true];
-                    m_lastPannedIndexPath = nil;
-                    m_lastPannedX = 0;
-                }
-                else
-                {
-                    [imageView setHidden:false];
-                    [UIView animateWithDuration:FAST_ANIMATION_DURATION
-                            delay:0.0f
-                            options:UIViewAnimationOptionCurveEaseInOut
-                            animations:^{
-                                         [view setTransform:CGAffineTransformMakeTranslation(PAN_OPEN_X, 0)];
-                                         [imageView setAlpha:1.0f];
-                                     }
-                                     completion:^(BOOL finished) {
-                                        [self displayPost:indexPath.row];
-                                         [view setTransform:CGAffineTransformMakeTranslation(PAN_CLOSED_X, 0)];
-                                         [imageView setAlpha:0.0f];
-                                         [imageView setHidden:true];
-                                     }];
-//                    [self snapView:view toX:PAN_OPEN_X animated:YES];
-//                    [imageView setAlpha:1.0f];
-//                    [imageView setHidden:false];
-                    m_lastPannedIndexPath = indexPath;
-                    m_lastPannedX = view.transform.tx;
-//                    [UIView setAnimationDidStopSelector:@selector(displayPost:(indexPath.row):)];
+        PostCell *cell = (PostCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+        UIView *view = cell.animateView;//[cell viewWithTag:8];
+        UIImageView *imageView = cell.fullImage;//(UIImageView *)[cell viewWithTag:9];
+        float threshold = (PAN_OPEN_X+PAN_CLOSED_X)/2.0;
+        float vX = 0.0;
+        float compare;
 
-//                    [self displayPost:indexPath.row];
-                }
-                }
-                break;
-            case UIGestureRecognizerStateChanged:
-                if (indexPath.section == Posts)
-                {
-                    CRSSItem *curItem = _feed.items[indexPath.row];
-                    imageView.image = curItem.appIcon;
-                    [imageView setHidden:false];
-                    
-                    compare = /*m_lastPannedX+*/[sender translationInView:self.view].x;
-                    if (compare > PAN_CLOSED_X)
-                        compare = PAN_CLOSED_X;
-                    else if (compare < PAN_OPEN_X)
-                        compare = PAN_OPEN_X;
-                    float alpha = compare / PAN_OPEN_X;
-                    [view setTransform:CGAffineTransformMakeTranslation(compare, 0)];
-                    [imageView setAlpha:alpha];
-                    
-                    m_lastPannedIndexPath = indexPath;
-                }
-                break;
-            default:
-                break;
-        }
-/*        UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-        if (cell)
         {
-            CGRect newFrame = cell.frame;
-            newFrame.origin.x += delta.x;
-            cell.frame = newFrame;
-        }*/
+            if (m_lastPannedIndexPath && (m_lastPannedIndexPath.section != indexPath.section || m_lastPannedIndexPath.row != indexPath.row))
+            {
+                PostCell *oldCell = (PostCell*)[self.tableView cellForRowAtIndexPath:m_lastPannedIndexPath];
+                UIView *oldView = oldCell.animateView;//[oldCell viewWithTag:8];
+                [self snapView:oldView toX:PAN_CLOSED_X animated:YES];
+                UIImageView *oldImageView = (UIImageView *)[oldCell viewWithTag:9];
+                [oldImageView setAlpha:0.0f];
+                [oldImageView setHidden:true];
+                m_lastPannedIndexPath = nil;
+                m_lastPannedX = 0;
+            }
+            
+            switch (sender.state)
+            {
+                case UIGestureRecognizerStateBegan:
+                    break;
+                case UIGestureRecognizerStateEnded:
+                    if (indexPath.section == Posts)
+                    {
+                    vX = (FAST_ANIMATION_DURATION/2.0)*[sender velocityInView:self.view].x;
+                    compare = view.transform.tx + vX;
+                    if (compare > threshold)
+                    {
+                        [self snapView:view toX:PAN_CLOSED_X animated:YES];
+                        [imageView setAlpha:0.0f];
+                        [imageView setHidden:true];
+                        m_lastPannedIndexPath = nil;
+                        m_lastPannedX = 0;
+                    }
+                    else
+                    {
+                        [imageView setHidden:false];
+                        [UIView animateWithDuration:FAST_ANIMATION_DURATION
+                                delay:0.0f
+                                options:UIViewAnimationOptionCurveEaseInOut
+                                animations:^{
+                                             [view setTransform:CGAffineTransformMakeTranslation(PAN_OPEN_X, 0)];
+                                             [imageView setAlpha:1.0f];
+                                         }
+                                         completion:^(BOOL finished) {
+                                            [self displayPost:indexPath.row];
+                                             [view setTransform:CGAffineTransformMakeTranslation(PAN_CLOSED_X, 0)];
+                                             [imageView setAlpha:0.0f];
+                                             [imageView setHidden:true];
+                                         }];
+    //                    [self snapView:view toX:PAN_OPEN_X animated:YES];
+    //                    [imageView setAlpha:1.0f];
+    //                    [imageView setHidden:false];
+                        m_lastPannedIndexPath = indexPath;
+                        m_lastPannedX = view.transform.tx;
+    //                    [UIView setAnimationDidStopSelector:@selector(displayPost:(indexPath.row):)];
+
+    //                    [self displayPost:indexPath.row];
+                    }
+                    }
+                    break;
+                case UIGestureRecognizerStateChanged:
+                    if (indexPath.section == Posts)
+                    {
+                        CRSSItem *curItem = _feed.items[indexPath.row];
+                        imageView.image = curItem.appIcon;
+                        [imageView setHidden:false];
+                        
+                        compare = /*m_lastPannedX+*/[sender translationInView:self.view].x;
+                        if (compare > PAN_CLOSED_X)
+                            compare = PAN_CLOSED_X;
+                        else if (compare < PAN_OPEN_X)
+                            compare = PAN_OPEN_X;
+                        float alpha = compare / PAN_OPEN_X;
+                        [view setTransform:CGAffineTransformMakeTranslation(compare, 0)];
+                        [imageView setAlpha:alpha];
+                        
+                        m_lastPannedIndexPath = indexPath;
+                    }
+                    break;
+                default:
+                    break;
+            }
+    /*        UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+            if (cell)
+            {
+                CGRect newFrame = cell.frame;
+                newFrame.origin.x += delta.x;
+                cell.frame = newFrame;
+            }*/
+        }
     }
 }
 
@@ -1288,7 +1321,7 @@ const int ExpandedSectionSize = 120;
         
         [_feed clearSearch];
         
-        self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"top_banner_logo"]];
+        [self createTopBanner];
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
                                                                                                target:self
                                                                                                action:@selector(onSearch:)];
@@ -1332,7 +1365,7 @@ const int ExpandedSectionSize = 120;
      postNotificationName:@"NewRSSFeed"
      object:self];
     
-    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"top_banner_logo"]];
+    [self createTopBanner];
 }
 
 

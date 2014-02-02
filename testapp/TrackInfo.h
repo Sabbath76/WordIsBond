@@ -14,6 +14,7 @@
 {
     @public
     NSString *title;
+    NSString *artist;
     NSString *url;
     float duration;
     CRSSItem *pItem;

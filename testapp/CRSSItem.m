@@ -558,13 +558,16 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
                               error:NULL];
         
         NSArray *tracksArray = [json objectForKey:@"tracks"];
+        NSString *artist = [json objectForKey:@"artist"];
         for (NSDictionary *track in tracksArray)
         {
             TrackInfo *newTrack = [TrackInfo alloc];
+            NSString *trackArtist = [track objectForKey:@"artist"];
             newTrack->title = [track objectForKey:@"title"];
             newTrack->url = [NSString stringWithFormat:BAND_CAMP_TRACK_URL, ((NSNumber*)([track objectForKey:@"track_id"])).stringValue];
 //            newTrack->url = [track objectForKey:@"streaming_url"];
             newTrack->duration = ((NSNumber*)([track objectForKey:@"duration"])).floatValue;
+            newTrack->artist = (trackArtist != nil) ? trackArtist : artist;
             [self addTrack:newTrack];
         }
         _type = Audio;

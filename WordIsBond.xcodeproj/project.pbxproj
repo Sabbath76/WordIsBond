@@ -84,6 +84,7 @@
 		0E98F64A1706E310006E9857 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E98F61F1706E30F006E9857 /* Foundation.framework */; };
 		0E98F6521706E310006E9857 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0E98F6501706E310006E9857 /* InfoPlist.strings */; };
 		0E98F6551706E310006E9857 /* testappTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E98F6541706E310006E9857 /* testappTests.m */; };
+		0EA47B66189E8A6000606EA4 /* PostCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EA47B65189E8A6000606EA4 /* PostCell.m */; };
 		0EA5FA9818126EAD00133EC8 /* UserData.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EA5FA9718126EAC00133EC8 /* UserData.m */; };
 		0EA64DBA18605EB60010EFCA /* comment.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EA64DB818605EB60010EFCA /* comment.png */; };
 		0EA64DBB18605EB60010EFCA /* comment@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EA64DB918605EB60010EFCA /* comment@2x.png */; };
@@ -243,6 +244,8 @@
 		0E98F6511706E310006E9857 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		0E98F6531706E310006E9857 /* testappTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = testappTests.h; sourceTree = "<group>"; };
 		0E98F6541706E310006E9857 /* testappTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = testappTests.m; sourceTree = "<group>"; };
+		0EA47B64189E8A6000606EA4 /* PostCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PostCell.h; sourceTree = "<group>"; };
+		0EA47B65189E8A6000606EA4 /* PostCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PostCell.m; sourceTree = "<group>"; };
 		0EA5FA9618126EAC00133EC8 /* UserData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserData.h; sourceTree = "<group>"; };
 		0EA5FA9718126EAC00133EC8 /* UserData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserData.m; sourceTree = "<group>"; };
 		0EA64DB818605EB60010EFCA /* comment.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = comment.png; sourceTree = "<group>"; };
@@ -442,6 +445,8 @@
 				0EA5FA9618126EAC00133EC8 /* UserData.h */,
 				0EA5FA9718126EAC00133EC8 /* UserData.m */,
 				0ED4E2D7189BAF6C001EF0B7 /* MediaPlayerHeader.xib */,
+				0EA47B64189E8A6000606EA4 /* PostCell.h */,
+				0EA47B65189E8A6000606EA4 /* PostCell.m */,
 			);
 			path = testapp;
 			sourceTree = "<group>";
@@ -772,6 +777,7 @@
 				0E98F62A1706E30F006E9857 /* main.m in Sources */,
 				0E98F62E1706E30F006E9857 /* AppDelegate.m in Sources */,
 				0E98F63D1706E30F006E9857 /* MasterViewController.m in Sources */,
+				0EA47B66189E8A6000606EA4 /* PostCell.m in Sources */,
 				0E639691184FD17000868311 /* SplashViewController.m in Sources */,
 				0E5D2C9E182E0D330036870A /* TrackInfo.m in Sources */,
 				0E63968A184FBCC800868311 /* UIImage+ImageEffects.m in Sources */,
