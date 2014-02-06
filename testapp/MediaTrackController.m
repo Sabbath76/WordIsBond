@@ -57,6 +57,7 @@
 //        _imageView.image = trackInfo->pItem.appIcon;
 //        _blurredImage.image = rssItem.blurredImage;
         label.text = trackInfo->title;
+        artist.text = trackInfo->artist;
  //       dateView.text = rssItem.dateString;
  //       author.text = rssItem.author;
 	}

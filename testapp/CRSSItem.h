@@ -39,12 +39,15 @@ typedef enum
 @property (nonatomic, readwrite) Boolean requiresDownload;
 
 - (UIImage *) requestImage:(id<IconDownloaderDelegate>)delegate;
+- (UIImage *) getBlurredImage;
 - (UIImage *) requestIcon:(id<IconDownloaderDelegate>)delegate;
 - (void) requestFullFeed:(id<PostRequestDelegate>)delegate;
 - (void) addTrack:(TrackInfo *) track;
 - (void) initWithDictionary:(NSDictionary*)post;
 - (void) updateImage:(UIImage *)image;
 - (Boolean) waitingOnTracks;
+
++ (void) setupDefaults;
 
 @end
 

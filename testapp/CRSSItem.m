@@ -22,6 +22,10 @@
     UIImage *m_listImage;
 }
 
+static UIImage *defaultIcon;
+static UIImage *defaultImage;
+static UIImage *defaultBlurredImage;
+
 static NSString * BAND_CAMP_KEY = @"godsthannlitanpalafreyregna";
 static NSString * BAND_CAMP_ALBUM_QUERY = @"http://api.bandcamp.com/api/album/2/info?key=godsthannlitanpalafreyregna&album_id=";
 static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download/track?enc=mp3-128&id=%@&stream=1";
@@ -52,12 +56,25 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
     return NULL;
 }
 
++ (void) setupDefaults
+{
+    if (defaultImage == nil)
+    {
+        defaultImage = [UIImage imageNamed:@"user_avatar"];
+        defaultBlurredImage = [defaultImage applyLightEffect];
+        //--- why is this 30? should be 60 for retina display
+        defaultIcon = [self resizeImage:defaultImage newSize:CGSizeMake(30.0f, 30.0f)];
+        
+    }
+}
+
 - (CRSSItem *) init
 {
     static int LAST_ID = 0;
     LAST_ID++;
     
     self.postID = LAST_ID;
+    
     return self;
 }
 
@@ -215,7 +232,7 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
 //    NSString *imgHTML = [NSString stringWithFormat:@"<div><a><img src=\"%@\" width=\"%d\" height=\"%d\"/></a></div>", imageURLString, (int)(objWidth.intValue*scale), (int)(objHeight.intValue*scale)];
     fullContent = [fullContent stringByAppendingString:imgHTML];
     
-    NSString *blurbFormat = @"<meta name='viewport' content='width=device-width; initial-scale=1, maximum-scale=1'><div style='text-align:justify; font-size:12px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>";
+    NSString *blurbFormat = @"<head><style>a:link {color:#844434;text-decoration:underline;}</style></head><meta name='viewport' content='width=device-width; initial-scale=1, maximum-scale=1'><div style='text-align:justify; font-size:12px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>";
     blurb = [NSString stringWithFormat:blurbFormat, description];
     
     NSString *postFormat = @"<meta name='viewport' content='width=device-width; initial-scale=1, maximum-scale=1'>\
@@ -280,7 +297,7 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
     [self setup];
 }
 
-- (UIImage *)resizeImage:(UIImage*)image newSize:(CGSize)newSize
++ (UIImage *)resizeImage:(UIImage*)image newSize:(CGSize)newSize
 {
     CGRect newRect = CGRectIntegral(CGRectMake(0, 0, newSize.width, newSize.height));
   
@@ -484,7 +501,7 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
         [IconDownloader download:self delegate:delegate];
     }
 
-    return appIcon;
+    return (appIcon == nil) ? defaultImage : appIcon;
 }
 
 - (UIImage *) requestIcon:(id<IconDownloaderDelegate>)delegate;
@@ -494,8 +511,14 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
         [IconDownloader download:self delegate:delegate];
     }
     
-    return iconImage;
+    return (iconImage == nil) ? defaultIcon : iconImage;
 }
+
+- (UIImage *) getBlurredImage
+{
+    return (blurredImage == nil) ? defaultBlurredImage : blurredImage;
+}
+
 
 - (void) requestFullFeed:(id<PostRequestDelegate>)delegate
 {
@@ -613,7 +636,8 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
 {
     appIcon = image;
     blurredImage = [image applyLightEffect];
-    iconImage = [self resizeImage:image newSize:CGSizeMake(55.0f, 55.0f)];
+    //--- why is thi 30? should be 60 for retina display
+    iconImage = [CRSSItem resizeImage:image newSize:CGSizeMake(30.0f, 30.0f)];
 }
 
 - (Boolean) waitingOnTracks;

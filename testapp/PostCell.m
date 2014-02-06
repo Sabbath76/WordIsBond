@@ -63,6 +63,7 @@
 
 - (void) setupIfNeeded
 {
+/*  //--- Masking layer disabled
     if (self.miniImage && (m_maskingLayer == nil))
     {
         CALayer *_maskingLayer = [CALayer layer];
@@ -75,7 +76,7 @@
         
         [self.miniImage.layer setMask:_maskingLayer];
         m_maskingLayer = _maskingLayer;
-    }
+    }*/
 }
 
 @end

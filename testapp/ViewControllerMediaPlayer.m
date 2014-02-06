@@ -38,6 +38,7 @@
     
     id playbackObserver;
     
+    __weak IBOutlet UIProgressView *m_trackProgress;
     __weak IBOutlet UIScrollView *m_scrollTrackHeader;
     __weak IBOutlet UIBarButtonItem *btnPlay;
     __weak IBOutlet UIBarButtonItem *btnPlay2;
@@ -128,13 +129,12 @@ float BLUR_IMAGE_RANGE = 100.0f;
         if (self_ != nil)
         {
             ViewControllerMediaPlayer *sself = self_;
-//            CMTime endTime = CMTimeConvertScale (sself->m_player.currentItem.asset.duration, sself->m_player.currentTime.timescale, kCMTimeRoundingMethod_RoundHalfAwayFromZero);
+            CMTime endTime = CMTimeConvertScale (sself->m_player.currentItem.asset.duration, sself->m_player.currentTime.timescale, kCMTimeRoundingMethod_RoundHalfAwayFromZero);
             Float64 currentSeconds = CMTimeGetSeconds(sself->m_player.currentTime);
 //            if (CMTimeCompare(endTime, kCMTimeZero) != 0)
             {
                 if ([sself->sldrPosition2 isTracking] == false)
                 {
-//                    double normalizedTime = (double) sself->m_player.currentTime.value / (double) endTime.value;
                     sself->sldrPosition2.value = currentSeconds;
                 }
             }
@@ -143,6 +143,11 @@ float BLUR_IMAGE_RANGE = 100.0f;
             NSString *minsString = mins < 10 ? [NSString stringWithFormat:@"%d", mins] :      [NSString stringWithFormat:@"%d", mins];
             NSString *secsString = secs < 10 ? [NSString stringWithFormat:@"0%d", secs] : [NSString stringWithFormat:@"%d", secs];
             sself->m_labelCurTime.text = [NSString stringWithFormat:@"%@:%@", minsString, secsString];
+            if (CMTimeCompare(endTime, kCMTimeZero) != 0)
+            {
+                double normalizedTime = (double) sself->m_player.currentTime.value / (double) endTime.value;
+                [sself->m_trackProgress setProgress:normalizedTime];
+            }
         }
     }];
     
@@ -313,6 +318,8 @@ float BLUR_IMAGE_RANGE = 100.0f;
     {
         [m_player advanceToNextItem];
         [self onNextTrack];
+        
+        [m_nextPage.streaming startAnimating];
         
 /*        currentItem++;
         if (currentItem >= m_audioItems.count)
@@ -506,6 +513,9 @@ float BLUR_IMAGE_RANGE = 100.0f;
             }
         }
 */
+        [m_currentPage.streaming startAnimating];
+        [m_nextPage.streaming startAnimating];
+
         [m_player removeAllItems];
         [self streamData:resourcePath];
         TrackInfo *nextTrack = [self getNextTrack];
@@ -859,6 +869,9 @@ float BLUR_IMAGE_RANGE = 100.0f;
                 case AVPlayerItemStatusFailed:
                 {
                     [m_playSpinner setHidden:true];
+                    
+                    [m_currentPage.streaming stopAnimating];
+                    [m_nextPage.streaming stopAnimating];
 
 //                    [m_spinner removeFromSuperview];
 
@@ -879,6 +892,9 @@ float BLUR_IMAGE_RANGE = 100.0f;
                 case AVPlayerItemStatusReadyToPlay:
                 {
                     [m_playSpinner setHidden:true];
+
+                    [m_currentPage.streaming stopAnimating];
+                    [m_nextPage.streaming stopAnimating];
 
 //                    [m_spinner removeFromSuperview];
 //                    [btnPlay.layer removeAllAnimations];

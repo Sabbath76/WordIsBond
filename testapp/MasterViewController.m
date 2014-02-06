@@ -165,6 +165,8 @@ const int ExpandedSectionSize = 120;
         self.contentSizeForViewInPopover = CGSizeMake(320.0, 600.0);
     }
     
+    [CRSSItem setupDefaults];
+    
     m_parser = [RSSParser alloc];
     self.imageDownloadsInProgress = [NSMutableDictionary dictionary];
     
@@ -635,9 +637,9 @@ const int ExpandedSectionSize = 120;
     {
         CRSSItem *post = _feed.items[m_currentQuickMenuItem];
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:m_currentQuickMenuItem inSection:Posts];
-        UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-        UIView *view = [cell viewWithTag:8];
-        UIImageView *imageView = (UIImageView *)[cell viewWithTag:9];
+        PostCell *cell = (PostCell*)[self.tableView cellForRowAtIndexPath:indexPath];
+        UIView *view = cell.animateView;// [cell viewWithTag:8];
+        UIImageView *imageView = cell.fullImage;//(UIImageView *)[cell viewWithTag:9];
         imageView.image = [post appIcon];
         [view setTransform:CGAffineTransformMakeTranslation(PAN_CLOSED_X, 0)];
         [imageView setAlpha:0.0f];
@@ -724,8 +726,8 @@ const int ExpandedSectionSize = 120;
 
             cell.title.text = [object title];
             cell.date.text = object.dateString;
-            cell.blurredImage.image = object.blurredImage;
-            cell.miniImage.image = object.iconImage;
+            cell.blurredImage.image = [object getBlurredImage];//object.blurredImage;
+            cell.miniImage.image = [object requestIcon:self];//object.iconImage;
             cell.options.hidden = !(m_currentQuickMenuItem == indexPath.row);
 /*
             UILabel *label = (UILabel *)[cell viewWithTag:1];
@@ -753,6 +755,7 @@ const int ExpandedSectionSize = 120;
             }*/
 
 
+/* No post type indicator anymore
             switch (object.type)
             {
                 case Audio:
@@ -764,7 +767,7 @@ const int ExpandedSectionSize = 120;
                 case Text:
                     cell.postTypeImage.image = [UIImage imageNamed:@"text"];
                     break;
-            }
+            }*/
             
 /*            [UIView animateWithDuration:1.0
                     delay: 0.0
@@ -883,7 +886,7 @@ const int ExpandedSectionSize = 120;
                 PostCell *oldCell = (PostCell*)[self.tableView cellForRowAtIndexPath:m_lastPannedIndexPath];
                 UIView *oldView = oldCell.animateView;//[oldCell viewWithTag:8];
                 [self snapView:oldView toX:PAN_CLOSED_X animated:YES];
-                UIImageView *oldImageView = (UIImageView *)[oldCell viewWithTag:9];
+                UIImageView *oldImageView = oldCell.fullImage;//(UIImageView *)[oldCell viewWithTag:9];
                 [oldImageView setAlpha:0.0f];
                 [oldImageView setHidden:true];
                 m_lastPannedIndexPath = nil;
@@ -973,9 +976,9 @@ const int ExpandedSectionSize = 120;
     {
         if (![indexPath isEqual:m_expandedIndexPath])
         {
-            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+            PostCell *cell = (PostCell*)[self.tableView cellForRowAtIndexPath:indexPath];
             
-            UIToolbar *toolbarMenu = (UIToolbar *) [cell viewWithTag:6];
+            UIToolbar *toolbarMenu = cell.options;//(UIToolbar *) [cell viewWithTag:6];
             [toolbarMenu setHidden:false];
             UIButton *favourite = [toolbarMenu items][1];
 //            UIBarButtonItem *favourite = (UIBarButtonItem*)[toolbarMenu viewWithTag:7];
@@ -1000,6 +1003,9 @@ const int ExpandedSectionSize = 120;
         }
         else
         {
+            PostCell *cell = (PostCell*)[self.tableView cellForRowAtIndexPath:indexPath];
+            [cell.options setHidden:true];
+
             m_currentQuickMenuItem = -1;
             m_expandedIndexPath = nil;
             [self.tableView beginUpdates];
@@ -1047,9 +1053,9 @@ const int ExpandedSectionSize = 120;
         {
             if (![indexPath isEqual:m_expandedIndexPath])
             {
-                UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+                PostCell *cell = (PostCell*)[self.tableView cellForRowAtIndexPath:indexPath];
                 
-                [[cell viewWithTag:6] setHidden:false];
+                [cell.options setHidden:false];
                 
 /*                [cell.contentView insertSubview:m_quickMenu atIndex:0];
 //                [cell insertSubview:m_quickMenu aboveSubview:<#(UIView *)#>

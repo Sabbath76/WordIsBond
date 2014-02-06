@@ -153,7 +153,9 @@
 
     m_currentPage = [[PostHeaderController alloc] initWithNibName:@"PostHeader" bundle:nil];
 	m_nextPage = [[PostHeaderController alloc] initWithNibName:@"PostHeader" bundle:nil];
-    
+        
+    m_btnFavourite = self.btnFavourite;
+
 	[m_header addSubview:m_currentPage.view];
 	[m_header addSubview:m_nextPage.view];
     
@@ -171,8 +173,6 @@
     }
     
     m_toolbarOffset = 0;
-    
-    m_btnFavourite = self.btnFavourite;
 }
 
 -(BOOL) navigationShouldPopOnBackButton

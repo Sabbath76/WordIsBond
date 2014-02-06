@@ -22,11 +22,13 @@
 	IBOutlet UILabel *label;
     __weak IBOutlet UILabel *dateView;
     __weak IBOutlet UILabel *author;
+    __weak IBOutlet UILabel *artist;
 }
 
 @property NSInteger pageIndex;
 @property (weak, nonatomic) IBOutlet UIImageView *imageView;
 @property (weak, nonatomic) IBOutlet UIImageView *blurredImage;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *streaming;
 
 - (void)updateTextViews:(BOOL)force;
 - (void)setSourceArray:(NSArray*)array;
