@@ -12,7 +12,7 @@
 
 @property (nonatomic, weak, readonly) UILabel *title; // 1
 @property (nonatomic, weak, readonly) UILabel *date;  // 5
-@property (nonatomic, weak, readonly) UIImageView *miniImage; // 4
+@property (nonatomic, weak, readonly) UIButton *miniImage; // 4
 @property (nonatomic, weak, readonly) UIImageView *postTypeImage; //3
 @property (nonatomic, weak, readonly) UIImageView *blurredImage; // 2
 @property (nonatomic, weak, readonly) UIView *animateView; // 8

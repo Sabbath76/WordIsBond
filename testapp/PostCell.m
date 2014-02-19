@@ -18,7 +18,7 @@
 
 @property (nonatomic, weak) IBOutlet UILabel *title; // 1
 @property (nonatomic, weak) IBOutlet UILabel *date;  // 5
-@property (nonatomic, weak) IBOutlet UIImageView *miniImage; // 4
+@property (nonatomic, weak) IBOutlet UIButton *miniImage; // 4
 @property (nonatomic, weak) IBOutlet UIImageView *postTypeImage; //3
 @property (nonatomic, weak) IBOutlet UIImageView *blurredImage; // 2
 @property (nonatomic, weak) IBOutlet UIView *animateView; // 8

@@ -17,6 +17,7 @@
 @implementation FeatureCell
 {
     __weak IBOutlet UIImageView *m_imgHighlight;
+    __weak IBOutlet UIImageView *m_imgHighlightLine;
     NSArray *m_thumbnails;
 }
 
@@ -39,7 +40,7 @@
     [self layoutIfNeeded];
     [self updateFeed];
 
-    UIImage *stretchableImage = (id)[UIImage imageNamed:@"cornerfull"];
+/*    UIImage *stretchableImage = (id)[UIImage imageNamed:@"cornerfull"];
 
     CALayer *_maskingLayer1 = [CALayer layer];
     CALayer *_maskingLayer2 = [CALayer layer];
@@ -73,7 +74,7 @@
     [imageView2.layer setMask:_maskingLayer2];
     [imageView3.layer setMask:_maskingLayer3];
     [imageView4.layer setMask:_maskingLayer4];
-    [imageView5.layer setMask:_maskingLayer5];
+    [imageView5.layer setMask:_maskingLayer5];*/
     
     m_thumbnails = [[NSArray alloc] initWithObjects:imageView1, imageView2, imageView3, imageView4, imageView5, nil];
 }
@@ -104,9 +105,13 @@
     if ((thumb >= 0) && (thumb < m_thumbnails.count))
     {
     UIButton *button = (UIButton*) m_thumbnails[thumb];
+        CGRect buttonFrame  = [button frame];
+        CGRect lineFrame    = [m_imgHighlightLine frame];
+        lineFrame.origin.x = buttonFrame.origin.x;
     [UIView animateWithDuration:0.4f animations:^
         {
-        [m_imgHighlight setFrame:[button frame]];
+            [m_imgHighlight setFrame:buttonFrame];
+            [m_imgHighlightLine setFrame:lineFrame];
          }];
     }
 }

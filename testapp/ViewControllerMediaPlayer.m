@@ -67,7 +67,7 @@
 
 @synthesize currentImage;
 
-float bottomOffset  = 44;
+float bottomOffset  = 50;
 float midOffset     = 149;
 float topOffset     = 20;
 
@@ -80,7 +80,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
         // Custom initialization
     }
     
-    UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead"];
+    UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead_on"];
     [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateNormal];
     [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateHighlighted];
     
@@ -140,9 +140,18 @@ float BLUR_IMAGE_RANGE = 100.0f;
             }
             int mins = currentSeconds/60.0;
             int secs = fmodf(currentSeconds, 60.0);
-            NSString *minsString = mins < 10 ? [NSString stringWithFormat:@"%d", mins] :      [NSString stringWithFormat:@"%d", mins];
+            NSString *minsString = [NSString stringWithFormat:@"%d", mins];
             NSString *secsString = secs < 10 ? [NSString stringWithFormat:@"0%d", secs] : [NSString stringWithFormat:@"%d", secs];
             sself->m_labelCurTime.text = [NSString stringWithFormat:@"%@:%@", minsString, secsString];
+
+            Float64 durationSeconds = CMTimeGetSeconds(endTime);
+            Float64 timeTillEnd = durationSeconds - currentSeconds;
+            mins = timeTillEnd/60.0;
+            secs = fmodf(timeTillEnd, 60.0);
+            minsString = [NSString stringWithFormat:@"%d", mins];
+            secsString = secs < 10 ? [NSString stringWithFormat:@"0%d", secs] : [NSString stringWithFormat:@"%d", secs];
+            sself->m_labelDuration.text = [NSString stringWithFormat:@"-%@:%@", minsString, secsString];
+            
             if (CMTimeCompare(endTime, kCMTimeZero) != 0)
             {
                 double normalizedTime = (double) sself->m_player.currentTime.value / (double) endTime.value;
@@ -234,7 +243,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
     
     _labelTitle.textColor = [UIColor grayColor];
     
-    UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead"];
+    UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead_on"];
     [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateNormal];
     [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateHighlighted];
 
@@ -880,7 +889,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
 //                    [btnPlay setImage:[UIImage imageNamed:@"icon_opt"] forState:UIControlStateSelected];
 //                    [btnPlay setHidden:false];
 
-                    UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead"];
+                    UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead_on"];
                     [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateNormal];
                     [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateHighlighted];
 
@@ -911,7 +920,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
                     }
                     [self updateTracks];
 
-                    UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead"];
+                    UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead_on"];
                     [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateNormal];
                     [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateHighlighted];
                     

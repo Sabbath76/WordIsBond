@@ -31,6 +31,7 @@
     int m_toolbarOffset;
     bool m_loading;
     bool m_extendedNavBar;
+    int m_scrollOffset;
 }
 
 @property (strong, nonatomic) UIPopoverController *masterPopoverController;
@@ -164,7 +165,7 @@
     [self configureView:true];
     
     self.webView.scrollView.delegate = self;
-    float headerBottom = m_header.frame.origin.y + m_header.frame.size.height;
+    float headerBottom = m_header.superview.frame.origin.y + m_header.frame.origin.y + m_header.frame.size.height;
     [[self.webView scrollView] setContentInset:UIEdgeInsetsMake(headerBottom, 0, 0, 0)];
     
     if (m_itemPos > 0)
@@ -173,6 +174,21 @@
     }
     
     m_toolbarOffset = 0;
+    m_scrollOffset = 0;
+}
+
+- (void) viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    float headerBottom = m_titleRoot.frame.origin.y;//m_header.superview.frame.origin.y + m_header.frame.origin.y + m_header.frame.size.height;
+    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1)
+    {
+        headerBottom = self->m_header.frame.size.height-m_titleRoot.frame.size.height;
+        m_scrollOffset = self.navigationController.navigationBar.frame.size.height + 20.0f;
+        headerBottom += m_scrollOffset;
+    }
+    [[self.webView scrollView] setContentInset:UIEdgeInsetsMake(headerBottom, 0, 0, 0)];
 }
 
 -(BOOL) navigationShouldPopOnBackButton
@@ -290,10 +306,13 @@
         if (enable)
         {
 //            UIToolbar *toolbar = [[UIToolbar alloc] init];
-            UIBarButtonItem *commentButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"comment"] style:UIBarButtonItemStylePlain target:self action:@selector(onComment:)];
-            UIBarButtonItem *fbButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"social_fb"] style:UIBarButtonItemStylePlain target:self action:@selector(onFacebook:)];
-            UIBarButtonItem *twButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"social_tw"] style:UIBarButtonItemStylePlain target:self action:@selector(onTweet:)];
+            UIBarButtonItem *commentButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_comments"] style:UIBarButtonItemStylePlain target:self action:@selector(onComment:)];
+            UIBarButtonItem *fbButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"facebook_off"] style:UIBarButtonItemStylePlain target:self action:@selector(onFacebook:)];
+            UIBarButtonItem *twButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"twitter_off"] style:UIBarButtonItemStylePlain target:self action:@selector(onTweet:)];
             UIBarButtonItem *favButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_fav"] style:UIBarButtonItemStylePlain target:self action:@selector(onFavourite:)];
+            [commentButton setTintColor:[UIColor whiteColor]];
+            [fbButton setTintColor:[UIColor whiteColor]];
+            [twButton setTintColor:[UIColor whiteColor]];
             UIBarButtonItem *flexibleItem1 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
             UIBarButtonItem *flexibleItem2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
             UIBarButtonItem *flexibleItem3 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
@@ -442,6 +461,7 @@
             [m_header setAlpha:MIN(factor, 1.0f)];
         }
         
+        senderOffset += m_scrollOffset;
         
         CGRect titleFrame = [m_titleRoot frame];
         titleFrame.origin.y = MAX(-senderOffset, m_header.frame.origin.y);

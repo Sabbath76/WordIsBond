@@ -30,6 +30,12 @@
 
 - (void)appImageDidLoad:(IconDownloader *)iconDownloader
 {
+    if (pageIndex == [iconDownloader postID])
+    {
+        UIImage *iconImage = [[iconDownloader appRecord] iconImage];
+        [m_trackImage setImage:iconImage forState:UIControlStateNormal];
+        [m_trackImage setImage:iconImage forState:UIControlStateSelected];
+    }
  /*   RSSFeed *feed = [RSSFeed getInstance];
 
 	if (pageIndex >= 0 && pageIndex < feed.features.count)
@@ -51,8 +57,9 @@
 	{
         TrackInfo *trackInfo = m_sourceArray[pageIndex];
 
-        [m_trackImage setImage:trackInfo->pItem.appIcon forState:UIControlStateNormal];
-        [m_trackImage setImage:trackInfo->pItem.appIcon forState:UIControlStateSelected];
+        UIImage *iconImage = [trackInfo->pItem requestIcon:self];
+        [m_trackImage setImage:iconImage forState:UIControlStateNormal];
+        [m_trackImage setImage:iconImage forState:UIControlStateSelected];
 
 //        _imageView.image = trackInfo->pItem.appIcon;
 //        _blurredImage.image = rssItem.blurredImage;

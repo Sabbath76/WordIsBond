@@ -114,6 +114,24 @@ const int ExpandedSectionSize = 120;
     [self setMenuOpen:false];
 }
 
+- (IBAction)onQuickMenu:(id)sender
+{
+    NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
+    for (NSIndexPath *indexPath in visiblePaths)
+    {
+        if (indexPath.section == Posts)
+        {
+            PostCell *postCell = (PostCell*)[self.tableView cellForRowAtIndexPath:indexPath];
+            if (postCell.miniImage == sender)
+            {
+                [self doExpandPost:indexPath];
+                break;
+            }
+        }
+    }
+
+}
+
 - (UIStatusBarStyle) preferredStatusBarStyle
 {
     return UIStatusBarStyleLightContent;
@@ -312,6 +330,8 @@ const int ExpandedSectionSize = 120;
     UIImageView *pImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"top_banner_logo"]];
     self.navigationItem.titleView = pImageView;
     
+    [self.navigationController.navigationBar setTintColor:[UIColor blackColor]];
+    
     UITapGestureRecognizer *singleFingerTap =
     [[UITapGestureRecognizer alloc] initWithTarget:self
                                             action:@selector(onTapTitle:)];
@@ -365,7 +385,7 @@ const int ExpandedSectionSize = 120;
 //                UIImageView *imgView = (UIImageView *)[cell viewWithTag:2];
 //                UIImageView *imgViewMini = (UIImageView *)[cell viewWithTag:4];
                 cell.blurredImage.image = iconDownloader.appRecord.blurredImage;
-                cell.miniImage.image = iconDownloader.appRecord.iconImage;
+                [cell.miniImage setImage:iconDownloader.appRecord.iconImage forState:normal];
 
                 break;
             }
@@ -727,7 +747,8 @@ const int ExpandedSectionSize = 120;
             cell.title.text = [object title];
             cell.date.text = object.dateString;
             cell.blurredImage.image = [object getBlurredImage];//object.blurredImage;
-            cell.miniImage.image = [object requestIcon:self];//object.iconImage;
+            [cell.miniImage setImage:object.iconImage forState:normal];
+//            cell.miniImage.image = [object requestIcon:self];//object.iconImage;
             cell.options.hidden = !(m_currentQuickMenuItem == indexPath.row);
 /*
             UILabel *label = (UILabel *)[cell viewWithTag:1];
@@ -1227,7 +1248,7 @@ const int ExpandedSectionSize = 120;
 //            [_feed LoadPage:[_feed GetPage]+1];
             break;
         case Posts:
-            [self doExpandPost:indexPath];
+//            [self doExpandPost:indexPath];
             
             if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
             {

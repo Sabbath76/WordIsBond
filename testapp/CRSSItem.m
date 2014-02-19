@@ -62,8 +62,7 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
     {
         defaultImage = [UIImage imageNamed:@"user_avatar"];
         defaultBlurredImage = [defaultImage applyLightEffect];
-        //--- why is this 30? should be 60 for retina display
-        defaultIcon = [self resizeImage:defaultImage newSize:CGSizeMake(30.0f, 30.0f)];
+        defaultIcon = [self resizeImage:defaultImage newSize:CGSizeMake(60.0f, 60.0f)];
         
     }
 }
@@ -232,11 +231,11 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
 //    NSString *imgHTML = [NSString stringWithFormat:@"<div><a><img src=\"%@\" width=\"%d\" height=\"%d\"/></a></div>", imageURLString, (int)(objWidth.intValue*scale), (int)(objHeight.intValue*scale)];
     fullContent = [fullContent stringByAppendingString:imgHTML];
     
-    NSString *blurbFormat = @"<head><style>a:link {color:#844434;text-decoration:underline;}</style></head><meta name='viewport' content='width=device-width; initial-scale=1, maximum-scale=1'><div style='text-align:justify; font-size:12px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>";
+    NSString *blurbFormat = @"<head><style>a:link {color:#844434;text-decoration:underline;}</style></head><meta name='viewport' content='width=device-width; initial-scale=1, maximum-scale=1'><div style='text-align:justify; font-size:12px;font-family:HelveticaNeue-CondensedBold;color:#FFFF;'>%@</div>";
     blurb = [NSString stringWithFormat:blurbFormat, description];
     
     NSString *postFormat = @"<meta name='viewport' content='width=device-width; initial-scale=1, maximum-scale=1'>\
-    <div style='font-size:15px;font-family:HelveticaNeue-CondensedBold;color:#0000;'><h1>%@</h1></div>\
+    <div style='font-size:15px;font-family:HelveticaNeue-CondensedBold;color:#FFFF;'><h1>%@</h1></div>\
     <p><div style='font-size:8px;float:left'>%@</div> <div style='font-size:8px;float:right'>%@</div></p><br/>\
     %@\
     <div style='text-align:justify; font-size:14px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>";
@@ -297,19 +296,36 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
     [self setup];
 }
 
-+ (UIImage *)resizeImage:(UIImage*)image newSize:(CGSize)newSize
++ (UIImage *)resizeImage:(UIImage*)image newSize:(CGSize)coordSize
 {
+    GLfloat scale = [UIScreen mainScreen].scale;
+    
+//    CGSize newSize = CGSizeMake(coordSize.width * scale, coordSize.height * scale);
+    CGSize newSize = CGSizeMake(coordSize.width, coordSize.height);
+    
+//    GLfloat srcSize = Min(image.size.height, image.size.width);
+//    CGRect newRect = CGRectIntegral(CGRectMake(0, 0, srcSize, srcSize));
+    
     CGRect newRect = CGRectIntegral(CGRectMake(0, 0, newSize.width, newSize.height));
   
-    float aspect = image.size.width / image.size.height;
-    newRect.size.width *= aspect;
-    newRect.origin.x -= (newRect.size.width - newSize.width) * 0.5f;
+    if (image.size.width >= image.size.height)
+    {
+        float aspect = image.size.width / image.size.height;
+        newRect.size.width *= aspect;
+        newRect.origin.x -= (newRect.size.width - newSize.width) * 0.5f;
+    }
+    else
+    {
+        float aspect = image.size.height / image.size.width;
+        newRect.size.height *= aspect;
+        newRect.origin.y -= (newRect.size.height - newSize.height) * 0.5f;
+    }
     // calculate resize ratio, and apply to rect
 //    newRect = AVMakeRectWithAspectRatioInsideRect(image.size, newRect);
     
     CGImageRef imageRef = image.CGImage;
     
-    UIGraphicsBeginImageContextWithOptions(newSize, NO, 0);
+    UIGraphicsBeginImageContextWithOptions(newSize, NO, scale);
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     // Set the quality level to use when rescaling
@@ -322,7 +338,7 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
     
     // Get the resized image from the context and a UIImage
     CGImageRef newImageRef = CGBitmapContextCreateImage(context);
-    UIImage *newImage = [UIImage imageWithCGImage:newImageRef];
+    UIImage *newImage = [UIImage imageWithCGImage:newImageRef scale:scale orientation:UIImageOrientationUp];
     
     CGImageRelease(newImageRef);
     UIGraphicsEndImageContext();
@@ -635,9 +651,10 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
 - (void) updateImage:(UIImage *)image
 {
     appIcon = image;
-    blurredImage = [image applyLightEffect];
-    //--- why is thi 30? should be 60 for retina display
-    iconImage = [CRSSItem resizeImage:image newSize:CGSizeMake(30.0f, 30.0f)];
+
+    iconImage = [CRSSItem resizeImage:image newSize:CGSizeMake(60.0f, 60.0f)];
+
+    blurredImage = [iconImage applyLightEffect];
 }
 
 - (Boolean) waitingOnTracks;

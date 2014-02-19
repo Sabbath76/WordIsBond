@@ -87,9 +87,28 @@ static NSMutableDictionary *s_downloadingImagesByID = NULL;
     // Set appIcon and clear temporary data/image
     UIImage *image = [[UIImage alloc] initWithData:self.activeDownload];
     
-    [self.appRecord updateImage:image];
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
+    dispatch_async(queue, ^{
+        [self.appRecord updateImage:image];
+    
+        dispatch_async(dispatch_get_main_queue(), ^{
+            //    self.appRecord.appIcon = image;
+            self.activeDownload = nil;
+            
+            // Release the connection now that it's finished
+            self.imageConnection = nil;
+            
+            for (id <IconDownloaderDelegate> delegateItem in delegateList)
+            {
+                [delegateItem appImageDidLoad:self];
+            }
+            
+            [s_downloadingImagesByID removeObjectForKey:[NSNumber numberWithInt:self.postID]];
+        });
+    });
+
 //    self.appRecord.appIcon = image;
-    self.activeDownload = nil;
+/*    self.activeDownload = nil;
     
     // Release the connection now that it's finished
     self.imageConnection = nil;
@@ -99,7 +118,7 @@ static NSMutableDictionary *s_downloadingImagesByID = NULL;
         [delegateItem appImageDidLoad:self];
     }
     
-    [s_downloadingImagesByID removeObjectForKey:[NSNumber numberWithInt:self.postID]];
+    [s_downloadingImagesByID removeObjectForKey:[NSNumber numberWithInt:self.postID]];*/
 }
 
 + (bool)download:(CRSSItem *)item indexPath:(NSIndexPath *)indexPathInTableView delegate:(id<IconDownloaderDelegate>)delegate isItem:(Boolean)isItem
