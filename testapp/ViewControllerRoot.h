@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewControllerRoot : UIViewController
+@interface ViewControllerRoot : UIViewController <UIGestureRecognizerDelegate>
 
 @end

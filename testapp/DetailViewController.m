@@ -165,7 +165,8 @@
     [self configureView:true];
     
     self.webView.scrollView.delegate = self;
-    float headerBottom = m_header.superview.frame.origin.y + m_header.frame.origin.y + m_header.frame.size.height;
+//    float headerBottom = m_header.superview.frame.origin.y + m_header.frame.origin.y + m_header.frame.size.height;
+    float headerBottom = 150.0f+44.0f;//m_header.frame.size.height + self->m_toolbar.frame.size.height;
     [[self.webView scrollView] setContentInset:UIEdgeInsetsMake(headerBottom, 0, 0, 0)];
     
     if (m_itemPos > 0)
@@ -181,7 +182,7 @@
 {
     [super viewDidAppear:animated];
     
-    float headerBottom = m_titleRoot.frame.origin.y;//m_header.superview.frame.origin.y + m_header.frame.origin.y + m_header.frame.size.height;
+    float headerBottom = 150.0f+44.0f;//m_titleRoot.frame.origin.y;//m_header.superview.frame.origin.y + m_header.frame.origin.y + m_header.frame.size.height;
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1)
     {
         headerBottom = self->m_header.frame.size.height-m_titleRoot.frame.size.height;

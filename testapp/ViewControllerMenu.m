@@ -52,10 +52,7 @@
     showText = true;
     
     [[UserData get] addListener:self];
-    
-//    [self.storyboard v]
-//    masterViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MasterViewController"];
-    
+
 }
 
 - (void)didReceiveMemoryWarning

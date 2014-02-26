@@ -74,6 +74,8 @@ const int ExpandedSectionSize = 120;
     float m_lastPannedX;
     
     bool m_searchShouldBeginEditing;
+    
+    float m_slideInitialPos;
 }
 
 
@@ -87,25 +89,26 @@ const int ExpandedSectionSize = 120;
 
 - (void) setMenuOpen:(bool)state
 {
-    CGRect destination = self.navigationController.view.superview.superview.frame;
+    UIView *rootView = self.navigationController.view.superview.superview;
+    CGRect destination = rootView.frame;
     
     if (state)
     {
         destination.origin.x = 270;
         _btnMenu.tintColor = [UIColor blackColor];
         
-        [self.tableView setUserInteractionEnabled:false];
+        [rootView setUserInteractionEnabled:false];
     }
     else
     {
         destination.origin.x = 0;
         _btnMenu.tintColor = [UIColor whiteColor];
         
-        [self.tableView setUserInteractionEnabled:true];
+        [rootView setUserInteractionEnabled:true];
     }
     
     [UIView beginAnimations:@"Bringing up menu" context:nil];
-    self.navigationController.view.superview.superview.frame = destination;
+    rootView.frame = destination;
     [UIView commitAnimations];
 }
 
@@ -249,6 +252,11 @@ const int ExpandedSectionSize = 120;
                                                  name:@"ViewPost"
                                                object:nil];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(updateMenuState:)
+                                                 name:@"UpdateMenuState"
+                                               object:nil];
+    
 //    [[NSNotificationCenter defaultCenter] addObserver:self
 //                                             selector:@selector(receiveCloseMenu:)
 //                                                 name:@"CloseMenu"
@@ -349,7 +357,8 @@ const int ExpandedSectionSize = 120;
 - (void)onTapTitle:(UITapGestureRecognizer *)recognizer
 {
     //--- Pan list view up to the top
-   [self.tableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+    [self.tableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"CloseMediaPlayer"  object:self];
 }
 
 - (void)startIconDownload:(CRSSItem *)appRecord forIndexPath:(NSIndexPath *)indexPath
@@ -489,6 +498,11 @@ const int ExpandedSectionSize = 120;
     [m_featureCell updateFeed];
     
     [self.refreshControl endRefreshing];
+}
+
+- (void) updateMenuState:(NSNotification *) notification
+{
+   _btnMenu.tintColor = [UIColor whiteColor];
 }
 
 - (void) receiveViewPost:(NSNotification *) notification
@@ -1397,6 +1411,28 @@ const int ExpandedSectionSize = 120;
     
     [self createTopBanner];
 }
+/*
+ CGRect destination = self.navigationController.view.superview.superview.frame;
+ 
+ if (state)
+ {
+ destination.origin.x = 270;
+ _btnMenu.tintColor = [UIColor blackColor];
+ 
+ [self.tableView setUserInteractionEnabled:false];
+ }
+ else
+ {
+ destination.origin.x = 0;
+ _btnMenu.tintColor = [UIColor whiteColor];
+ 
+ [self.tableView setUserInteractionEnabled:true];
+ }
+ 
+ [UIView beginAnimations:@"Bringing up menu" context:nil];
+ self.navigationController.view.superview.superview.frame = destination;
+ [UIView commitAnimations];
+ */
 
 
 @end

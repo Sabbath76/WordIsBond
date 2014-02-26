@@ -13,7 +13,7 @@
 #import "IconDownloader.h"
 
 
-@interface ViewControllerMediaPlayer : UIViewController <AVAudioPlayerDelegate, IconDownloaderDelegate, NSURLConnectionDelegate, UITableViewDelegate, UITableViewDataSource>
+@interface ViewControllerMediaPlayer : UIViewController <AVAudioPlayerDelegate, IconDownloaderDelegate, NSURLConnectionDelegate, UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate>
 
 @property (weak, nonatomic) IBOutlet UIImageView *currentImage;
 @property (weak, nonatomic) IBOutlet UILabel *labelTitle;

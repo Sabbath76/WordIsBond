@@ -40,7 +40,7 @@
     
     __weak IBOutlet UIProgressView *m_trackProgress;
     __weak IBOutlet UIScrollView *m_scrollTrackHeader;
-    __weak IBOutlet UIBarButtonItem *btnPlay;
+    __weak IBOutlet UIButton *btnPlay;
     __weak IBOutlet UIBarButtonItem *btnPlay2;
     __weak IBOutlet UISlider *sldrPosition2;
     __weak IBOutlet UIButton *miniImage;
@@ -51,6 +51,8 @@
     __weak IBOutlet UIBarButtonItem *m_currentTitle;
     __weak IBOutlet UILabel *m_labelCurTime;
     __weak IBOutlet UILabel *m_labelDuration;
+    
+    __weak IBOutlet UIProgressView *m_progressBar;
     
     __weak IBOutlet UIActivityIndicatorView *m_playSpinner;
 //    __weak IBOutlet NSLayoutConstraint *m_topConstraint;
@@ -129,7 +131,10 @@ float BLUR_IMAGE_RANGE = 100.0f;
         if (self_ != nil)
         {
             ViewControllerMediaPlayer *sself = self_;
-            CMTime endTime = CMTimeConvertScale (sself->m_player.currentItem.asset.duration, sself->m_player.currentTime.timescale, kCMTimeRoundingMethod_RoundHalfAwayFromZero);
+//            AVPlayerItem *curItem = sself->m_player.currentItem;
+//            AVAsset *curAsset = curItem.asset;
+//            bool playable = [curAsset isPlayable];
+//            CMTime endTime = CMTimeConvertScale (curAsset.duration, sself->m_player.currentTime.timescale, kCMTimeRoundingMethod_RoundHalfAwayFromZero);
             Float64 currentSeconds = CMTimeGetSeconds(sself->m_player.currentTime);
 //            if (CMTimeCompare(endTime, kCMTimeZero) != 0)
             {
@@ -144,7 +149,9 @@ float BLUR_IMAGE_RANGE = 100.0f;
             NSString *secsString = secs < 10 ? [NSString stringWithFormat:@"0%d", secs] : [NSString stringWithFormat:@"%d", secs];
             sself->m_labelCurTime.text = [NSString stringWithFormat:@"%@:%@", minsString, secsString];
 
-            Float64 durationSeconds = CMTimeGetSeconds(endTime);
+            TrackInfo *trackInfo = sself->m_audioTracks[sself->currentTrack];
+            Float64 durationSeconds = trackInfo->duration;
+//            Float64 durationSeconds = CMTimeGetSeconds(endTime);
             Float64 timeTillEnd = durationSeconds - currentSeconds;
             mins = timeTillEnd/60.0;
             secs = fmodf(timeTillEnd, 60.0);
@@ -152,11 +159,17 @@ float BLUR_IMAGE_RANGE = 100.0f;
             secsString = secs < 10 ? [NSString stringWithFormat:@"0%d", secs] : [NSString stringWithFormat:@"%d", secs];
             sself->m_labelDuration.text = [NSString stringWithFormat:@"-%@:%@", minsString, secsString];
             
-            if (CMTimeCompare(endTime, kCMTimeZero) != 0)
+            if (currentSeconds != 0.0f)
+            {
+                double normalizedTime = currentSeconds / currentSeconds;
+                [sself->m_trackProgress setProgress:normalizedTime];
+            }
+/*            if (CMTimeCompare(endTime, kCMTimeZero) != 0)
             {
                 double normalizedTime = (double) sself->m_player.currentTime.value / (double) endTime.value;
                 [sself->m_trackProgress setProgress:normalizedTime];
             }
+ */
         }
     }];
     
@@ -238,6 +251,10 @@ float BLUR_IMAGE_RANGE = 100.0f;
                                              selector:@selector(receiveNewRSSFeed:)
                                                  name:@"NewTrackInfo"
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(onCloseMediaPlayer:)
+                                                 name:@"CloseMediaPlayer"
+                                               object:nil];
     m_audioItems = [[NSMutableArray alloc] init];
     m_audioTracks = [[NSMutableArray alloc] init];
     
@@ -247,6 +264,12 @@ float BLUR_IMAGE_RANGE = 100.0f;
     [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateNormal];
     [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateHighlighted];
 
+    [self.tableView setContentInset:UIEdgeInsetsMake(125, 0, 0, 0)];
+    
+//    self->topToolbar.layer.shadowOffset = CGSizeMake(0, -15);
+//    self->topToolbar.layer.shadowRadius = 5;
+//    self->topToolbar.layer.shadowOpacity = 0.5;
+    
     
     if (miniImage)
     {
@@ -357,6 +380,11 @@ float BLUR_IMAGE_RANGE = 100.0f;
         [self updateCurrentTrack:currentTrack updateListItems:true];
         [self prepareMusic];
     }
+}
+
+- (void) onCloseMediaPlayer:(NSNotification *) notification
+{
+    [self setOpen:false];
 }
 
 - (void) receiveNewRSSFeed:(NSNotification *) notification
@@ -698,6 +726,18 @@ float BLUR_IMAGE_RANGE = 100.0f;
     CGRect screenRect = [[UIScreen mainScreen] bounds];
     float max = screenRect.size.height - bottomOffset;
     [m_topConstraint setConstant:max];
+}
+
+- (void) setOpen:(bool)open
+{
+    UIView *moveView = self.view.superview;
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    float min = topOffset;
+    float max = screenRect.size.height - bottomOffset;
+
+    [self setTopToolbarActive:!open];
+    [m_topConstraint setConstant:open?min:max];
+    [UIView animateWithDuration:0.5f animations:^{[moveView layoutIfNeeded];}];
 }
 
 - (IBAction)onPlayList:(id)sender
@@ -1104,6 +1144,21 @@ float BLUR_IMAGE_RANGE = 100.0f;
     m_scrollStartPoint = 0;//scrollView.contentOffset.y;
 }
 
+- (BOOL) gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+{
+    UIView *touchView = touch.view;
+    UIView *parentTouchView = touchView.superview.superview;
+    if ([touchView isKindOfClass:[UIControl class]]
+       || [parentTouchView isKindOfClass:[UITableViewCell class]])
+//       || [touchView isKindOfClass:[UITableViewContentCell class]])
+   {
+        // we touched a button, slider, or other UIControl
+        return NO; // ignore the touch
+    }
+
+    return YES;
+}
+
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(MediaTrackController *)pageController
 {
 	NSInteger pageCount = m_audioTracks ? m_audioTracks.count : 1;
@@ -1216,17 +1271,20 @@ float BLUR_IMAGE_RANGE = 100.0f;
 
 -(void) setTopToolbarActive:(bool) active
 {
-    if (m_fullItems == nil)
+    m_progressBar.hidden = !active;
+    btnPlay.hidden = !active;
+    
+/*    if (m_fullItems == nil)
     {
         self.labelTitle.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
         self.labelTitle.superview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
 //        self.labelTitle.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
         m_fullItems = [topToolbar items];
-        m_reducedItems = @[m_fullItems[1], m_fullItems[2]];
+        m_reducedItems = @[m_fullItems[0], m_fullItems[1]];
     }
     
     topToolbar.items = active ? m_fullItems : m_reducedItems;
-    [topToolbar updateConstraints];
+    [topToolbar updateConstraints];*/
 }
 
 float MP_ANIMATION_DURATION = 0.5f;
