@@ -9,6 +9,7 @@
 #import "DetailViewController.h"
 #import "UserData.h"
 #import "PostHeaderController.h"
+#import "FullPostController.h"
 #import "RSSFeed.h"
 
 #import <Social/Social.h>
@@ -23,8 +24,10 @@
     __weak IBOutlet UIView *m_titleRoot;
     __weak IBOutlet UILabel *m_title;
     __weak IBOutlet UILabel *m_date;
-    PostHeaderController *m_currentPage;
-    PostHeaderController *m_nextPage;
+//    PostHeaderController *m_currentPage;
+//    PostHeaderController *m_nextPage;
+    FullPostController *m_currentPage;
+    FullPostController *m_nextPage;
     UIBarButtonItem *m_btnFavourite;
     int m_itemPos;
     NSArray *m_sourceList;
@@ -32,6 +35,7 @@
     bool m_loading;
     bool m_extendedNavBar;
     int m_scrollOffset;
+    __weak IBOutlet UIView *m_scrollViewContent;
 }
 
 @property (strong, nonatomic) UIPopoverController *masterPopoverController;
@@ -130,9 +134,13 @@
             int numItems = m_sourceList ? m_sourceList.count : 1;
             m_header.contentSize =
                 CGSizeMake(
-                   m_header.frame.size.width * numItems,
-                   m_header.frame.size.height);
+                           m_header.frame.size.width * numItems, 0);//
+//                   m_header.frame.size.height);
             //m_header.contentOffset = CGPointMake(0, 0);
+            
+            CGRect size = m_scrollViewContent.frame;
+            size.size.width =m_header.frame.size.width * numItems;
+            m_scrollViewContent.frame = size;
         }
         }
 
@@ -152,14 +160,22 @@
     
     self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"top_banner_logo"]];
 
-    m_currentPage = [[PostHeaderController alloc] initWithNibName:@"PostHeader" bundle:nil];
-	m_nextPage = [[PostHeaderController alloc] initWithNibName:@"PostHeader" bundle:nil];
-        
+//    m_currentPage = [[PostHeaderController alloc] initWithNibName:@"PostHeader" bundle:nil];
+//	m_nextPage = [[PostHeaderController alloc] initWithNibName:@"PostHeader" bundle:nil];
+    m_currentPage = [[FullPostController alloc] initWithNibName:@"FullPost" bundle:nil];
+	m_nextPage = [[FullPostController alloc] initWithNibName:@"FullPost" bundle:nil];
+    
     m_btnFavourite = self.btnFavourite;
 
 	[m_header addSubview:m_currentPage.view];
 	[m_header addSubview:m_nextPage.view];
+/*    UIView *contentView = [[UIView alloc] initWithFrame:CGRectMake(0,0,20000,100)];
+	[m_header addSubview:contentView];
     
+    m_header.translatesAutoresizingMaskIntoConstraints = TRUE;
+    m_currentPage.view.translatesAutoresizingMaskIntoConstraints = TRUE;
+    m_nextPage.view.translatesAutoresizingMaskIntoConstraints = TRUE;
+*/
     [_webView setDelegate:self];
     
     [self configureView:true];
@@ -173,6 +189,8 @@
     {
         m_header.contentOffset = CGPointMake(m_header.frame.size.width*m_itemPos, 0);
     }
+    
+    [self enableExtendedNavigationBar:true];
     
     m_toolbarOffset = 0;
     m_scrollOffset = 0;
@@ -190,6 +208,21 @@
         headerBottom += m_scrollOffset;
     }
     [[self.webView scrollView] setContentInset:UIEdgeInsetsMake(headerBottom, 0, 0, 0)];
+    
+    
+    CGSize contentSize = m_header.contentSize;
+    CGPoint contentOffset = m_header.contentOffset;
+    UIEdgeInsets contentInset = m_header.contentInset;
+    CGRect headerFrame = m_header.frame;
+    CGRect curFrame = m_currentPage.view.frame;
+    CGRect nextFrame = m_nextPage.view.frame;
+    
+    if (m_header)
+    {
+        int numItems = m_sourceList ? m_sourceList.count : 1;
+        m_header.contentSize = CGSizeMake(m_header.frame.size.width * numItems, 0);
+    }
+
 }
 
 -(BOOL) navigationShouldPopOnBackButton
@@ -207,7 +240,7 @@
 
 - (void) webViewDidFinishLoad:(UIWebView *)webView
 {
-    [UIView animateWithDuration:0.5f animations:^{[_webView setAlpha:1.0f]; [m_currentPage.blurredImage setAlpha:0.0f];}];
+//    [UIView animateWithDuration:0.5f animations:^{[_webView setAlpha:1.0f]; [m_currentPage.blurredImage setAlpha:0.0f];}];
     m_loading = false;
 }
 
@@ -274,7 +307,7 @@
 }
 
 
-- (void)applyNewIndex:(NSInteger)newIndex pageController:(PostHeaderController *)pageController
+- (void)applyNewIndex:(NSInteger)newIndex pageController:(FullPostController *)pageController
 {
 	NSInteger pageCount = m_sourceList ? m_sourceList.count : 1;
 	BOOL outOfBounds = newIndex >= pageCount || newIndex < 0;
@@ -350,22 +383,22 @@
 // called by our ImageDownloader when an icon is ready to be displayed
 - (void)appImageDidLoad:(IconDownloader *)iconDownloader
 {
-    if (iconDownloader != nil)
+/*    if (iconDownloader != nil)
     {
         CRSSItem *featureNext = m_sourceList && (m_nextPage.pageIndex < m_sourceList.count) ? m_sourceList[m_nextPage.pageIndex] : _detailItem;
         CRSSItem *featureCurrent = m_sourceList && (m_nextPage.pageIndex < m_sourceList.count) ? m_sourceList[m_currentPage.pageIndex] : _detailItem;
         UIImage *newImage = iconDownloader.appRecord.appIcon;
         if (featureNext.postID == iconDownloader.postID)
         {
-            m_nextPage.imageView.image = newImage;
+//            m_nextPage.imageView.image = newImage;
             m_nextPage.pageIndex = m_nextPage.pageIndex;
         }
         if (featureCurrent.postID == iconDownloader.postID)
         {
-            m_currentPage.imageView.image = newImage;
+//            m_currentPage.imageView.image = newImage;
             m_currentPage.pageIndex = m_currentPage.pageIndex;
         }
-    }
+    }*/
 }
 
 
@@ -375,6 +408,13 @@
     {
     CGFloat pageWidth = m_header.frame.size.width;
     float fractionalPage = m_header.contentOffset.x / pageWidth;
+        
+    CGSize contentSize = m_header.contentSize;
+        CGPoint contentOffset = m_header.contentOffset;
+        UIEdgeInsets contentInset = m_header.contentInset;
+        CGRect headerFrame = m_header.frame;
+        CGRect curFrame = m_currentPage.view.frame;
+        CGRect nextFrame = m_nextPage.view.frame;
 	
 	NSInteger lowerNumber = floor(fractionalPage);
 	NSInteger upperNumber = lowerNumber + 1;
@@ -424,11 +464,11 @@
             nextAlpha = MIN(pageFract * 2.0f, 1.0f);
             curAlpha = MIN((1.0f-pageFract) * 2.0f, 1.0f);
         }
-        if (!m_loading)
+//        if (!m_loading)
         {
-            [self.webView setAlpha:pageAlpha];
-            [m_currentPage.blurredImage setAlpha:curAlpha];
-            [m_nextPage.blurredImage setAlpha:nextAlpha];
+//            [self.webView setAlpha:pageAlpha];
+            [m_currentPage setAlpha:curAlpha];
+            [m_nextPage setAlpha:nextAlpha];
         }
         
         if (isPrev && (pageFract > 0.6f))
@@ -471,7 +511,7 @@
         tbFrame.origin.y = -senderOffset + titleFrame.size.height;
         [m_toolbar setFrame:tbFrame];
         
-        [self enableExtendedNavigationBar:(senderOffset > 0)];
+//        [self enableExtendedNavigationBar:(senderOffset > 0)];
     }
 }
 
@@ -553,7 +593,7 @@
     
 	if (m_currentPage.pageIndex != nearestNumber)
 	{
-		PostHeaderController *swapController = m_currentPage;
+		FullPostController *swapController = m_currentPage;
 		m_currentPage = m_nextPage;
 		m_nextPage = swapController;
 	}

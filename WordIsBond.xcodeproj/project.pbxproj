@@ -145,6 +145,8 @@
 		0ED70D76184D0AE500B24A7C /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0ED70D75184D0AE500B24A7C /* Social.framework */; };
 		0ED77FC317DB855C001923B2 /* Plus_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 0ED77FC217DB855C001923B2 /* Plus_button.png */; };
 		0EE620D417EB89B000D11B3B /* FeatureController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EE620D317EB89B000D11B3B /* FeatureController.m */; };
+		0EE820A318C24905005B98BC /* FullPost.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0EE820A218C24905005B98BC /* FullPost.xib */; };
+		0EE820A618C25942005B98BC /* FullPostController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EE820A518C25942005B98BC /* FullPostController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -325,6 +327,9 @@
 		0ED77FC217DB855C001923B2 /* Plus_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Plus_button.png; sourceTree = "<group>"; };
 		0EE620D217EB89B000D11B3B /* FeatureController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeatureController.h; sourceTree = "<group>"; };
 		0EE620D317EB89B000D11B3B /* FeatureController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeatureController.m; sourceTree = "<group>"; };
+		0EE820A218C24905005B98BC /* FullPost.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FullPost.xib; sourceTree = "<group>"; };
+		0EE820A418C25942005B98BC /* FullPostController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FullPostController.h; sourceTree = "<group>"; };
+		0EE820A518C25942005B98BC /* FullPostController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FullPostController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -394,6 +399,8 @@
 		0E98F6231706E30F006E9857 /* testapp */ = {
 			isa = PBXGroup;
 			children = (
+				0EE820A418C25942005B98BC /* FullPostController.h */,
+				0EE820A518C25942005B98BC /* FullPostController.m */,
 				0ED4E2D9189BDF53001EF0B7 /* MediaTrackController.h */,
 				0ED4E2DA189BDF53001EF0B7 /* MediaTrackController.m */,
 				0ECF92E018685AAF00BA91A5 /* UIViewController+BackButtonHandler.h */,
@@ -453,6 +460,7 @@
 				0ED4E2D7189BAF6C001EF0B7 /* MediaPlayerHeader.xib */,
 				0EA47B64189E8A6000606EA4 /* PostCell.h */,
 				0EA47B65189E8A6000606EA4 /* PostCell.m */,
+				0EE820A218C24905005B98BC /* FullPost.xib */,
 			);
 			path = testapp;
 			sourceTree = "<group>";
@@ -687,6 +695,7 @@
 				0E34395418AD325200677775 /* feature_thumb_hl_tab.png in Resources */,
 				0EAAF0B818577C750090037A /* post_drag.png in Resources */,
 				0EAAF0B5185749400090037A /* WIB_BG.png in Resources */,
+				0EE820A318C24905005B98BC /* FullPost.xib in Resources */,
 				0E033052181D22E40047BA11 /* icon_120.png in Resources */,
 				0E5D2CA2182E53CB0036870A /* streamingOn.png in Resources */,
 				0EA8512118B528140026A4FF /* goto_post_off@2x.png in Resources */,
@@ -803,6 +812,7 @@
 				0ED1D2CE17BFED3C006FC6D4 /* FeatureViewController.m in Sources */,
 				0ED1D2CF17BFED3C006FC6D4 /* IconDownloader.m in Sources */,
 				0ED1D2D017BFED3C006FC6D4 /* ItemCell.m in Sources */,
+				0EE820A618C25942005B98BC /* FullPostController.m in Sources */,
 				0EBAC3DB17FF548700DCD6A5 /* ViewControllerMenu.m in Sources */,
 				0ED1D2D717BFED4E006FC6D4 /* RSSFeed.m in Sources */,
 				0ED1D2D817BFED4E006FC6D4 /* RSSParser.m in Sources */,

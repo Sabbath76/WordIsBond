@@ -682,122 +682,24 @@
         <!--Detail View Controller - Detail-->
         <scene sceneID="24">
             <objects>
-                <viewController title="Detail" extendedLayoutIncludesOpaqueBars="YES" modalTransitionStyle="flipHorizontal" id="21" customClass="DetailViewController" sceneMemberID="viewController">
+                <viewController autoresizesArchivedViewToFullSize="NO" title="Detail" extendedLayoutIncludesOpaqueBars="YES" modalTransitionStyle="flipHorizontal" id="21" customClass="DetailViewController" sceneMemberID="viewController">
                     <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="Dj9-ir-Ee6"/>
-                        <viewControllerLayoutGuide type="bottom" id="g61-u0-6qC"/>
+                        <viewControllerLayoutGuide type="top" id="MaS-lV-Ppo"/>
+                        <viewControllerLayoutGuide type="bottom" id="M9s-F2-GeP"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="22">
+                    <view key="view" contentMode="scaleToFill" id="pKs-kg-7QB">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="443"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="WIB_BG_white.png" translatesAutoresizingMaskIntoConstraints="NO" id="MGR-5P-W9r">
-                                <rect key="frame" x="0.0" y="44" width="320" height="399"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            </imageView>
-                            <webView opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" scalesPageToFit="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9r4-Y0-Dey">
-                                <rect key="frame" x="0.0" y="44" width="320" height="399"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                <color key="tintColor" red="0.71139588649999996" green="0.37001147490000003" blue="0.22882847670000001" alpha="1" colorSpace="calibratedRGB"/>
-                                <dataDetectorType key="dataDetectorTypes" phoneNumber="YES" link="YES" address="YES" calendarEvent="YES"/>
-                            </webView>
-                            <scrollView clipsSubviews="YES" clearsContextBeforeDrawing="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cHb-ex-rrt">
-                                <rect key="frame" x="0.0" y="44" width="320" height="150"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="150" id="iij-uc-HIw"/>
-                                </constraints>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" pagingEnabled="YES" translatesAutoresizingMaskIntoConstraints="NO" id="shb-TD-ztL">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="443"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <connections>
-                                    <outlet property="delegate" destination="21" id="ybH-iq-L1c"/>
+                                    <outlet property="delegate" destination="21" id="fZS-b4-gcv"/>
                                 </connections>
                             </scrollView>
-                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" barStyle="black" translatesAutoresizingMaskIntoConstraints="NO" id="Xk1-jC-1Oh">
-                                <rect key="frame" x="0.0" y="194" width="320" height="44"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="44" id="mU7-kl-Zzm"/>
-                                </constraints>
-                                <items>
-                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="M29-Ma-SvS"/>
-                                    <barButtonItem image="icon_comments.png" style="plain" id="nVd-rR-3kr">
-                                        <connections>
-                                            <action selector="onComment:" destination="21" id="dcZ-uQ-Rym"/>
-                                        </connections>
-                                    </barButtonItem>
-                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="ERz-lR-X94"/>
-                                    <barButtonItem image="facebook_off.png" id="LTx-tC-5Ou">
-                                        <connections>
-                                            <action selector="onFacebook:" destination="21" id="1wF-3A-CTH"/>
-                                        </connections>
-                                    </barButtonItem>
-                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="92I-cB-RLr"/>
-                                    <barButtonItem image="twitter_off.png" id="Rqg-8R-nq8">
-                                        <connections>
-                                            <action selector="onTweet:" destination="21" id="FmG-j5-BaI"/>
-                                        </connections>
-                                    </barButtonItem>
-                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="MQM-4M-gDD"/>
-                                </items>
-                            </toolbar>
-                            <view alpha="0.5" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PLe-zt-51U">
-                                <rect key="frame" x="0.0" y="174" width="320" height="20"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <subviews>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ciI-mz-KrM">
-                                        <rect key="frame" x="10" y="0.0" width="233" height="20"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="233" id="1hB-0G-RFP"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Date" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zif-WM-L45">
-                                        <rect key="frame" x="243" y="0.0" width="70" height="20"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
-                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstItem="ciI-mz-KrM" firstAttribute="leading" secondItem="PLe-zt-51U" secondAttribute="leading" constant="10" id="A8W-Tv-wpS"/>
-                                    <constraint firstAttribute="height" constant="20" id="ROA-uZ-53c"/>
-                                    <constraint firstItem="zif-WM-L45" firstAttribute="top" secondItem="PLe-zt-51U" secondAttribute="top" id="XVX-Ov-ghy"/>
-                                    <constraint firstAttribute="trailing" secondItem="zif-WM-L45" secondAttribute="trailing" constant="7" id="aF2-RP-dkB"/>
-                                    <constraint firstItem="zif-WM-L45" firstAttribute="leading" secondItem="ciI-mz-KrM" secondAttribute="trailing" id="hfv-ua-5cc"/>
-                                    <constraint firstAttribute="bottom" secondItem="ciI-mz-KrM" secondAttribute="bottom" id="pjj-Pu-fWz"/>
-                                    <constraint firstAttribute="bottom" secondItem="zif-WM-L45" secondAttribute="bottom" id="ylP-PT-dms"/>
-                                    <constraint firstItem="ciI-mz-KrM" firstAttribute="top" secondItem="PLe-zt-51U" secondAttribute="top" id="ztN-cW-oog"/>
-                                </constraints>
-                            </view>
                         </subviews>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                        <gestureRecognizers/>
-                        <constraints>
-                            <constraint firstItem="9r4-Y0-Dey" firstAttribute="top" secondItem="Dj9-ir-Ee6" secondAttribute="bottom" id="186-kh-pQ1"/>
-                            <constraint firstItem="cHb-ex-rrt" firstAttribute="top" secondItem="Dj9-ir-Ee6" secondAttribute="bottom" id="7Cr-xp-pH0"/>
-                            <constraint firstItem="Xk1-jC-1Oh" firstAttribute="leading" secondItem="cHb-ex-rrt" secondAttribute="leading" id="ALq-vl-Gn6"/>
-                            <constraint firstItem="MGR-5P-W9r" firstAttribute="leading" secondItem="22" secondAttribute="leading" id="BPa-ef-HvW"/>
-                            <constraint firstItem="g61-u0-6qC" firstAttribute="top" secondItem="MGR-5P-W9r" secondAttribute="bottom" id="FlG-Si-Q4Z"/>
-                            <constraint firstItem="cHb-ex-rrt" firstAttribute="trailing" secondItem="Xk1-jC-1Oh" secondAttribute="trailing" id="Roi-oh-785"/>
-                            <constraint firstItem="cHb-ex-rrt" firstAttribute="trailing" secondItem="9r4-Y0-Dey" secondAttribute="trailing" id="YH5-41-ZcW"/>
-                            <constraint firstItem="MGR-5P-W9r" firstAttribute="top" secondItem="Dj9-ir-Ee6" secondAttribute="bottom" id="adb-Lv-x9V"/>
-                            <constraint firstAttribute="bottom" secondItem="9r4-Y0-Dey" secondAttribute="bottom" id="bTW-fF-gVX"/>
-                            <constraint firstItem="Xk1-jC-1Oh" firstAttribute="top" secondItem="cHb-ex-rrt" secondAttribute="bottom" id="d3d-oy-GaE"/>
-                            <constraint firstItem="cHb-ex-rrt" firstAttribute="leading" secondItem="PLe-zt-51U" secondAttribute="leading" id="fQm-O6-9Mw"/>
-                            <constraint firstAttribute="trailing" secondItem="9r4-Y0-Dey" secondAttribute="trailing" id="jWP-dZ-0ld"/>
-                            <constraint firstAttribute="trailing" secondItem="MGR-5P-W9r" secondAttribute="trailing" id="pZq-bq-wUT"/>
-                            <constraint firstItem="Xk1-jC-1Oh" firstAttribute="top" secondItem="PLe-zt-51U" secondAttribute="bottom" id="smY-Y3-z1D"/>
-                            <constraint firstItem="cHb-ex-rrt" firstAttribute="leading" secondItem="9r4-Y0-Dey" secondAttribute="leading" id="wkJ-eC-Exv"/>
-                            <constraint firstItem="9r4-Y0-Dey" firstAttribute="leading" secondItem="22" secondAttribute="leading" id="xFc-FA-aMh"/>
-                            <constraint firstItem="cHb-ex-rrt" firstAttribute="trailing" secondItem="PLe-zt-51U" secondAttribute="trailing" id="zef-5b-jcS"/>
-                        </constraints>
-                        <connections>
-                            <outletCollection property="gestureRecognizers" destination="gC8-ro-B6k" appends="YES" id="4wj-af-K5k"/>
-                        </connections>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" title="Title" id="XNB-2V-5Fb">
@@ -811,12 +713,7 @@
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="btnFavourite" destination="ebI-g6-Xfx" id="9G9-G4-8AT"/>
-                        <outlet property="m_date" destination="zif-WM-L45" id="Vd2-Wf-09H"/>
-                        <outlet property="m_header" destination="cHb-ex-rrt" id="xMf-Dd-Ttr"/>
-                        <outlet property="m_title" destination="ciI-mz-KrM" id="hu5-d5-h8e"/>
-                        <outlet property="m_titleRoot" destination="PLe-zt-51U" id="jg2-7A-Lot"/>
-                        <outlet property="m_toolbar" destination="Xk1-jC-1Oh" id="g2l-BP-7IM"/>
-                        <outlet property="webView" destination="9r4-Y0-Dey" id="LVj-tY-7uu"/>
+                        <outlet property="m_header" destination="shb-TD-ztL" id="ArQ-Mz-X3y"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="23" sceneMemberID="firstResponder"/>
@@ -896,11 +793,11 @@
                                 </connections>
                             </tableView>
                             <toolbar clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bNL-0G-W4C">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="124"/>
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="130"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <gestureRecognizers/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="124" id="7Yc-EV-I57"/>
+                                    <constraint firstAttribute="height" constant="130" id="7Yc-EV-I57"/>
                                 </constraints>
                                 <items>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="GFJ-gs-WrD">
@@ -956,7 +853,7 @@
                                 </connections>
                             </button>
                             <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="MT9-lm-al1">
-                                <rect key="frame" x="48" y="50" width="224" height="34"/>
+                                <rect key="frame" x="48" y="55" width="224" height="34"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="minimumTrackTintColor" red="0.71139588649999996" green="0.37001147490000003" blue="0.22882847670000001" alpha="1" colorSpace="calibratedRGB"/>
                                 <connections>
@@ -964,21 +861,21 @@
                                 </connections>
                             </slider>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Curr" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HE9-Bb-YaN">
-                                <rect key="frame" x="0.0" y="55" width="42" height="21"/>
+                                <rect key="frame" x="0.0" y="60" width="42" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Next" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6xI-9D-Wag">
-                                <rect key="frame" x="278" y="55" width="42" height="21"/>
+                                <rect key="frame" x="278" y="60" width="42" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <scrollView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" pagingEnabled="YES" translatesAutoresizingMaskIntoConstraints="NO" id="36c-M3-I5P">
-                                <rect key="frame" x="0.0" y="3" width="284" height="42"/>
+                                <rect key="frame" x="0.0" y="3" width="284" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <connections>
@@ -995,7 +892,7 @@
                         <gestureRecognizers/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="bNL-0G-W4C" secondAttribute="trailing" id="5MM-k7-3YY"/>
-                            <constraint firstItem="h2c-E8-Tha" firstAttribute="top" secondItem="bNL-0G-W4C" secondAttribute="bottom" constant="-124" id="68L-MB-xum"/>
+                            <constraint firstItem="h2c-E8-Tha" firstAttribute="top" secondItem="bNL-0G-W4C" secondAttribute="bottom" constant="-130" id="68L-MB-xum"/>
                             <constraint firstItem="bNL-0G-W4C" firstAttribute="leading" secondItem="5m5-aF-d3p" secondAttribute="leading" id="km4-N0-6f2"/>
                         </constraints>
                         <connections>
@@ -1206,12 +1103,10 @@
     <resources>
         <image name="Default.png" width="320" height="480"/>
         <image name="FastForward.png" width="40" height="39"/>
-        <image name="WIB_BG_white.png" width="320" height="480"/>
         <image name="facebook_off.png" width="32" height="32"/>
         <image name="feature_thumb_hl.png" width="63" height="63"/>
         <image name="feature_thumb_hl_tab.png" width="63" height="2"/>
         <image name="goto_post_off.png" width="13" height="21"/>
-        <image name="icon_comments.png" width="33" height="27"/>
         <image name="icon_fav.png" width="22" height="21"/>
         <image name="icon_opt.png" width="19" height="17"/>
         <image name="play_icon.png" width="65" height="68"/>

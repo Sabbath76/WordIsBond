@@ -69,7 +69,7 @@
 
 @synthesize currentImage;
 
-float bottomOffset  = 50;
+float bottomOffset  = 56;
 float midOffset     = 149;
 float topOffset     = 20;
 
@@ -161,7 +161,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
             
             if (currentSeconds != 0.0f)
             {
-                double normalizedTime = currentSeconds / currentSeconds;
+                double normalizedTime = currentSeconds / durationSeconds;
                 [sself->m_trackProgress setProgress:normalizedTime];
             }
 /*            if (CMTimeCompare(endTime, kCMTimeZero) != 0)
@@ -264,7 +264,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
     [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateNormal];
     [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateHighlighted];
 
-    [self.tableView setContentInset:UIEdgeInsetsMake(125, 0, 0, 0)];
+    [self.tableView setContentInset:UIEdgeInsetsMake(130, 0, 0, 0)];
     
 //    self->topToolbar.layer.shadowOffset = CGSizeMake(0, -15);
 //    self->topToolbar.layer.shadowRadius = 5;
