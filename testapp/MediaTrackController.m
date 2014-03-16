@@ -30,7 +30,8 @@
 
 - (void)appImageDidLoad:(IconDownloader *)iconDownloader
 {
-    if (pageIndex == [iconDownloader postID])
+    TrackInfo *trackInfo = m_sourceArray[pageIndex];
+    if ([trackInfo->pItem postID] == [iconDownloader postID])
     {
         UIImage *iconImage = [[iconDownloader appRecord] iconImage];
         [m_trackImage setImage:iconImage forState:UIControlStateNormal];

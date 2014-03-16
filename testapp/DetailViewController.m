@@ -210,13 +210,13 @@
     [[self.webView scrollView] setContentInset:UIEdgeInsetsMake(headerBottom, 0, 0, 0)];
     
     
-    CGSize contentSize = m_header.contentSize;
+/*    CGSize contentSize = m_header.contentSize;
     CGPoint contentOffset = m_header.contentOffset;
     UIEdgeInsets contentInset = m_header.contentInset;
     CGRect headerFrame = m_header.frame;
     CGRect curFrame = m_currentPage.view.frame;
     CGRect nextFrame = m_nextPage.view.frame;
-    
+*/
     if (m_header)
     {
         int numItems = m_sourceList ? m_sourceList.count : 1;
@@ -343,7 +343,7 @@
             UIBarButtonItem *commentButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_comments"] style:UIBarButtonItemStylePlain target:self action:@selector(onComment:)];
             UIBarButtonItem *fbButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"facebook_off"] style:UIBarButtonItemStylePlain target:self action:@selector(onFacebook:)];
             UIBarButtonItem *twButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"twitter_off"] style:UIBarButtonItemStylePlain target:self action:@selector(onTweet:)];
-            UIBarButtonItem *favButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_fav"] style:UIBarButtonItemStylePlain target:self action:@selector(onFavourite:)];
+            UIBarButtonItem *favButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_favourite_off"] style:UIBarButtonItemStylePlain target:self action:@selector(onFavourite:)];
             [commentButton setTintColor:[UIColor whiteColor]];
             [fbButton setTintColor:[UIColor whiteColor]];
             [twButton setTintColor:[UIColor whiteColor]];
@@ -409,13 +409,13 @@
     CGFloat pageWidth = m_header.frame.size.width;
     float fractionalPage = m_header.contentOffset.x / pageWidth;
         
-    CGSize contentSize = m_header.contentSize;
+/*    CGSize contentSize = m_header.contentSize;
         CGPoint contentOffset = m_header.contentOffset;
         UIEdgeInsets contentInset = m_header.contentInset;
         CGRect headerFrame = m_header.frame;
         CGRect curFrame = m_currentPage.view.frame;
         CGRect nextFrame = m_nextPage.view.frame;
-	
+*/
 	NSInteger lowerNumber = floor(fractionalPage);
 	NSInteger upperNumber = lowerNumber + 1;
 	

@@ -181,6 +181,8 @@ float BLUR_IMAGE_RANGE = 100.0f;
     {
         topOffset = 60;
     }
+    
+    [self prepareMusic];
 
 //    CGRect imageFrame = currentImage.frame;
 //    CGRect toolFrame = m_playerDock.frame;
@@ -315,6 +317,8 @@ float BLUR_IMAGE_RANGE = 100.0f;
 //    CGRect rect = self.view.superview.frame;
 //    rect.origin.y = rect.size.height - 39;
 //    self.view.superview.frame = rect;
+    
+    [self receiveNewRSSFeed:nil];
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
@@ -799,7 +803,13 @@ float BLUR_IMAGE_RANGE = 100.0f;
                 [m_player pause];
             }
 
-            [btnPlay setTintColor:m_isPlaying?[self getActiveColour]:[UIColor lightGrayColor]];
+            NSString *imageName = m_isPlaying ? @"player_pause_on" : @"player_play_off";
+            UIImage *btnImage =[UIImage imageNamed:imageName];
+            [btnPlay setImage:btnImage forState:UIControlStateNormal];
+
+//            [btnPlay setTintColor:m_isPlaying?[self getActiveColour]:[UIColor lightGrayColor]];
+//            UIBarButtonSystemItem *item = (UIBarButtonSystemItem *)btnPlay2;
+            [btnPlay2 setImage:btnImage];
             [btnPlay2 setTintColor:m_isPlaying?[self getActiveColour]:[UIColor lightGrayColor]];
             [self updateTrackCell:m_displayedTrack];
         }
@@ -1017,7 +1027,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
 
 - (UIColor *) getActiveColour
 {
-    return [UIColor colorWithRed:1.0f green:0.5f blue:0.3f alpha:1.0f];
+    return [UIColor colorWithRed:160.0f/256.0f green:72.0f/256.0f blue:51.0f/256.0f alpha:1.0f];
 }
 
 - (UIColor *)getTextColourForTrack:(int) trackID

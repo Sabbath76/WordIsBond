@@ -95,9 +95,14 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
     return retString;
 }
 
+static NSDateFormatter *sDateFormatter = nil;
 - (NSString *) convertDate:(NSString *)initialDate
 {
-    NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
+    if (sDateFormatter == nil)
+    {
+        sDateFormatter = [[NSDateFormatter alloc] init];
+    }
+    NSDateFormatter *formatter = sDateFormatter;
     //    [formatter setDateStyle:NSDateFormatterShortStyle];
     //    [formatter setTimeStyle:NSDateFormatterShortStyle];
     //    [formatter setDateFormat:@"yyyy-MM-dd HH:MM:SS"];
@@ -177,7 +182,7 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
     postURL = [post objectForKey:@"url"];
     
     NSArray *attachments = [post objectForKey:@"attachments"];
-    NSString *fullContent = @"";
+//    NSString *fullContent = @"";
     for (NSDictionary *attachment in attachments)
     {
         NSString *mimeType = [attachment objectForKey:@"mime_type"];
@@ -227,14 +232,14 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
 //    NSNumber *objHeight = [image objectForKey:@"height"];
     imageURLString = [image objectForKey:@"url"];
 //    float scale = 1.0f;///(width / objWidth.floatValue);
-    NSString *imgHTML = [NSString stringWithFormat:@"<div><a><img src=\"%@\" width='100%%'/></a></div>", imageURLString];
+/*    NSString *imgHTML = [NSString stringWithFormat:@"<div><a><img src=\"%@\" width='100%%'/></a></div>", imageURLString];
 //    NSString *imgHTML = [NSString stringWithFormat:@"<div><a><img src=\"%@\" width=\"%d\" height=\"%d\"/></a></div>", imageURLString, (int)(objWidth.intValue*scale), (int)(objHeight.intValue*scale)];
     fullContent = [fullContent stringByAppendingString:imgHTML];
-    
-    NSString *blurbFormat = @"<head><style>a:link {color:#844434;text-decoration:underline;}</style></head><meta name='viewport' content='width=device-width; initial-scale=1, maximum-scale=1'><div style='text-align:justify; font-size:12px;font-family:HelveticaNeue-CondensedBold;color:#FFFF;'>%@</div>";
+*/
+    NSString *blurbFormat = @"<head><style>a:link {color:#844434;text-decoration:underline;}</style></head><meta name='viewport' content='width=device-width; initial-scale=1, maximum-scale=1'><div style='text-align:justify; font-size:14px;font-family:HelveticaNeue-CondensedBold;color:#FFFF;'>%@</div>";
     blurb = [NSString stringWithFormat:blurbFormat, description];
     
-    NSString *postFormat = @"<meta name='viewport' content='width=device-width; initial-scale=1, maximum-scale=1'>\
+/*    NSString *postFormat = @"<meta name='viewport' content='width=device-width; initial-scale=1, maximum-scale=1'>\
     <div style='font-size:15px;font-family:HelveticaNeue-CondensedBold;color:#FFFF;'><h1>%@</h1></div>\
     <p><div style='font-size:8px;float:left'>%@</div> <div style='font-size:8px;float:right'>%@</div></p><br/>\
     %@\
@@ -244,7 +249,8 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
 //    <p><div style='font-size:30px;float:left'>%@</div> <div style='font-size:30px;float:right'>%@</div></p><br/>\
 //    %@\
 //    <div style='text-align:justify; font-size:30px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>";
-    description = [NSString stringWithFormat:postFormat, title, author, dateString, fullContent, description];
+    description = [NSString stringWithFormat:postFormat, title, author, dateString, fullContent, description];*/
+    
     /*
     NSString *disqusBlock = @"<<div id=\"disqus_thread\"></div>\
     <script type=\"text/javascript\">\
@@ -348,7 +354,7 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
 
 - (void) setup
 {
-    imageURLString = [self findProperty:@"img"];
+//    imageURLString = [self findProperty:@"img"];
     
     NSString *media = [self findProperty:@"iframe"];
 

@@ -39,7 +39,7 @@ typedef enum
 
 const int SectionSize[Total_Sections] =
 {
-    30, 210, 80, 40
+    30, 210, 80, 60
 };
 
 const float PAN_CLOSED_X = 0;
@@ -66,16 +66,16 @@ const int ExpandedSectionSize = 120;
     
     int m_currentQuickMenuItem;
     
-    bool m_isLoadingMoreData;
-    
     NSIndexPath *m_expandedIndexPath;
     
     NSIndexPath *m_lastPannedIndexPath;
     float m_lastPannedX;
-    
-    bool m_searchShouldBeginEditing;
-    
+
     float m_slideInitialPos;
+
+    bool m_searchShouldBeginEditing;
+    bool m_isLoadingMoreData;
+    bool m_isInitialising;
 }
 
 
@@ -222,6 +222,7 @@ const int ExpandedSectionSize = 120;
 //Huh?    [self setNeedsStatusBarAppearanceUpdate];
     
     m_isLoadingMoreData = false;
+    m_isInitialising = true;
     
     m_currentQuickMenuItem = -1;
 
@@ -303,11 +304,20 @@ const int ExpandedSectionSize = 120;
     
     
     UIRefreshControl *refresh = [[UIRefreshControl alloc] init];
-    refresh.attributedTitle = [[NSAttributedString alloc] initWithString:@"Pull to Refresh"];
+//    refresh.attributedTitle = [[NSAttributedString alloc] initWithString:@"Pull to Refresh"];
     [refresh setTintColor:[UIColor whiteColor]];
+    UIFont * font = [UIFont fontWithName:@"Helvetica-Light" size:10.0];
+    NSDictionary *attributes = @{NSFontAttributeName:font, NSForegroundColorAttributeName : [UIColor whiteColor]};
+    refresh.attributedTitle = [[NSAttributedString alloc] initWithString:@"Get latest posts" attributes:attributes];
 
     [refresh addTarget:self action:@selector(loadNewer) forControlEvents:UIControlEventValueChanged];
     self.refreshControl = refresh;
+    self.refreshControl.layer.zPosition = self.tableView.backgroundView.layer.zPosition + 1;
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.refreshControl beginRefreshing];
+        [self.refreshControl endRefreshing];
+    });
     
 //    UISwipeGestureRecognizer *swipeRecognizerLeft = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipePost:)];
 //    [swipeRecognizerLeft setDirection:(UISwipeGestureRecognizerDirectionLeft)];
@@ -331,6 +341,9 @@ const int ExpandedSectionSize = 120;
     [self.tableView addGestureRecognizer:lpgr];*/
     
     m_quickMenu = [[[NSBundle mainBundle] loadNibNamed:@"PostQuickMenu" owner:self options:nil] objectAtIndex:0];
+
+    //--- Load the first few items straight away
+    [self loadImagesForOnscreenRows];
 }
 
 - (void) createTopBanner
@@ -523,6 +536,13 @@ const int ExpandedSectionSize = 120;
 
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
 
+}
+
+- (void) viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    m_isInitialising = false;
 }
 
 - (void)didReceiveMemoryWarning
@@ -764,6 +784,12 @@ const int ExpandedSectionSize = 120;
             [cell.miniImage setImage:object.iconImage forState:normal];
 //            cell.miniImage.image = [object requestIcon:self];//object.iconImage;
             cell.options.hidden = !(m_currentQuickMenuItem == indexPath.row);
+
+            //--- When initialising trigger all items to stream in images
+            if (m_isInitialising)
+            {
+                [object requestImage:self];
+            }
 /*
             UILabel *label = (UILabel *)[cell viewWithTag:1];
             label.text = [object title];
@@ -1322,7 +1348,7 @@ const int ExpandedSectionSize = 120;
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    if (_feed.items.count)
+    if (_feed.items.count && !m_isInitialising)
     {
     if ((scrollView.contentOffset.y + scrollView.frame.size.height) >= scrollView.contentSize.height)
     {
