@@ -61,7 +61,9 @@ const NSString *notificationURL = @"http://www.thewordisbond.com/?json=register_
 
 - (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken
 {
-    NSString *host = @"wordisbond.co/wp-content/plugins/push-notifications-ios";
+    NSString *host = @"www.thewordisbond.com/wp-content/plugins/push-notifications-ios";
+//    NSString *host = @"wordisbond.co/wp-content/plugins/push-notifications-ios";
+    //http://www.thewordisbond.com/wp-content/plugins/push-notifications-ios/register_user_device.php
 
 //    http://64.207.153.141/httpdocs/wp-content/plugins/push-notifications-ios/register_user_device.php	NSLog(@"My token is: %@", deviceToken);
     //http://64.207.153.141/wordisbond/wp-content/plugins/push-notifications-ios/register_user_device.php

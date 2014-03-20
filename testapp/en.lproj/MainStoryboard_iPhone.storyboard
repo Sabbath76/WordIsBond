@@ -692,7 +692,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" translatesAutoresizingMaskIntoConstraints="NO" id="shb-TD-ztL">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="443"/>
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="393"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <connections>
                                     <outlet property="delegate" destination="21" id="fZS-b4-gcv"/>
@@ -701,7 +701,7 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="bottom" secondItem="shb-TD-ztL" secondAttribute="bottom" id="13y-OI-1Td"/>
+                            <constraint firstAttribute="bottom" secondItem="shb-TD-ztL" secondAttribute="bottom" constant="50" id="13y-OI-1Td"/>
                             <constraint firstItem="shb-TD-ztL" firstAttribute="leading" secondItem="pKs-kg-7QB" secondAttribute="leading" id="Gl0-uS-K1z"/>
                             <constraint firstAttribute="trailing" secondItem="shb-TD-ztL" secondAttribute="trailing" id="JSQ-sm-sZX"/>
                             <constraint firstItem="shb-TD-ztL" firstAttribute="top" secondItem="pKs-kg-7QB" secondAttribute="top" id="ore-7a-Hwk"/>

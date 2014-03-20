@@ -183,7 +183,7 @@
     self.webView.scrollView.delegate = self;
 //    float headerBottom = m_header.superview.frame.origin.y + m_header.frame.origin.y + m_header.frame.size.height;
     float headerBottom = 150.0f+44.0f;//m_header.frame.size.height + self->m_toolbar.frame.size.height;
-    [[self.webView scrollView] setContentInset:UIEdgeInsetsMake(headerBottom, 0, 0, 0)];
+    [[self.webView scrollView] setContentInset:UIEdgeInsetsMake(headerBottom, 0, -headerBottom, 0)];
     
     if (m_itemPos > 0)
     {
@@ -207,16 +207,15 @@
         m_scrollOffset = self.navigationController.navigationBar.frame.size.height + 20.0f;
         headerBottom += m_scrollOffset;
     }
-    [[self.webView scrollView] setContentInset:UIEdgeInsetsMake(headerBottom, 0, 0, 0)];
+    [[self.webView scrollView] setContentInset:UIEdgeInsetsMake(headerBottom, 0, -headerBottom, 0)];
     
-    
-/*    CGSize contentSize = m_header.contentSize;
+    CGSize contentSize = m_header.contentSize;
     CGPoint contentOffset = m_header.contentOffset;
     UIEdgeInsets contentInset = m_header.contentInset;
     CGRect headerFrame = m_header.frame;
     CGRect curFrame = m_currentPage.view.frame;
     CGRect nextFrame = m_nextPage.view.frame;
-*/
+
     if (m_header)
     {
         int numItems = m_sourceList ? m_sourceList.count : 1;
@@ -317,6 +316,8 @@
 		CGRect pageFrame = pageController.view.frame;
 		pageFrame.origin.y = 0;
 		pageFrame.origin.x = m_header.frame.size.width * newIndex;
+        pageFrame.size.height = m_header.frame.size.height;
+        
 		pageController.view.frame = pageFrame;
         
 	    CRSSItem *rssItem = m_sourceList ? m_sourceList[newIndex] : _detailItem;
