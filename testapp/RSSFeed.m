@@ -402,7 +402,12 @@ I want my mummee
     {
         self.items = sourceItems;
         self.features = sourceFeatures;
-        m_hasSearch = true;
+        m_hasSearch = false;
+        
+        [m_connectionPosts cancel];
+        [m_connectionFeatures cancel];
+        m_connectionPosts = nil;
+        m_connectionFeatures = nil;
 
         reset = true;
 

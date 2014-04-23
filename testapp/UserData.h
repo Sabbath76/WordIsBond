@@ -19,6 +19,8 @@
 - (void)onChanged;
 - (void)save;
 - (void)load;
+- (int)getTargetPost;
+- (void)setTargetPost:(int)postID;
 
 @end
 

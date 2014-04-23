@@ -57,13 +57,21 @@
 	{
         CRSSItem *rssItem = m_sourceArray[pageIndex];
 
+        if ([rssItem requiresDownload])
+        {
+            [rssItem requestFullFeed:self];
+        }
+
         m_webView.scrollView.delegate = self;
 
         m_image.image = [rssItem requestImage:self];
         m_blurredImage.image = [rssItem getBlurredImage];
         m_title.text = rssItem.title;
         m_date.text = rssItem.dateString;
-        m_author.text = [@"By " stringByAppendingString:rssItem.author];
+        if (rssItem.author != nil)
+        {
+            m_author.text = [@"By " stringByAppendingString:rssItem.author];
+        }
         [m_webView loadHTMLString:[rssItem blurb] baseURL:[NSURL URLWithString:[rssItem postURL]]];
         
         m_offset = 80.0f;
@@ -72,6 +80,16 @@
         [[m_webView scrollView] setContentInset:UIEdgeInsetsMake(headerBottom, 0, 0, 0)];
     }
 }
+
+- (void)fullPostDidLoad:(CRSSItem *)post
+{
+    CRSSItem *rssItem = m_sourceArray[pageIndex];
+    if (post.postID == rssItem.postID)
+    {
+        [self setPageIndex:pageIndex];
+    }
+}
+
 
 - (void)updateTextViews:(BOOL)force
 {

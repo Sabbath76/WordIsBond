@@ -91,10 +91,10 @@
 //        self.title = [self.detailItem title];
         
         
-        if ([self.detailItem requiresDownload])
-        {
-            [self.detailItem requestFullFeed:self];
-        }
+//        if ([self.detailItem requiresDownload])
+// {
+//            [self.detailItem requestFullFeed:self];
+//        }
         if (_webView)
         {
 //            NSString *fullString = [NSString stringWithFormat:@"<div style='text-align:justify; font-size:45px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>", [self.detailItem description]];
@@ -345,9 +345,12 @@
             UIBarButtonItem *fbButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"facebook_off"] style:UIBarButtonItemStylePlain target:self action:@selector(onFacebook:)];
             UIBarButtonItem *twButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"twitter_off"] style:UIBarButtonItemStylePlain target:self action:@selector(onTweet:)];
             UIBarButtonItem *favButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_favourite_off"] style:UIBarButtonItemStylePlain target:self action:@selector(onFavourite:)];
-            [commentButton setTintColor:[UIColor whiteColor]];
-            [fbButton setTintColor:[UIColor whiteColor]];
-            [twButton setTintColor:[UIColor whiteColor]];
+            if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1)
+            {
+                [commentButton setTintColor:[UIColor whiteColor]];
+                [fbButton setTintColor:[UIColor whiteColor]];
+                [twButton setTintColor:[UIColor whiteColor]];
+            }
             UIBarButtonItem *flexibleItem1 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
             UIBarButtonItem *flexibleItem2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
             UIBarButtonItem *flexibleItem3 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];

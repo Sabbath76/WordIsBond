@@ -144,6 +144,7 @@
 		0ED1D2D617BFED4E006FC6D4 /* play_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0ED1D2D117BFED4E006FC6D4 /* play_icon.png */; };
 		0ED1D2D717BFED4E006FC6D4 /* RSSFeed.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ED1D2D317BFED4E006FC6D4 /* RSSFeed.m */; };
 		0ED1D2D817BFED4E006FC6D4 /* RSSParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ED1D2D517BFED4E006FC6D4 /* RSSParser.m */; };
+		0ED3AC8918F0132C00A49749 /* icon_favourite_on.png in Resources */ = {isa = PBXBuildFile; fileRef = 0ED3AC8818F0132C00A49749 /* icon_favourite_on.png */; };
 		0ED4E2D8189BAF6C001EF0B7 /* MediaPlayerHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0ED4E2D7189BAF6C001EF0B7 /* MediaPlayerHeader.xib */; };
 		0ED4E2DB189BDF53001EF0B7 /* MediaTrackController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ED4E2DA189BDF53001EF0B7 /* MediaTrackController.m */; };
 		0ED70D76184D0AE500B24A7C /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0ED70D75184D0AE500B24A7C /* Social.framework */; };
@@ -328,6 +329,7 @@
 		0ED1D2D317BFED4E006FC6D4 /* RSSFeed.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RSSFeed.m; sourceTree = "<group>"; };
 		0ED1D2D417BFED4E006FC6D4 /* RSSParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RSSParser.h; sourceTree = "<group>"; };
 		0ED1D2D517BFED4E006FC6D4 /* RSSParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RSSParser.m; sourceTree = "<group>"; };
+		0ED3AC8818F0132C00A49749 /* icon_favourite_on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_favourite_on.png; sourceTree = "<group>"; };
 		0ED4E2D7189BAF6C001EF0B7 /* MediaPlayerHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MediaPlayerHeader.xib; sourceTree = "<group>"; };
 		0ED4E2D9189BDF53001EF0B7 /* MediaTrackController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MediaTrackController.h; sourceTree = "<group>"; };
 		0ED4E2DA189BDF53001EF0B7 /* MediaTrackController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MediaTrackController.m; sourceTree = "<group>"; };
@@ -476,6 +478,7 @@
 		0E98F6241706E30F006E9857 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				0ED3AC8818F0132C00A49749 /* icon_favourite_on.png */,
 				0EC93F7E18D4DD2A00823645 /* player_pause_on.png */,
 				0EC93F7F18D4DD2A00823645 /* player_pause_on@2x.png */,
 				0EA8512A18B54CC40026A4FF /* icon_comments.png */,
@@ -642,6 +645,7 @@
 		0E98F6121706E30F006E9857 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastTestingUpgradeCheck = 0510;
 				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = "Tom Berry";
 				TargetAttributes = {
@@ -689,6 +693,7 @@
 				0EA877D6184A3F7B003A0B82 /* post_thumb_border.png in Resources */,
 				0EB3DE4F180DC83200BABC2A /* user_avatar@2x.png in Resources */,
 				0E033056181D240E0047BA11 /* icon_114.png in Resources */,
+				0ED3AC8918F0132C00A49749 /* icon_favourite_on.png in Resources */,
 				0E0A673417EEF9C400E5918A /* Bond_logo.png in Resources */,
 				0EC93F8118D4DD2A00823645 /* player_pause_on@2x.png in Resources */,
 				0EB691AD18B3E99800FEFC7A /* facebook_off.png in Resources */,

@@ -12,6 +12,7 @@
 @implementation UserData
 {
     id<FavouritesChangedDelegate> m_listener;
+    int m_targetPost;
 }
 
 static UserData *s_userData;
@@ -23,6 +24,7 @@ static UserData *s_userData;
     favourites = [[NSMutableSet alloc] init];
     
     [self load];
+    m_targetPost = -1;
     
     return self;
 }
@@ -84,7 +86,7 @@ static UserData *s_userData;
             NSString *postTitle = [values objectAtIndex:(2*i)+1];
             
             CRSSItem *item = [[CRSSItem alloc] init];
-            item.postID = [postId integerValue];
+            item.postID = [postId intValue];
             item.title = postTitle;
             item.requiresDownload = true;
             
@@ -92,5 +94,16 @@ static UserData *s_userData;
         }
 	}
 }
+
+- (int)getTargetPost
+{
+    return m_targetPost;
+}
+
+- (void)setTargetPost:(int)postID
+{
+    m_targetPost = postID;
+}
+
 
 @end

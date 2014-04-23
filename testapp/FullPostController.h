@@ -14,8 +14,9 @@
 
 #import <UIKit/UIKit.h>
 #import "IconDownloader.h"
+#import "CRSSItem.h"
 
-@interface FullPostController : UIViewController <IconDownloaderDelegate, UIScrollViewDelegate>
+@interface FullPostController : UIViewController <IconDownloaderDelegate, PostRequestDelegate, UIScrollViewDelegate>
 {
 	NSInteger pageIndex;
 	BOOL textViewNeedsUpdate;

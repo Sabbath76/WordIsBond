@@ -13,6 +13,7 @@
 #import "DetailViewController.h"
 #import "FeatureController.h"
 #import <QuartzCore/QuartzCore.h>
+#import "SelectedItem.h"
 
 @implementation FeatureCell
 {
@@ -35,6 +36,11 @@
 
 	[scrollView addSubview:currentPage.view];
 	[scrollView addSubview:nextPage.view];
+    
+    
+    UITapGestureRecognizer *tapRecogniser = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onShowPost:)];
+    [scrollView addGestureRecognizer:tapRecogniser];
+
     
     rssFeed = [RSSFeed getInstance];
     [self layoutIfNeeded];
@@ -144,6 +150,17 @@
 	[self applyNewIndex:1 pageController:nextPage];
 }
 
+-(void)onShowPost:(UITapGestureRecognizer *)gestureRecognizer
+{
+    SelectedItem *item = [SelectedItem alloc];
+    item->isFavourite = false;
+    item->isFeature = true;
+    int curFeature = round(self.scrollView.contentOffset.x / self.scrollView.frame.size.width);
+    
+    CRSSItem *object = rssFeed.features[curFeature];
+    item->item = object;
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"ViewPost" object:item];
+}
 
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(FeatureController *)pageController
 {
@@ -209,7 +226,10 @@
             currentPage.imageView.image = newImage;
         }
         
-        for (int i=0; i<m_thumbnails.count; i++)
+        int maxFeatures = rssFeed.features.count - leftMostFeature;
+        int numImages = MIN(maxFeatures, m_thumbnails.count);
+        
+        for (int i=0; i<numImages; i++)
         {
             CRSSItem *featureThumb = rssFeed.features[leftMostFeature + i];
             

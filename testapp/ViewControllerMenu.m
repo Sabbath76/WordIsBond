@@ -171,6 +171,7 @@
     CRSSItem *item = [favouriteArray objectAtIndex:indexPath.row];
     SelectedItem *selItem = [SelectedItem alloc];
     selItem->isFavourite = true;
+    selItem->isFeature = false;
     selItem->item = item;
 
     [[NSNotificationCenter defaultCenter] postNotificationName:@"ViewPost" object:selItem];

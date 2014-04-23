@@ -14,6 +14,7 @@
     @public
     CRSSItem *item;
     bool isFavourite;
+    bool isFeature;
 }
 
 @end

@@ -173,14 +173,6 @@ float BLUR_IMAGE_RANGE = 100.0f;
         }
     }];
     
-    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1)
-    {
-        topOffset = 20;
-    }
-    else
-    {
-        topOffset = 60;
-    }
     
     [self prepareMusic];
 
@@ -241,6 +233,15 @@ float BLUR_IMAGE_RANGE = 100.0f;
     m_isPlaying = false;
     m_autoPlay = false;
     
+    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1)
+    {
+        topOffset = 20;
+    }
+    else
+    {
+        topOffset = 60;
+    }
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(receiveNewRSSFeed:)
                                                  name:@"NewRSSFeed"
@@ -607,6 +608,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
 
         SelectedItem *item = [SelectedItem alloc];
         item->isFavourite = false;
+        item->isFeature = false;
         TrackInfo *track = m_audioTracks[currentTrack];
         item->item = track->pItem;
         [[NSNotificationCenter defaultCenter] postNotificationName:@"ViewPost" object:item];

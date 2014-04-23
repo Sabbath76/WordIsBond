@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4514" systemVersion="12F45" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="QlP-QW-IWM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5053" systemVersion="12F45" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="QlP-QW-IWM">
     <dependencies>
         <deployment defaultVersion="1552" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3747"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
     </dependencies>
     <scenes>
         <!--Navigation Controller-->
@@ -206,9 +206,6 @@
                                                 <constraint firstAttribute="height" constant="145" id="ndA-hm-55P"/>
                                                 <constraint firstAttribute="width" constant="320" id="rr8-xl-dA6"/>
                                             </constraints>
-                                            <connections>
-                                                <outletCollection property="gestureRecognizers" destination="sZM-YO-sge" appends="YES" id="BNN-Yx-gqM"/>
-                                            </connections>
                                         </scrollView>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kBq-Dq-IJD">
                                             <rect key="frame" x="0.0" y="145" width="320" height="1"/>
@@ -395,9 +392,6 @@
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="73" id="ZDl-V7-L8b"/>
                                             </constraints>
-                                            <connections>
-                                                <outletCollection property="gestureRecognizers" destination="jeH-zy-gpi" appends="YES" id="BhP-kD-RX7"/>
-                                            </connections>
                                         </imageView>
                                         <imageView hidden="YES" userInteractionEnabled="NO" tag="4" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="TSI-bh-WYZ">
                                             <rect key="frame" x="5" y="10" width="60" height="60"/>
@@ -659,21 +653,9 @@
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="17" sceneMemberID="firstResponder"/>
-                <tapGestureRecognizer id="sZM-YO-sge">
+                <tapGestureRecognizer enabled="NO" id="sZM-YO-sge">
                     <connections>
                         <segue destination="21" kind="push" identifier="showDetailFeature" id="WKg-Ly-dlY"/>
-                    </connections>
-                </tapGestureRecognizer>
-                <swipeGestureRecognizer enabled="NO" direction="right" id="6Rp-tk-ahb"/>
-                <panGestureRecognizer enabled="NO" minimumNumberOfTouches="1" id="fhP-2i-CQu">
-                    <connections>
-                        <action selector="onPan:" destination="12" id="1GY-KY-zEP"/>
-                        <outlet property="delegate" destination="12" id="S9p-Fu-aCf"/>
-                    </connections>
-                </panGestureRecognizer>
-                <tapGestureRecognizer enabled="NO" id="jeH-zy-gpi">
-                    <connections>
-                        <segue destination="21" kind="push" identifier="showDetail" id="d3o-A1-hD2"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>
@@ -688,11 +670,11 @@
                         <viewControllerLayoutGuide type="bottom" id="M9s-F2-GeP"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="pKs-kg-7QB">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="443"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" translatesAutoresizingMaskIntoConstraints="NO" id="shb-TD-ztL">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="393"/>
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="430"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <connections>
                                     <outlet property="delegate" destination="21" id="fZS-b4-gcv"/>
@@ -801,6 +783,7 @@
                             <toolbar clearsContextBeforeDrawing="NO" contentMode="bottom" translatesAutoresizingMaskIntoConstraints="NO" id="bNL-0G-W4C">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="130"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <color key="backgroundColor" red="0.9108690693" green="0.90821738139999997" blue="0.9110116332" alpha="1" colorSpace="calibratedRGB"/>
                                 <gestureRecognizers/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="130" id="7Yc-EV-I57"/>
@@ -813,7 +796,7 @@
                                         <inset key="imageInsets" minX="0.0" minY="80" maxX="0.0" maxY="0.0"/>
                                     </barButtonItem>
                                     <barButtonItem style="plain" systemItem="rewind" id="brj-QT-HfJ">
-                                        <inset key="imageInsets" minX="0.0" minY="80" maxX="0.0" maxY="0.0"/>
+                                        <inset key="imageInsets" minX="0.0" minY="100" maxX="0.0" maxY="20"/>
                                         <color key="tintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <connections>
                                             <action selector="onPrev:" destination="jaJ-hr-n2n" id="61t-h5-c7C"/>
@@ -823,7 +806,7 @@
                                         <inset key="imageInsets" minX="0.0" minY="80" maxX="0.0" maxY="0.0"/>
                                     </barButtonItem>
                                     <barButtonItem image="player_play_off.png" style="plain" id="AlU-MZ-eAy">
-                                        <inset key="imageInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="-80"/>
+                                        <inset key="imageInsets" minX="0.0" minY="100" maxX="0.0" maxY="20"/>
                                         <color key="tintColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                         <connections>
                                             <action selector="togglePlay:" destination="jaJ-hr-n2n" id="LQo-yk-EU4"/>
@@ -833,7 +816,7 @@
                                         <inset key="imageInsets" minX="0.0" minY="80" maxX="0.0" maxY="0.0"/>
                                     </barButtonItem>
                                     <barButtonItem style="plain" systemItem="fastForward" id="vjc-4I-jym">
-                                        <inset key="imageInsets" minX="0.0" minY="80" maxX="0.0" maxY="0.0"/>
+                                        <inset key="imageInsets" minX="0.0" minY="100" maxX="0.0" maxY="20"/>
                                         <color key="tintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <connections>
                                             <action selector="onNext:" destination="jaJ-hr-n2n" id="Qai-6q-7wg"/>
@@ -846,6 +829,7 @@
                                         <inset key="imageInsets" minX="0.0" minY="80" maxX="0.0" maxY="0.0"/>
                                     </barButtonItem>
                                 </items>
+                                <color key="tintColor" red="0.9108690693" green="0.90821738139999997" blue="0.9110116332" alpha="1" colorSpace="calibratedRGB"/>
                             </toolbar>
                             <button opaque="NO" contentMode="center" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a2O-Re-w16">
                                 <rect key="frame" x="285" y="5" width="35" height="40"/>
@@ -859,7 +843,7 @@
                                 </connections>
                             </button>
                             <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="MT9-lm-al1">
-                                <rect key="frame" x="48" y="55" width="224" height="34"/>
+                                <rect key="frame" x="50" y="55" width="220" height="34"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="minimumTrackTintColor" red="0.71139588649999996" green="0.37001147490000003" blue="0.22882847670000001" alpha="1" colorSpace="calibratedRGB"/>
                                 <connections>
@@ -867,23 +851,26 @@
                                 </connections>
                             </slider>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Curr" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HE9-Bb-YaN">
-                                <rect key="frame" x="0.0" y="60" width="42" height="21"/>
+                                <rect key="frame" x="0.0" y="60" width="46" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Next" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6xI-9D-Wag">
-                                <rect key="frame" x="278" y="60" width="42" height="21"/>
+                                <rect key="frame" x="274" y="60" width="46" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <scrollView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" pagingEnabled="YES" translatesAutoresizingMaskIntoConstraints="NO" id="36c-M3-I5P">
+                            <scrollView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" pagingEnabled="YES" translatesAutoresizingMaskIntoConstraints="NO" id="36c-M3-I5P">
                                 <rect key="frame" x="0.0" y="3" width="284" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="OSL-B0-Ux9"/>
+                                </constraints>
                                 <connections>
                                     <outlet property="delegate" destination="jaJ-hr-n2n" id="NAB-Ai-JrV"/>
                                 </connections>
@@ -891,7 +878,9 @@
                             <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" fixedFrame="YES" progressViewStyle="bar" translatesAutoresizingMaskIntoConstraints="NO" id="v19-Uh-lWd">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="3"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="0.9108690693" green="0.90821738139999997" blue="0.9110116332" alpha="1" colorSpace="calibratedRGB"/>
                                 <color key="progressTintColor" red="0.71139588649999996" green="0.37001147490000003" blue="0.22882847670000001" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="trackTintColor" red="0.9108690693" green="0.90821738139999997" blue="0.9110116332" alpha="1" colorSpace="calibratedRGB"/>
                             </progressView>
                         </subviews>
                         <color key="backgroundColor" red="0.90980392160000001" green="0.90980392160000001" blue="0.90980392160000001" alpha="1" colorSpace="calibratedRGB"/>
@@ -899,6 +888,9 @@
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="bNL-0G-W4C" secondAttribute="trailing" id="5MM-k7-3YY"/>
                             <constraint firstItem="h2c-E8-Tha" firstAttribute="top" secondItem="bNL-0G-W4C" secondAttribute="bottom" constant="-130" id="68L-MB-xum"/>
+                            <constraint firstItem="bNL-0G-W4C" firstAttribute="top" secondItem="36c-M3-I5P" secondAttribute="top" constant="-3" id="6aO-ga-i7y"/>
+                            <constraint firstAttribute="trailing" secondItem="36c-M3-I5P" secondAttribute="trailing" constant="36" id="6ms-Fl-T8v"/>
+                            <constraint firstItem="36c-M3-I5P" firstAttribute="leading" secondItem="5m5-aF-d3p" secondAttribute="leading" id="kXM-BB-pm4"/>
                             <constraint firstItem="bNL-0G-W4C" firstAttribute="leading" secondItem="5m5-aF-d3p" secondAttribute="leading" id="km4-N0-6f2"/>
                         </constraints>
                         <connections>
@@ -1061,10 +1053,10 @@
                                             <rect key="frame" x="0.0" y="0.0" width="227" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Fav Post 1" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="O98-Yn-Uk3">
+                                                <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Fav Post 1" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="210" id="O98-Yn-Uk3">
                                                     <rect key="frame" x="15" y="0.0" width="210" height="44"/>
                                                     <autoresizingMask key="autoresizingMask"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <color key="textColor" cocoaTouchSystemColor="lightTextColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
@@ -1128,6 +1120,6 @@
         <simulatedScreenMetrics key="destination"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="Lbf-d0-oxN"/>
+        <segue reference="WKg-Ly-dlY"/>
     </inferredMetricsTieBreakers>
 </document>

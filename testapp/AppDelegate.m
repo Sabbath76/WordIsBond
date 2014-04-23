@@ -56,7 +56,32 @@ const NSString *notificationURL = @"http://www.thewordisbond.com/?json=register_
     
     application.applicationIconBadgeNumber = 0;
     
+    NSDictionary *remoteNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+    if (remoteNotification != nil)
+    {
+        NSNumber *postID = [remoteNotification objectForKey:@"postID"];
+        if (postID)
+        {
+            //--- Start the application by switching to the selected post
+            [[UserData get] setTargetPost:[postID intValue]];
+        }
+    }
+    
     return YES;
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+    if (userInfo != nil)
+    {
+        NSNumber *postID = [userInfo objectForKey:@"postID"];
+        if (postID)
+        {
+            //--- Start the application by switching to the selected post
+            [[UserData get] setTargetPost:[postID intValue]];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"NewRSSFeed" object:self];
+        }
+    }
 }
 
 - (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken

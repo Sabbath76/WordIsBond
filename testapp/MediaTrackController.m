@@ -86,6 +86,7 @@
     {
         SelectedItem *item = [SelectedItem alloc];
         item->isFavourite = false;
+        item->isFeature = false;
         TrackInfo *track = m_sourceArray[pageIndex];
         item->item = track->pItem;
         [[NSNotificationCenter defaultCenter] postNotificationName:@"ViewPost" object:item];

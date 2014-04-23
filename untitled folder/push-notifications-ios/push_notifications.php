@@ -157,7 +157,7 @@ function push_notifications_uninstall(){
 /*----------------------------------*/
 
 
-function push_notifications_send($pn_push_type, $json, $message, $sound, $badge){
+function push_notifications_send($pn_push_type, $json, $message, $sound, $badge, $postID){
 
 
 	global $wpdb;
@@ -236,11 +236,16 @@ function push_notifications_send($pn_push_type, $json, $message, $sound, $badge)
 	//$badge = str_replace('"', "", $badge);
 
 	if ($pn_push_type != 'json' ){
+		
 		$body['aps'] = array(
-//			'badge' => (int)$badge,
 			'alert' => $message,
 			'sound' => $sound
-		);
+			);
+
+		if ((int)$postID >= 0)
+		{
+			$body['postID'] = (int)$postID;
+		}
 
 		$json = json_encode($body);
 
@@ -399,7 +404,8 @@ function push_notifications_create_form(){
 			$_POST['json'],
 			$_POST['pn_text'],
 			$_POST['pn_sound'],
-			$_POST['pn_badge']
+			$_POST['pn_badge'],
+			$_POST['pn_postID']
 			);
 
 
@@ -420,6 +426,7 @@ function push_notifications_create_form(){
 							<p><input type='text' name='pn_text'   placeholder='Text' /></p>
 							<p><input type='text' name='pn_sound'  placeholder='Sound' value=''/></p>
 							<p><input type='text' name='pn_badge'  placeholder='Badge (number)' value='1' /></p>
+							<p><input type='text' name='pn_postID'  placeholder='PostID (number)' value='-1' /></p>
 							<label><input class='pn_radio' type='radio' name='pn_push_type' value='json'><span class='overlay'></span></label>
 							<p><textarea type='text' name='json' placeholder='JSON'>{ "aps": { "badge": 1, "alert": "Hello world!"}, "action": "" }</textarea></p>
 						</div>

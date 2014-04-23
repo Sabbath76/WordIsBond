@@ -195,32 +195,6 @@ const int ExpandedSectionSize = 120;
     
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     
-//    m_featureCell = [FeatureCell alloc];
-//    m_featureCell.rssFeed = _feed;
-//    m_featuresController = [FeatureViewController alloc];
-//    [m_featuresController setFeed:_feed];
-    
-    // create the queue to run our ParseOperation
-//    self.m_queue = [[[NSOperationQueue alloc] init] autorelease];
-
-    //--- JSON Only
-//    [_feed LoadFeed];
-    
-    //--- RSS Feed
-//    NSString *url = @"http://www.thewordisbond.com/feed/mobile/?format=xml";
-/*    NSString *url = @"http://www.thewordisbond.com/feed/tablet/?format=xml";
-    [m_parser startParse:url completionHandler:^(NSArray *appList) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            [self handleLoadedApps:appList];
-            
-        });
- 
-//        self.m_queue = nil;   // we are finished with the queue and our ParseOperation
-    }];*/
-    
-//Huh?    [self setNeedsStatusBarAppearanceUpdate];
-    
     m_isLoadingMoreData = false;
     m_isInitialising = true;
     
@@ -258,49 +232,11 @@ const int ExpandedSectionSize = 120;
                                                  name:@"UpdateMenuState"
                                                object:nil];
     
-//    [[NSNotificationCenter defaultCenter] addObserver:self
-//                                             selector:@selector(receiveCloseMenu:)
-//                                                 name:@"CloseMenu"
-//                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(updateTargetPost:)
+                                                 name:@"UpdateTargetPost"
+                                               object:nil];
     
-    
-/*
- 
- Makka munda.
- Hello there!
- I like to mohgli mohgli.
- 
- Oh Poo!
- 
- Hello painted dog!
- Who painted you anyway?
- Was it a naughty cat?
- 
- Brulbrrulbrulbrbulrbrulbrulbrrp!
- 
- Pifftlerpahpacutpennoo
- 
- How much wood would a woodchuck chuck if a woodchuck could chuck wood?
- 
- Red lorry yellow lorry Red lorry yellow lorry Red lorry yellow lorry Red lorry yellow lorry.
- 
- She sells seashells on the seashore
- 
- Luke luck licks lakes
- Luke Luke's duck licks lakes?
- 
- Polar bears are smashing their heads against the ice
- 
- my memery is gone!
- 
- EeeeeeeeeEeeeeeeeeeeeEeeeeeee
- 
- I'm stupid
- 
- You are a poo
- 
- OH POO. I really hate myself!
- */
     
     
     UIRefreshControl *refresh = [[UIRefreshControl alloc] init];
@@ -377,18 +313,6 @@ const int ExpandedSectionSize = 120;
 - (void)startIconDownload:(CRSSItem *)appRecord forIndexPath:(NSIndexPath *)indexPath
 {
     [IconDownloader download:appRecord delegate:self];
-/*    IconDownloader *iconDownloader = [imageDownloadsInProgress objectForKey:indexPath];
-    if (iconDownloader == nil)
-    {
-        iconDownloader = [[IconDownloader alloc] init];
-        iconDownloader.appRecord = appRecord;
-        iconDownloader.indexPathInTableView = indexPath;
-        iconDownloader.delegate = self;
-        iconDownloader.isItem = true;
-        [imageDownloadsInProgress setObject:iconDownloader forKey:indexPath];
-        [iconDownloader startDownload];
-//        [iconDownloader release];
-    }*/
 }
 
 // called by our ImageDownloader when an icon is ready to be displayed
@@ -511,6 +435,58 @@ const int ExpandedSectionSize = 120;
     [m_featureCell updateFeed];
     
     [self.refreshControl endRefreshing];
+    
+    [self updateTargetPost];
+}
+
+- (void) updateTargetPost
+{
+    int targetPost = [[UserData get] getTargetPost];
+    if (targetPost >= 0)
+    {
+        RSSFeed *rssFeed = [RSSFeed getInstance];
+        
+        SelectedItem *selItem = nil;
+        
+        for( CRSSItem *item in rssFeed.features)
+        {
+            if (item.postID == targetPost)
+            {
+                selItem = [SelectedItem alloc];
+                selItem->isFavourite = false;
+                selItem->isFeature = true;
+                selItem->item = item;
+                
+                break;
+            }
+        }
+        
+        if (selItem == nil)
+        {
+            for( CRSSItem *item in rssFeed.items)
+            {
+                if (item.postID == targetPost)
+                {
+                    selItem = [SelectedItem alloc];
+                    selItem->isFavourite = false;
+                    selItem->isFeature = false;
+                    selItem->item = item;
+                    
+                    break;
+                }
+            }
+        }
+        
+        if (selItem != nil)
+        {
+            [self setMenuOpen:false];
+            m_forcedDetailItem = selItem;
+            
+            [self performSegueWithIdentifier: @"showDetailManual" sender:self];
+        }
+        
+        [[UserData get] setTargetPost:-1];
+    }
 }
 
 - (void) updateMenuState:(NSNotification *) notification
@@ -543,6 +519,8 @@ const int ExpandedSectionSize = 120;
     [super viewDidAppear:animated];
     
     m_isInitialising = false;
+    
+    [self updateTargetPost];
 }
 
 - (void)didReceiveMemoryWarning
@@ -598,32 +576,36 @@ const int ExpandedSectionSize = 120;
 
 - (IBAction)onFavourite:(id)sender
 {
-    UIButton *favBtn = (UIButton *)sender;
+    UIBarButtonItem *favBtn = (UIBarButtonItem *)sender;
     if (m_currentQuickMenuItem != -1)
     {
         CRSSItem *item = _feed.items[m_currentQuickMenuItem];
         NSMutableSet *favourites = [[UserData get] favourites];
         if ([favourites containsObject:item])
         {
-            if (favBtn == m_btnFavourite)
+/*            if (favBtn == m_btnFavourite)
             {
                 [m_btnFavourite setSelected:false];
             }
-            else
+            else*/
             {
-                [favBtn setTintColor:[UIColor blackColor]];
+//                [favBtn setBackButtonBackgroundImage:[UIImage imageNamed:@"icon_favourite_off"] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
+                favBtn.tintColor = [UIColor blackColor];
+//                [favBtn setTintColor:[UIColor blackColor]];
             }
             [favourites removeObject:item];
         }
         else
         {
-            if (favBtn == m_btnFavourite)
+/*            if (favBtn == m_btnFavourite)
             {
                 [m_btnFavourite setSelected:true];
             }
-            else
+            else*/
             {
-                [favBtn setTintColor:[UIColor whiteColor]];
+                favBtn.tintColor = [UIColor whiteColor];
+//                [favBtn setBackButtonBackgroundImage:[UIImage imageNamed:@"icon_favourite_on"] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
+//                [favBtn setTintColor:[UIColor whiteColor]];
             }
             [favourites addObject:item];
         }
@@ -783,7 +765,26 @@ const int ExpandedSectionSize = 120;
             cell.blurredImage.image = [object getBlurredImage];//object.blurredImage;
             [cell.miniImage setImage:object.iconImage forState:normal];
 //            cell.miniImage.image = [object requestIcon:self];//object.iconImage;
-            cell.options.hidden = !(m_currentQuickMenuItem == indexPath.row);
+            bool isExpanded = (m_currentQuickMenuItem == indexPath.row);
+            cell.options.hidden = !isExpanded;
+
+            if (isExpanded)
+            {
+                UIBarButtonItem *favourite = [cell.options items][1];
+                if (favourite)
+                {
+                    bool isFavourite = [[[UserData get] favourites] containsObject:_feed.items[indexPath.row]];
+                    
+                    if (isFavourite)
+                    {
+                        [favourite setTintColor:[UIColor whiteColor]];
+                    }
+                    else
+                    {
+                        [favourite setTintColor:[UIColor blackColor]];
+                    }
+                }
+            }
 
             //--- When initialising trigger all items to stream in images
             if (m_isInitialising)
@@ -1038,10 +1039,9 @@ const int ExpandedSectionSize = 120;
         if (![indexPath isEqual:m_expandedIndexPath])
         {
             PostCell *cell = (PostCell*)[self.tableView cellForRowAtIndexPath:indexPath];
-            
             UIToolbar *toolbarMenu = cell.options;//(UIToolbar *) [cell viewWithTag:6];
             [toolbarMenu setHidden:false];
-            UIButton *favourite = [toolbarMenu items][1];
+            UIBarButtonItem *favourite = [toolbarMenu items][1];
 //            UIBarButtonItem *favourite = (UIBarButtonItem*)[toolbarMenu viewWithTag:7];
             if (favourite)
             {
@@ -1079,6 +1079,7 @@ const int ExpandedSectionSize = 120;
 {
     SelectedItem *item = [SelectedItem alloc];
     item->isFavourite = false;
+    item->isFeature = false;
     item->item = _feed.items[postID];
     
     m_forcedDetailItem = item;
@@ -1338,6 +1339,10 @@ const int ExpandedSectionSize = 120;
         {
             NSArray *favouriteList = [[[UserData get] favourites] allObjects];
             [[segue destinationViewController] setDetailItem:m_forcedDetailItem->item list:favouriteList];
+        }
+        else if (m_forcedDetailItem->isFeature)
+        {
+            [[segue destinationViewController] setDetailItem:m_forcedDetailItem->item list:_feed.features];
         }
         else
         {
