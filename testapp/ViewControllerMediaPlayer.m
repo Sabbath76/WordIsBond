@@ -1161,8 +1161,9 @@ float BLUR_IMAGE_RANGE = 100.0f;
     UIView *touchView = touch.view;
     UIView *parentTouchView = touchView.superview.superview;
     if ([touchView isKindOfClass:[UIControl class]]
-       || [parentTouchView isKindOfClass:[UITableViewCell class]])
-//       || [touchView isKindOfClass:[UITableViewContentCell class]])
+        || [parentTouchView isKindOfClass:[UITableViewCell class]]
+        || [parentTouchView isKindOfClass:[UITableView class]])
+//       || [touchView isKindOfClass:[UITableViewCellContentView class]])
    {
         // we touched a button, slider, or other UIControl
         return NO; // ignore the touch

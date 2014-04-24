@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 
-@interface RSSFeed : NSObject < NSURLConnectionDelegate >
+@interface RSSFeed : NSObject < NSURLConnectionDelegate, UIAlertViewDelegate >
 
 @property (nonatomic, retain) NSMutableArray *items;
 @property (nonatomic, retain) NSMutableArray *features;

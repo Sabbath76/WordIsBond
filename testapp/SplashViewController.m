@@ -63,8 +63,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-
-
 - (void) failedNewRSSFeed:(NSNotification *) notification
 {
 }

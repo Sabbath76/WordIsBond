@@ -540,7 +540,7 @@
         SLComposeViewController *mySLComposerSheet = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeFacebook];
         CRSSItem *item = self.detailItem;
         
-        [mySLComposerSheet setInitialText:@"Found a dope post on WIB"];
+        [mySLComposerSheet setInitialText:item.title];
         
   //      [mySLComposerSheet addImage:item.appIcon];
         
@@ -567,7 +567,7 @@
         SLComposeViewController *mySLComposerSheet = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
         CRSSItem *item = self.detailItem;
         
-        [mySLComposerSheet setInitialText:@"Found a dope post on WIB"];
+        [mySLComposerSheet setInitialText:item.title];
         
  //       [mySLComposerSheet addImage:item.appIcon];
         

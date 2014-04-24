@@ -10,14 +10,15 @@
 
 @interface PostCell : UITableViewCell
 
-@property (nonatomic, weak, readonly) UILabel *title; // 1
-@property (nonatomic, weak, readonly) UILabel *date;  // 5
-@property (nonatomic, weak, readonly) UIButton *miniImage; // 4
-@property (nonatomic, weak, readonly) UIImageView *postTypeImage; //3
-@property (nonatomic, weak, readonly) UIImageView *blurredImage; // 2
-@property (nonatomic, weak, readonly) UIView *animateView; // 8
-@property (nonatomic, weak, readonly) UIImageView *fullImage; // 9
-@property (nonatomic, weak, readonly) UIToolbar *options; // 9
+@property (nonatomic, weak, readonly) UILabel *title;
+@property (nonatomic, weak, readonly) UILabel *date;
+@property (nonatomic, weak, readonly) UIButton *expandButton;
+@property (nonatomic, weak, readonly) UIImageView *miniImage;
+@property (nonatomic, weak, readonly) UIImageView *postTypeImage;
+@property (nonatomic, weak, readonly) UIImageView *blurredImage;
+@property (nonatomic, weak, readonly) UIView *animateView;
+@property (nonatomic, weak, readonly) UIImageView *fullImage;
+@property (nonatomic, weak, readonly) UIToolbar *options;
 
 - (void) setupIfNeeded;
 

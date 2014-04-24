@@ -18,6 +18,8 @@
     NSMutableData *m_receivedDataFeatures;
     NSURLConnection *m_connectionPosts;
     NSURLConnection *m_connectionFeatures;
+    NSString *m_lastURLPosts;
+    NSString *m_lastURLFeatures;
     int m_page;
     int m_totalPages;
     NSString *m_lastSearch;
@@ -101,7 +103,8 @@
 {
     m_receivedData = [[NSMutableData alloc] init];
     reset = doReset;
-    
+    m_lastURLPosts = url;
+
     //Create the connection with the string URL and kick it off
     m_connectionPosts = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] delegate:self];
     [m_connectionPosts start];
@@ -112,6 +115,7 @@
 {
     m_receivedDataFeatures = [[NSMutableData alloc] init];
     m_resetFeatures = doReset;
+    m_lastURLFeatures = url;
     
     //Create the connection with the string URL and kick it off
     m_connectionFeatures = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] delegate:self];
@@ -156,18 +160,46 @@ I want my mummee
     }
 }
 
+- (void)failedFeed
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"FailedFeed" object:self];
+    
+    m_connectionPosts = nil;
+    m_connectionFeatures = nil;
+    
+    UIAlertView *alertView = [[UIAlertView alloc]
+                              initWithTitle:@"Cannot connect to WIB"
+                              message:@"Please ensure that you are connected to the internet."
+                              delegate:self
+                              cancelButtonTitle:@"Try Again"
+                              otherButtonTitles:nil];
+    [alertView show];
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == [alertView cancelButtonIndex])
+    {
+        m_receivedData = [[NSMutableData alloc] init];
+        m_receivedDataFeatures = [[NSMutableData alloc] init];
+        
+        m_connectionPosts = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:m_lastURLPosts]] delegate:self];
+        m_connectionFeatures = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:m_lastURLFeatures]] delegate:self];
+
+        [m_connectionPosts start];
+        [m_connectionFeatures start];
+    }
+}
+
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
     if (connection == m_connectionPosts)
     {
-        [[NSNotificationCenter defaultCenter]
-            postNotificationName:@"FailedFeed"
-            object:self];
-        m_connectionPosts = nil;
+        [self failedFeed];
     }
     else if (connection == m_connectionFeatures)
     {
-        m_connectionFeatures = nil;
+        [self failedFeed];
     }
 }
 
@@ -253,10 +285,11 @@ I want my mummee
     }
     
     //Start the XML parser with the delegate pointing at the current object
+    NSError *errorRes = nil;
     NSDictionary* json = [NSJSONSerialization
                           JSONObjectWithData:data
                           options:kNilOptions
-                          error:NULL];
+                          error:&errorRes];
     
     NSNumber *numItems = [json objectForKey:@"count"];
     if ((numItems.intValue > 0) || isFeatures)
@@ -341,9 +374,7 @@ I want my mummee
     }
     else if (isPosts)
     {
-        [[NSNotificationCenter defaultCenter]
-         postNotificationName:@"FailedFeed"
-         object:self];
+        [self failedFeed];
     }
 }
 

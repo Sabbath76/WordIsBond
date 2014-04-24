@@ -112,6 +112,35 @@ const int ExpandedSectionSize = 120;
     [UIView commitAnimations];
 }
 
+- (void) wobbleMenu
+{
+    UIView *rootView = self.navigationController.view.superview.superview;
+    CGRect initialFrame = rootView.frame;
+    CGRect destination = initialFrame;
+    destination.origin.x = 20;
+
+    [UIView animateWithDuration:0.25
+                          delay:0.0
+                        options:UIViewAnimationCurveEaseOut
+                     animations:^{
+                         rootView.frame = destination;
+                     }
+                     completion:^(BOOL finished) {
+                         [UIView animateWithDuration:0.15
+                                               delay:0.0
+                                             options:0
+                                          animations:^{
+                                              rootView.frame = initialFrame;
+                                          }
+                                          completion:^(BOOL finished) {}];
+                     }];
+    
+    [UIView beginAnimations:@"Wobble menu" context:nil];
+    rootView.frame = destination;
+    [UIView commitAnimations];
+
+}
+
 - (void) selectDetail:(CRSSItem *)item
 {
     [self setMenuOpen:false];
@@ -125,7 +154,7 @@ const int ExpandedSectionSize = 120;
         if (indexPath.section == Posts)
         {
             PostCell *postCell = (PostCell*)[self.tableView cellForRowAtIndexPath:indexPath];
-            if (postCell.miniImage == sender)
+            if (postCell.expandButton == sender)
             {
                 [self doExpandPost:indexPath];
                 break;
@@ -331,7 +360,7 @@ const int ExpandedSectionSize = 120;
 //                UIImageView *imgView = (UIImageView *)[cell viewWithTag:2];
 //                UIImageView *imgViewMini = (UIImageView *)[cell viewWithTag:4];
                 cell.blurredImage.image = iconDownloader.appRecord.blurredImage;
-                [cell.miniImage setImage:iconDownloader.appRecord.iconImage forState:normal];
+                cell.miniImage.image = iconDownloader.appRecord.iconImage;
 
                 break;
             }
@@ -610,6 +639,8 @@ const int ExpandedSectionSize = 120;
             [favourites addObject:item];
         }
         [[UserData get] onChanged];
+        
+        [self wobbleMenu];
     }
 }
 
@@ -620,7 +651,7 @@ const int ExpandedSectionSize = 120;
         SLComposeViewController *mySLComposerSheet = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
         CRSSItem *item = _feed.items[m_currentQuickMenuItem];
 
-        [mySLComposerSheet setInitialText:@"Found a dope post on WIB"];
+        [mySLComposerSheet setInitialText:item.title];
     
         [mySLComposerSheet addImage:item.appIcon];
     
@@ -647,7 +678,7 @@ const int ExpandedSectionSize = 120;
         SLComposeViewController *mySLComposerSheet = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeFacebook];
         CRSSItem *item = _feed.items[m_currentQuickMenuItem];
         
-        [mySLComposerSheet setInitialText:@"Found a dope post on WIB"];
+        [mySLComposerSheet setInitialText:item.title];
         
         [mySLComposerSheet addImage:item.appIcon];
         
@@ -728,17 +759,7 @@ const int ExpandedSectionSize = 120;
 
             cell.rssFeed = _feed;
             cell.detailViewController = _detailViewController;
-           
-/*            CALayer *_maskingLayer = [CALayer layer];
-            _maskingLayer.frame = cell.bounds;
-            UIImage *stretchableImage = (id)[UIImage imageNamed:@"corner"];
-            
-            _maskingLayer.contents = (id)stretchableImage.CGImage;
-            _maskingLayer.contentsScale = [UIScreen mainScreen].scale; //<-needed for the retina display, otherwise our image will not be scaled properly
-            _maskingLayer.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
-
-            [cell.layer setMask:_maskingLayer];
-            */
+ 
             if (newFeatureCell)
             {
                 [cell updateFeed];
@@ -758,13 +779,10 @@ const int ExpandedSectionSize = 120;
             
             CRSSItem *object = _feed.items[indexPath.row];
             
-//            [cell.layer setMask:_maskingLayer];
-
             cell.title.text = [object title];
             cell.date.text = object.dateString;
-            cell.blurredImage.image = [object getBlurredImage];//object.blurredImage;
-            [cell.miniImage setImage:object.iconImage forState:normal];
-//            cell.miniImage.image = [object requestIcon:self];//object.iconImage;
+            cell.blurredImage.image = [object getBlurredImage];
+            cell.miniImage.image = object.iconImage;
             bool isExpanded = (m_currentQuickMenuItem == indexPath.row);
             cell.options.hidden = !isExpanded;
 
@@ -791,62 +809,6 @@ const int ExpandedSectionSize = 120;
             {
                 [object requestImage:self];
             }
-/*
-            UILabel *label = (UILabel *)[cell viewWithTag:1];
-            label.text = [object title];
-            UIImageView *imgView = (UIImageView *)[cell viewWithTag:2];
-            UIImageView *imgIcon = (UIImageView *)[cell viewWithTag:3];
-            UIImageView *imgViewMini = (UIImageView *)[cell viewWithTag:4];
-            UILabel *labelDate = (UILabel *)[cell viewWithTag:5];
-            labelDate.text = object.dateString;
-
-            imgView.image = object.blurredImage;
-            imgViewMini.image = object.iconImage;
-*/
-  /*          if (cell.miniImage)
-            {
-                CALayer *_maskingLayer = [CALayer layer];
-                _maskingLayer.frame = cell.miniImage.bounds;
-                UIImage *stretchableImage = (id)[UIImage imageNamed:@"cornerfull"];
-                
-                _maskingLayer.contents = (id)stretchableImage.CGImage;
-                _maskingLayer.contentsScale = [UIScreen mainScreen].scale; //<-needed for the retina display, otherwise our image will not be scaled properly
-                _maskingLayer.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
-
-                [cell.miniImage.layer setMask:_maskingLayer];
-            }*/
-
-
-/* No post type indicator anymore
-            switch (object.type)
-            {
-                case Audio:
-                    cell.postTypeImage.image = [UIImage imageNamed:@"audio"];
-                   break;
-                case Video:
-                    cell.postTypeImage.image = [UIImage imageNamed:@"video"];
-                    break;
-                case Text:
-                    cell.postTypeImage.image = [UIImage imageNamed:@"text"];
-                    break;
-            }*/
-            
-/*            [UIView animateWithDuration:1.0
-                    delay: 0.0
-                    options: UIViewAnimationOptionCurveEaseIn
-                    animations:^{
-                                 [cell.frame.size.height = 0.0;
-                             }
-                             completion:^(BOOL finished){
-                                 // Wait one second and then fade in the view
-                                 [UIView animateWithDuration:1.0
-                                                       delay: 1.0
-                                                     options:UIViewAnimationOptionCurveEaseOut
-                                                  animations:^{
-                                                      thirdView.alpha = 1.0;
-                                                  }
-                                                  completion:nil];
-                             }];*/
             return cell;
         }
         break;

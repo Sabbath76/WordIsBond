@@ -30,12 +30,15 @@
 
 - (void)appImageDidLoad:(IconDownloader *)iconDownloader
 {
-    TrackInfo *trackInfo = m_sourceArray[pageIndex];
-    if ([trackInfo->pItem postID] == [iconDownloader postID])
-    {
-        UIImage *iconImage = [[iconDownloader appRecord] iconImage];
-        [m_trackImage setImage:iconImage forState:UIControlStateNormal];
-        [m_trackImage setImage:iconImage forState:UIControlStateSelected];
+	if (pageIndex >= 0 && pageIndex < m_sourceArray.count)
+	{
+        TrackInfo *trackInfo = m_sourceArray[pageIndex];
+        if ([trackInfo->pItem postID] == [iconDownloader postID])
+        {
+            UIImage *iconImage = [[iconDownloader appRecord] iconImage];
+            [m_trackImage setImage:iconImage forState:UIControlStateNormal];
+            [m_trackImage setImage:iconImage forState:UIControlStateSelected];
+        }
     }
  /*   RSSFeed *feed = [RSSFeed getInstance];
 

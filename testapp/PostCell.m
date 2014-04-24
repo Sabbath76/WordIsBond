@@ -18,7 +18,8 @@
 
 @property (nonatomic, weak) IBOutlet UILabel *title; // 1
 @property (nonatomic, weak) IBOutlet UILabel *date;  // 5
-@property (nonatomic, weak) IBOutlet UIButton *miniImage; // 4
+@property (nonatomic, weak) IBOutlet UIButton *expandButton;
+@property (nonatomic, weak) IBOutlet UIImageView *miniImage; // 4
 @property (nonatomic, weak) IBOutlet UIImageView *postTypeImage; //3
 @property (nonatomic, weak) IBOutlet UIImageView *blurredImage; // 2
 @property (nonatomic, weak) IBOutlet UIView *animateView; // 8
@@ -29,7 +30,7 @@
 
 @implementation PostCell
 {
-    CALayer *m_maskingLayer;
+//    CALayer *m_maskingLayer;
 }
 /*
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
