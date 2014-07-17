@@ -8,9 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import "CRSSItem.h"
+#import "GAITrackedViewController.h"
 
-
-@interface DetailViewController : UIViewController <UISplitViewControllerDelegate, PostRequestDelegate, UIScrollViewDelegate, IconDownloaderDelegate, UIWebViewDelegate>
+@interface DetailViewController : GAITrackedViewController <UISplitViewControllerDelegate, PostRequestDelegate, UIScrollViewDelegate, IconDownloaderDelegate, UIWebViewDelegate>
 @property (weak, nonatomic) IBOutlet UIWebView *webView;
 
 @property (strong, nonatomic) id detailItem;

@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "UserData.h"
+#import "GAI.h"
 //#import "AFHTTPClient.h"
 
 const NSString *notificationURL = @"http://www.thewordisbond.com/?json=register_notifications";
@@ -47,6 +48,12 @@ const NSString *notificationURL = @"http://www.thewordisbond.com/?json=register_
         splitViewController.delegate = (id)navigationController.topViewController;
     }
     
+    //--- Init the URL cache to stop it eating too much memory
+    int cacheSizeMemory = 4*1024*1024; // 4MB
+    int cacheSizeDisk = 32*1024*1024; // 32MB
+    NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:cacheSizeMemory diskCapacity:cacheSizeDisk diskPath:@"nsurlcache"] ;
+    [NSURLCache setSharedURLCache:sharedCache];
+
     // Let the device know we want to receive push notifications
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:
      (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
@@ -67,6 +74,13 @@ const NSString *notificationURL = @"http://www.thewordisbond.com/?json=register_
         }
     }
     
+    //--- Google Analytics
+    [GAI sharedInstance].trackUncaughtExceptions = YES;
+    [GAI sharedInstance].dispatchInterval = 20;
+    [[[GAI sharedInstance] logger] setLogLevel:kGAILogLevelVerbose];
+    [[GAI sharedInstance] trackerWithTrackingId:@"UA-11823155-6"];
+
+    
     return YES;
 }
 
@@ -82,6 +96,10 @@ const NSString *notificationURL = @"http://www.thewordisbond.com/?json=register_
             [[NSNotificationCenter defaultCenter] postNotificationName:@"NewRSSFeed" object:self];
         }
     }
+}
+
+- (void)applicationDidReceiveMemoryWarning:(UIApplication *)application {
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
 }
 
 - (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken
@@ -175,11 +193,11 @@ const NSString *notificationURL = @"http://www.thewordisbond.com/?json=register_
     NSURLResponse *response;
     NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
     NSString *stringReply = (NSString *)[[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
-    NSLog(@"reply from server: %@", stringReply);
+//    NSLog(@"reply from server: %@", stringReply);
     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
     int statusCode = [httpResponse statusCode];
-    NSLog(@"HTTP Response Headers %@", [httpResponse allHeaderFields]);
-    NSLog(@"HTTP Status code: %d", statusCode);
+//    NSLog(@"HTTP Response Headers %@", [httpResponse allHeaderFields]);
+ //   NSLog(@"HTTP Status code: %d", statusCode);
     if(error != nil)
     {
         NSLog(@"Failed to connect for push notifications %@", [error localizedDescription]);

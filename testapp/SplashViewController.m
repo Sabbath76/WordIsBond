@@ -10,6 +10,7 @@
 #import "RSSFeed.h"
 
 @interface SplashViewController ()
+@property (weak, nonatomic) IBOutlet UIImageView *m_loadingSpinner;
 
 @end
 
@@ -21,6 +22,9 @@
     if (self) {
         // Custom initialization
 
+        //--- Animate the loading spinner
+        [self spinWithOptions:UIViewAnimationOptionCurveEaseIn];
+       
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(receiveNewRSSFeed:)
                                                      name:@"NewRSSFeed"
@@ -43,6 +47,8 @@
 	// Do any additional setup after loading the view.
     
     // Custom initialization
+    //--- Animate the loading spinner
+    [self spinWithOptions:UIViewAnimationOptionCurveEaseIn];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(receiveNewRSSFeed:)
@@ -56,6 +62,23 @@
     RSSFeed *feed = [RSSFeed getInstance];
     [feed LoadFeed];
 }
+
+- (void) spinWithOptions: (UIViewAnimationOptions) options {
+    // this spin completes 360 degrees every 2 seconds
+    [UIView animateWithDuration: 0.5f
+                          delay: 0.0f
+                        options: options
+                     animations: ^{
+                         self.m_loadingSpinner.transform = CGAffineTransformRotate(self.m_loadingSpinner.transform, M_PI / 2);
+                     }
+                     completion: ^(BOOL finished) {
+                         if (finished) {
+                                  // if flag still set, keep spinning with constant speed
+                                 [self spinWithOptions: UIViewAnimationOptionCurveLinear];
+                        }
+                     }];
+}
+
 
 - (void)didReceiveMemoryWarning
 {

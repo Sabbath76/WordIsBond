@@ -376,6 +376,9 @@ I want my mummee
     {
         [self failedFeed];
     }
+    
+    //--- Free up our buffer
+    [data setLength:0];
 }
 
 - (void) LoadFeed

@@ -17,6 +17,9 @@
 #import <Accounts/Accounts.h>
 #import "UIViewController+BackButtonHandler.h"
 
+#import "GAI.h"
+#import "GAIDictionaryBuilder.h"
+
 @interface DetailViewController ()
 {
     __weak IBOutlet UIScrollView *m_header;
@@ -103,6 +106,16 @@
             m_loading = true;
         }
         
+        //--- Send information to Google Analytics
+        id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+        
+        [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"view post"     // Event category (required)
+                                                              action:[self.detailItem title]  // Event action (required)
+                                                             label:[[NSNumber numberWithInt:[self.detailItem postID]] stringValue]          // Event label
+                                                               value:nil] build]];    // Event value
+
+
+        //--- Update UI based new post selection
         NSMutableSet *favourites = [[UserData get] favourites];
         if ([favourites containsObject:self.detailItem])
         {
@@ -194,6 +207,8 @@
     
     m_toolbarOffset = 0;
     m_scrollOffset = 0;
+    
+    self.screenName = @"Post Details Screen";
 }
 
 - (void) viewDidAppear:(BOOL)animated
@@ -209,16 +224,16 @@
     }
     [[self.webView scrollView] setContentInset:UIEdgeInsetsMake(headerBottom, 0, -headerBottom, 0)];
     
-    CGSize contentSize = m_header.contentSize;
-    CGPoint contentOffset = m_header.contentOffset;
-    UIEdgeInsets contentInset = m_header.contentInset;
-    CGRect headerFrame = m_header.frame;
-    CGRect curFrame = m_currentPage.view.frame;
-    CGRect nextFrame = m_nextPage.view.frame;
+//    CGSize contentSize = m_header.contentSize;
+//    CGPoint contentOffset = m_header.contentOffset;
+//    UIEdgeInsets contentInset = m_header.contentInset;
+//    CGRect headerFrame = m_header.frame;
+//    CGRect curFrame = m_currentPage.view.frame;
+//    CGRect nextFrame = m_nextPage.view.frame;
 
     if (m_header)
     {
-        int numItems = m_sourceList ? m_sourceList.count : 1;
+        NSInteger numItems = m_sourceList ? m_sourceList.count : 1;
         m_header.contentSize = CGSizeMake(m_header.frame.size.width * numItems, 0);
     }
 

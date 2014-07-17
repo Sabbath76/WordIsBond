@@ -17,6 +17,9 @@
 
 #import "MediaTrackController.h"
 
+#import "GAI.h"
+#import "GAITracker.h"
+#import "GAIDictionaryBuilder.h"
 
 @interface ViewControllerMediaPlayer ()
 {
@@ -798,6 +801,13 @@ float BLUR_IMAGE_RANGE = 100.0f;
         {
             if (m_isPlaying)
             {
+                id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+                
+                [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"ui_action"     // Event category (required)
+                                                                      action:@"button_press"  // Event action (required)
+                                                                       label:@"play"          // Event label
+                                                                       value:nil] build]];    // Event value
+        
                 [m_player play];
             }
             else
