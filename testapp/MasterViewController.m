@@ -10,6 +10,8 @@
 
 #import "DetailViewController.h"
 
+#import "ViewControllerRoot.h"
+
 #import "RSSParser.h"
 #import "RSSFeed.h"
 
@@ -59,6 +61,7 @@ const int ExpandedSectionSize = 120;
     FeatureCell *m_featureCell;
     
     FeatureViewController *m_featuresController;
+    ViewControllerRoot *m_rootViewController;
     
     SelectedItem *m_forcedDetailItem;
     
@@ -89,7 +92,8 @@ const int ExpandedSectionSize = 120;
 
 - (void) setMenuOpen:(bool)state
 {
-    UIView *rootView = self.navigationController.view.superview.superview;
+    [m_rootViewController setMenuOpen:state];
+/*    UIView *rootView = self.navigationController.view.superview.superview;
     CGRect destination = rootView.frame;
     
     if (state)
@@ -109,7 +113,7 @@ const int ExpandedSectionSize = 120;
     
     [UIView beginAnimations:@"Bringing up menu" context:nil];
     rootView.frame = destination;
-    [UIView commitAnimations];
+    [UIView commitAnimations];*/
 }
 
 - (void) wobbleMenu
@@ -162,6 +166,11 @@ const int ExpandedSectionSize = 120;
         }
     }
 
+}
+
+- (void) setRootController:(UIViewController*) controller
+{
+    m_rootViewController = (ViewControllerRoot*)controller;;
 }
 
 - (UIStatusBarStyle) preferredStatusBarStyle
@@ -1151,7 +1160,7 @@ const int ExpandedSectionSize = 120;
         }
     }
 }
-
+/*
 -(void)handleLongPress:(UISwipeGestureRecognizer *)gestureRecognizer
 {
     CGPoint p = [gestureRecognizer locationInView:self.tableView];
@@ -1238,7 +1247,7 @@ const int ExpandedSectionSize = 120;
         }
     }
 }
-
+*/
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {

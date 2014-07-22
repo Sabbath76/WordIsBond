@@ -143,6 +143,10 @@
 		0EBEA2BC17D8AB62001CE110 /* FastForward.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EBEA2BA17D8AB62001CE110 /* FastForward.png */; };
 		0EBEA2BD17D8AB62001CE110 /* Rewind.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EBEA2BB17D8AB62001CE110 /* Rewind.png */; };
 		0EC11B7D183AC032006DC8F9 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EC11B7C183AC032006DC8F9 /* CoreMedia.framework */; };
+		0EC5874F197E8F8400A56E03 /* linkedin.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EC5874D197E8F8400A56E03 /* linkedin.png */; };
+		0EC58750197E8F8400A56E03 /* linkedin@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EC5874E197E8F8400A56E03 /* linkedin@2x.png */; };
+		0EC58753197E9B6E00A56E03 /* ViewControllerAbout.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EC58752197E9B6E00A56E03 /* ViewControllerAbout.m */; };
+		0EC58755197EDF3100A56E03 /* option_btn_off@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EC58754197EDF3100A56E03 /* option_btn_off@2x.png */; };
 		0EC93F8018D4DD2A00823645 /* player_pause_on.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EC93F7E18D4DD2A00823645 /* player_pause_on.png */; };
 		0EC93F8118D4DD2A00823645 /* player_pause_on@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EC93F7F18D4DD2A00823645 /* player_pause_on@2x.png */; };
 		0ECF92E218685AAF00BA91A5 /* UIViewController+BackButtonHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ECF92E118685AAF00BA91A5 /* UIViewController+BackButtonHandler.m */; };
@@ -336,6 +340,11 @@
 		0EBEA2BA17D8AB62001CE110 /* FastForward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FastForward.png; sourceTree = "<group>"; };
 		0EBEA2BB17D8AB62001CE110 /* Rewind.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Rewind.png; sourceTree = "<group>"; };
 		0EC11B7C183AC032006DC8F9 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		0EC5874D197E8F8400A56E03 /* linkedin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = linkedin.png; sourceTree = "<group>"; };
+		0EC5874E197E8F8400A56E03 /* linkedin@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "linkedin@2x.png"; sourceTree = "<group>"; };
+		0EC58751197E9B6E00A56E03 /* ViewControllerAbout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewControllerAbout.h; sourceTree = "<group>"; };
+		0EC58752197E9B6E00A56E03 /* ViewControllerAbout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewControllerAbout.m; sourceTree = "<group>"; };
+		0EC58754197EDF3100A56E03 /* option_btn_off@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "option_btn_off@2x.png"; sourceTree = "<group>"; };
 		0EC93F7E18D4DD2A00823645 /* player_pause_on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = player_pause_on.png; sourceTree = "<group>"; };
 		0EC93F7F18D4DD2A00823645 /* player_pause_on@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "player_pause_on@2x.png"; sourceTree = "<group>"; };
 		0ECF92E018685AAF00BA91A5 /* UIViewController+BackButtonHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+BackButtonHandler.h"; sourceTree = "<group>"; };
@@ -459,6 +468,8 @@
 				0E83002C196D8F0D006D9507 /* Google Analytics */,
 				0EE820A418C25942005B98BC /* FullPostController.h */,
 				0EE820A518C25942005B98BC /* FullPostController.m */,
+				0EC58751197E9B6E00A56E03 /* ViewControllerAbout.h */,
+				0EC58752197E9B6E00A56E03 /* ViewControllerAbout.m */,
 				0ED4E2D9189BDF53001EF0B7 /* MediaTrackController.h */,
 				0ED4E2DA189BDF53001EF0B7 /* MediaTrackController.m */,
 				0ECF92E018685AAF00BA91A5 /* UIViewController+BackButtonHandler.h */,
@@ -526,6 +537,9 @@
 		0E98F6241706E30F006E9857 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				0EC58754197EDF3100A56E03 /* option_btn_off@2x.png */,
+				0EC5874D197E8F8400A56E03 /* linkedin.png */,
+				0EC5874E197E8F8400A56E03 /* linkedin@2x.png */,
 				0E898AB1193E1F87001AA4D3 /* MyriadPro-Regular.otf */,
 				0EA533DF191D2FFA00555273 /* icon_loading@2x.png */,
 				0EA533DD191D2DE800555273 /* WIB_BG_blur.png */,
@@ -743,6 +757,7 @@
 				0EA64DBB18605EB60010EFCA /* comment@2x.png in Resources */,
 				0E63968C184FCEE900868311 /* StreamFeed.xib in Resources */,
 				0E2E964217FA081200FB9BD8 /* icon_fav.png in Resources */,
+				0EC58750197E8F8400A56E03 /* linkedin@2x.png in Resources */,
 				0E98F6321706E30F006E9857 /* Default@2x.png in Resources */,
 				0EA877D6184A3F7B003A0B82 /* post_thumb_border.png in Resources */,
 				0EB3DE4F180DC83200BABC2A /* user_avatar@2x.png in Resources */,
@@ -776,6 +791,7 @@
 				0E5D2CA2182E53CB0036870A /* streamingOn.png in Resources */,
 				0EA8512118B528140026A4FF /* goto_post_off@2x.png in Resources */,
 				0E67D74517D5FBB300CFB7C5 /* WIBNavBar.jpg in Resources */,
+				0EC5874F197E8F8400A56E03 /* linkedin.png in Resources */,
 				0E033051181D22E40047BA11 /* icon_55.png in Resources */,
 				0EB691AF18B3EAF000FEFC7A /* goto_post_off.png in Resources */,
 				0EA877E1184A523E003A0B82 /* player_play_off@2x.png in Resources */,
@@ -799,6 +815,7 @@
 				0E0A673C17EF010400E5918A /* postIconText@2x.png in Resources */,
 				0E2E965317FA090D00FB9BD8 /* banner_mask@2x.png in Resources */,
 				0EBEA2A917D886C9001CE110 /* WiB_playMedia.png in Resources */,
+				0EC58755197EDF3100A56E03 /* option_btn_off@2x.png in Resources */,
 				0EA8512518B528260026A4FF /* WIB_BG_white@2x.png in Resources */,
 				0E898AB2193E1F87001AA4D3 /* MyriadPro-Regular.otf in Resources */,
 				0EAC77A91837364F0084CE8C /* PostHeader.xib in Resources */,
@@ -890,6 +907,7 @@
 				0ED1D2C317BFED27006FC6D4 /* CRSSItem.m in Sources */,
 				0ECF92E218685AAF00BA91A5 /* UIViewController+BackButtonHandler.m in Sources */,
 				0ED1D2CD17BFED3C006FC6D4 /* FeatureCell.m in Sources */,
+				0EC58753197E9B6E00A56E03 /* ViewControllerAbout.m in Sources */,
 				0ED1D2CE17BFED3C006FC6D4 /* FeatureViewController.m in Sources */,
 				0ED1D2CF17BFED3C006FC6D4 /* IconDownloader.m in Sources */,
 				0ED1D2D017BFED3C006FC6D4 /* ItemCell.m in Sources */,

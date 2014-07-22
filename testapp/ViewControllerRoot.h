@@ -10,4 +10,6 @@
 
 @interface ViewControllerRoot : UIViewController <UIGestureRecognizerDelegate>
 
+- (void) setMenuOpen:(bool)state;
+
 @end

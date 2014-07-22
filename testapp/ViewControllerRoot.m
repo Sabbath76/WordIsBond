@@ -8,6 +8,7 @@
 
 #import "ViewControllerRoot.h"
 #import "ViewControllerMediaPlayer.h"
+#import "MasterViewController.h"
 
 @interface ViewControllerRoot ()
 
@@ -16,6 +17,7 @@
 @implementation ViewControllerRoot
 {
     __weak IBOutlet NSLayoutConstraint *mediaPlayerPosition;
+    __weak IBOutlet NSLayoutConstraint *mainScreenPosition;
     __weak IBOutlet UIView *m_mainView;
     float m_slideInitialPos;
 }
@@ -50,6 +52,13 @@
         // do something with the AlertView's subviews here...
         [childViewController setSlideConstraint:mediaPlayerPosition];
     }
+    else if ([segueName isEqualToString: @"main_embed"])
+    {
+        UINavigationController *navController = (UINavigationController*) [segue destinationViewController];
+         MasterViewController *pMasterViewControlller = (MasterViewController *) [navController visibleViewController];
+     //   MasterViewController *pMasterViewControlller = (MasterViewController *) [segue destinationViewController];
+        [pMasterViewControlller setRootController:self];
+    }
 }
 
 
@@ -58,24 +67,27 @@ float MENU_FAST_ANIMATION_DURATION = 0.1f;
 
 - (void) setMenuOpen:(bool)state
 {
-    CGRect destination = m_mainView.frame;
+//    CGRect destination = m_mainView.frame;
+    float destination = 0;
     
     if (state)
     {
-        destination.origin.x = 270;
+        destination = 270;
         
         [m_mainView setUserInteractionEnabled:false];
     }
     else
     {
-        destination.origin.x = 0;
+        destination = 0;
         
         [m_mainView setUserInteractionEnabled:true];
     }
     
-    [UIView beginAnimations:@"Bringing up menu" context:nil];
-    m_mainView.frame = destination;
-    [UIView commitAnimations];
+//    [UIView beginAnimations:@"Bringing up menu" context:nil];
+//    m_mainView.frame = destination;
+//    [UIView commitAnimations];
+    [mainScreenPosition setConstant:destination];
+    [UIView animateWithDuration:0.5f animations:^{[[m_mainView superview] layoutIfNeeded];}];
 }
 
 - (BOOL) gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
@@ -113,20 +125,26 @@ float MENU_FAST_ANIMATION_DURATION = 0.1f;
             vX = dragView.frame.origin.x + (MENU_ANIMATION_DURATION/2.0)*[sender velocityInView:self.view].x;
             compare = vX;
             bool closed = (compare < threshold);
+            float timeT = 0.0f;
             if (closed)
             {
                 vX = min;
+                timeT = compare / max;
             }
             else
             {
                 vX = max;
+                timeT = (max - compare) / max;
             }
             
-            CGRect frame = dragView.frame;
-            frame.origin.x = vX;
-            [UIView animateWithDuration:MENU_ANIMATION_DURATION animations:^
+//            CGRect frame = dragView.frame;
+//            frame.origin.x = vX;
+            [mainScreenPosition setConstant:vX];
+//            [UIView animateWithDuration:0.5f animations:^{[[self view] layoutIfNeeded];}];
+            [UIView animateWithDuration:MENU_ANIMATION_DURATION*timeT animations:^
              {
-                 [dragView setFrame:frame];
+                 [[m_mainView superview]  layoutIfNeeded];
+//                 [dragView setFrame:frame];
              } completion:^(BOOL finished)
              {
                  [dragView setUserInteractionEnabled:closed];
@@ -145,10 +163,11 @@ float MENU_FAST_ANIMATION_DURATION = 0.1f;
             compare = MAX(compare, min);
             compare = MIN(compare, max);
             
-            CGRect frame = dragView.frame;
-            frame.origin.x = compare;
-            
-            [UIView animateWithDuration:MENU_FAST_ANIMATION_DURATION animations:^{[dragView setFrame:frame];}];
+            [mainScreenPosition setConstant:compare];
+            [UIView animateWithDuration:MENU_FAST_ANIMATION_DURATION animations:^{[[m_mainView superview]  layoutIfNeeded];}];
+//            CGRect frame = dragView.frame;
+//            frame.origin.x = compare;
+//            [UIView animateWithDuration:MENU_FAST_ANIMATION_DURATION animations:^{[dragView setFrame:frame];}];
             break;
         }
             

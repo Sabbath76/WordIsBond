@@ -20,5 +20,6 @@
 
 - (void) setMenuOpen:(bool)state;
 - (void) selectDetail:(CRSSItem *)item;
+- (void) setRootController:(UIViewController*) controller;
 
 @end
