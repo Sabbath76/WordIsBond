@@ -454,6 +454,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
                    m_scrollTrackHeader.frame.size.width * numItems,
                    m_scrollTrackHeader.frame.size.height);
     }
+    [m_scrollTrackHeader reloadInputViews];
 
     
 }

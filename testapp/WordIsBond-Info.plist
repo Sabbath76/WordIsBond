@@ -80,6 +80,7 @@
 	<key>UIAppFonts</key>
 	<array>
 		<string>MyriadPro-Regular.otf</string>
+		<string>ModeC.otf</string>
 	</array>
 </dict>
 </plist>

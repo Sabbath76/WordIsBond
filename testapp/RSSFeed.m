@@ -434,6 +434,9 @@ I want my mummee
 {
     if (m_hasSearch)
     {
+        NSString *url = @"http://www.thewordisbond.com/?json=appqueries.get_recent_posts&count=20";
+        m_lastSearch = url;
+        
         self.items = sourceItems;
         self.features = sourceFeatures;
         m_hasSearch = false;

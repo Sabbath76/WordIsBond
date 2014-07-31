@@ -80,7 +80,18 @@ const NSString *notificationURL = @"http://www.thewordisbond.com/?json=register_
     [[[GAI sharedInstance] logger] setLogLevel:kGAILogLevelVerbose];
     [[GAI sharedInstance] trackerWithTrackingId:@"UA-11823155-6"];
 
+/*    for (NSString* family in [UIFont familyNames])
+    {
+        NSLog(@"%@", family);
+        
+        for (NSString* name in [UIFont fontNamesForFamilyName: family])
+        {
+            NSLog(@"  %@", name);
+        }
+    }
     
+    [UIFont fontWithName:@"MyriadPro-Regular" size:20];
+*/
     return YES;
 }
 

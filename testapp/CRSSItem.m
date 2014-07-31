@@ -236,7 +236,9 @@ static NSDateFormatter *sDateFormatter = nil;
 //    NSString *imgHTML = [NSString stringWithFormat:@"<div><a><img src=\"%@\" width=\"%d\" height=\"%d\"/></a></div>", imageURLString, (int)(objWidth.intValue*scale), (int)(objHeight.intValue*scale)];
     fullContent = [fullContent stringByAppendingString:imgHTML];
 */
-    NSString *blurbFormat = @"<head><style>a:link {color:#844434;text-decoration:underline;}</style></head><meta name='viewport' content='width=device-width; initial-scale=1, maximum-scale=1'><div style='text-align:justify; font-size:16px;font-family:HelveticaNeue;color:#FFFF;'>%@</div>";
+//    NSString *blurbFormat = @"<head><style>a:link {color:#844434;text-decoration:underline;}</style></head><meta name='viewport' content='width=device-width; initial-scale=1, maximum-scale=1'><div style='text-align:justify; font-size:16px;font-family:HelveticaNeue;color:#FFFF;'>%@</div>";
+    NSString *blurbFormat = @"<head><style>a:link {color:#844434;text-decoration:underline;}</style></head><meta name='viewport' content='width=device-width; initial-scale=1, maximum-scale=1'><div style='text-align:justify; font-size:16px;font-family:MyriadPro-Regular;color:#FFFF;'>%@</div>";
+
     blurb = [NSString stringWithFormat:blurbFormat, description];
     
 /*    NSString *postFormat = @"<meta name='viewport' content='width=device-width; initial-scale=1, maximum-scale=1'>\

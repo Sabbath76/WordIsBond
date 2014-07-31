@@ -46,13 +46,6 @@
 {
     [super viewDidLoad];
 
-    // hello Miles, hello Charlotte, hello Lloyd. Miles has a messy nose. Charlotte is abernorical. Miles is cute.
-    // I am not a robot, Miles and Charlotte are robots!
-    // Miles is coolest but Charlotte is the most bonkers girl in the whole wide world.
-    // It is funny, very funny. I am the funniest.
-    // Mummy is not the boss of me.
-    // There's a starman floating in the sky. He'd like to come and meet us, but he thinks he'd blow our minds.
-    // Do you like those noodles Miles? Tasty they are, yes!
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  

@@ -63,6 +63,9 @@ const int ExpandedSectionSize = 120;
     FeatureViewController *m_featuresController;
     ViewControllerRoot *m_rootViewController;
     
+    UIImageView *m_searchOverlay;
+    UIImageView *m_searchSpinner;
+    
     SelectedItem *m_forcedDetailItem;
     
     UIView *m_quickMenu;
@@ -187,36 +190,6 @@ const int ExpandedSectionSize = 120;
     [self setMenuOpen:menuOpen];
 }
 
-- (IBAction)onSearch:(id)sender
-{
-    if (m_searchShouldBeginEditing)
-    {
-        [self.navigationItem.titleView resignFirstResponder];
-
-        [self createTopBanner];
-        
-        m_searchShouldBeginEditing = FALSE;
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
-                                                                                               target:self
-                                                                                               action:@selector(onSearch:)];
-        
-        [_feed clearSearch];
-    }
-    else
-    {
-        UISearchBar *searchBar = [[UISearchBar alloc] initWithFrame:CGRectZero];
-        [searchBar sizeToFit];
-        searchBar.delegate = self;
-        self.navigationItem.titleView = searchBar;
-
-        m_searchShouldBeginEditing = true;
-        [searchBar becomeFirstResponder];
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
-                                                                         target:self
-                                                                         action:@selector(onSearch:)];
-    }
-}
-
 - (void)awakeFromNib
 {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
@@ -316,6 +289,19 @@ const int ExpandedSectionSize = 120;
     
     m_quickMenu = [[[NSBundle mainBundle] loadNibNamed:@"PostQuickMenu" owner:self options:nil] objectAtIndex:0];
 
+    m_searchOverlay = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"WIB_BG_blur"]];
+    CGRect vframe = self.view.frame;
+    CGRect frame = self.tableView.frame;
+    m_searchOverlay.frame = frame;
+    m_searchSpinner = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"icon_loading"]];
+    m_searchSpinner.frame = frame;
+    m_searchSpinner.contentMode = UIViewContentModeCenter;
+//    m_searchOverlay = [[UIView alloc]  initWithFrame:self. view.frame];
+//    m_searchOverlay.backgroundColor=[UIColor blackColor];
+    m_searchOverlay.alpha = 0;
+    m_searchSpinner.alpha = 0;
+    [m_searchOverlay addSubview:m_searchSpinner];
+    
     //--- Load the first few items straight away
     [self loadImagesForOnscreenRows];
 }
@@ -418,6 +404,8 @@ const int ExpandedSectionSize = 120;
 {
     [self setMenuOpen:false];
     
+    [self updateSearchBlur:false];
+
     // tell our table view to reload its data, now that parsing has completed
     if (_feed.reset)
     {
@@ -1358,6 +1346,89 @@ const int ExpandedSectionSize = 120;
 
 // Search bar functionality
 
+
+- (void) spinWithOptions: (UIViewAnimationOptions) options {
+    // this spin completes 360 degrees every 2 seconds
+    [UIView animateWithDuration: 0.5f
+                          delay: 0.0f
+                        options: options
+                     animations: ^{
+                         m_searchSpinner.transform = CGAffineTransformRotate(m_searchSpinner.transform, M_PI / 2);
+                     }
+                     completion: ^(BOOL finished) {
+                         if (finished) {
+                             // if flag still set, keep spinning with constant speed
+                             [self spinWithOptions: UIViewAnimationOptionCurveLinear];
+                         }
+                     }];
+}
+
+-(void) updateSearchBlur:(Boolean) enable
+{
+    if (enable)
+    {
+        [self.view.superview addSubview:m_searchOverlay];
+        
+        [UIView beginAnimations:@"FadeIn" context:nil];
+        [UIView setAnimationDuration:0.5];
+        m_searchOverlay.alpha = 0.6;
+        [UIView commitAnimations];
+    }
+    else
+    {
+        
+        if (m_searchOverlay.alpha > 0)
+        {
+            [UIView animateWithDuration:m_searchOverlay.alpha animations:^{
+                m_searchOverlay.alpha = 0.0;
+                m_searchSpinner.alpha = 0.0;
+            } completion:^(BOOL finished) {
+                [m_searchOverlay removeFromSuperview];
+            }];
+        }
+        else
+        {
+            m_searchOverlay.alpha = 0;
+            m_searchSpinner.alpha = 0.0;
+            [m_searchOverlay removeFromSuperview];
+        }
+    }
+}
+
+- (IBAction)onSearch:(id)sender
+{
+    if (m_searchShouldBeginEditing)
+    {
+        [self.navigationItem.titleView resignFirstResponder];
+        
+        [self createTopBanner];
+        
+        m_searchShouldBeginEditing = FALSE;
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
+                                                                                               target:self
+                                                                                               action:@selector(onSearch:)];
+        self.navigationItem.rightBarButtonItem.tintColor = [UIColor whiteColor];
+        
+        [_feed clearSearch];
+    }
+    else
+    {
+        UISearchBar *searchBar = [[UISearchBar alloc] initWithFrame:CGRectZero];
+        [searchBar sizeToFit];
+        searchBar.delegate = self;
+        self.navigationItem.titleView = searchBar;
+        
+        m_searchShouldBeginEditing = true;
+        [searchBar becomeFirstResponder];
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
+                                                                                               target:self
+                                                                                               action:@selector(onSearch:)];
+        self.navigationItem.rightBarButtonItem.tintColor = [UIColor whiteColor];
+    }
+    
+    [self updateSearchBlur:m_searchShouldBeginEditing];
+}
+
 - (void)searchBar:(UISearchBar *)bar textDidChange:(NSString *)searchText
 {
     if(![bar isFirstResponder])
@@ -1371,7 +1442,7 @@ const int ExpandedSectionSize = 120;
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
                                                                                                target:self
                                                                                                action:@selector(onSearch:)];
-
+        self.navigationItem.rightBarButtonItem.tintColor = [UIColor whiteColor];
     }
 }
 
@@ -1393,6 +1464,18 @@ const int ExpandedSectionSize = 120;
     
     [[RSSFeed getInstance] FilterJSON:searchBar.text showAudio:true showVideo:true showText:true];
     
+    [UIView animateWithDuration:0.5 animations:^{
+        m_searchOverlay.alpha = 0.95;
+    } completion:^(BOOL finished) {
+        [UIView animateWithDuration:0.5 animations:^{
+            m_searchSpinner.alpha = 1.0;
+        } completion:^(BOOL finished) {
+            [self spinWithOptions:UIViewAnimationOptionCurveEaseIn];
+        }];
+    }];
+
+ //   [self performSegueWithIdentifier: @"Search" sender:self];
+
 //    [[NSNotificationCenter defaultCenter]
 //     postNotificationName:@"CloseMenu"
 //     object:self];
@@ -1410,7 +1493,9 @@ const int ExpandedSectionSize = 120;
     [[NSNotificationCenter defaultCenter]
      postNotificationName:@"NewRSSFeed"
      object:self];
-    
+
+    [self updateSearchBlur:false];
+
     [self createTopBanner];
 }
 /*

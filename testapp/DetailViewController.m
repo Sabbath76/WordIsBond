@@ -189,6 +189,9 @@
     m_currentPage.view.translatesAutoresizingMaskIntoConstraints = TRUE;
     m_nextPage.view.translatesAutoresizingMaskIntoConstraints = TRUE;
 */
+    
+    [self enableExtendedNavigationBar:true];
+    
     [_webView setDelegate:self];
     
     [self configureView:true];
@@ -202,8 +205,6 @@
     {
         m_header.contentOffset = CGPointMake(m_header.frame.size.width*m_itemPos, 0);
     }
-    
-    [self enableExtendedNavigationBar:true];
     
     m_toolbarOffset = 0;
     m_scrollOffset = 0;
