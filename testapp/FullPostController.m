@@ -77,6 +77,10 @@
         m_offset = 80.0f;
         
         float headerBottom = 220.0f;
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
+        {
+            headerBottom = 300.0f;
+        }
         [[m_webView scrollView] setContentInset:UIEdgeInsetsMake(headerBottom, 0, 0, 0)];
     }
 }
@@ -138,6 +142,13 @@
         [m_image setFrame:imageFrame];
         [m_blurredImage setFrame:imageFrame];
     }
+}
+
+- (void) goToComments
+{
+//    CGPoint bottomOffset = CGPointMake(0, m_webView.scrollView.contentSize.height - m_webView.scrollView.bounds.size.height);
+//    [m_webView.scrollView setContentOffset:bottomOffset animated:YES];
+    [m_webView stringByEvaluatingJavaScriptFromString:@"window.location.hash='comments';"];
 }
 
 @end

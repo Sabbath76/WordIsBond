@@ -142,7 +142,10 @@ static NSMutableDictionary *s_downloadingImagesByID = NULL;
     }
     else
     {
-        [iconDownloader->delegateList addObject:delegate];
+        if ([iconDownloader->delegateList containsObject:delegate] == false)
+        {
+            [iconDownloader->delegateList addObject:delegate];
+        }
         
     }
 

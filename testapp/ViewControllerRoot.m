@@ -55,9 +55,9 @@
     else if ([segueName isEqualToString: @"main_embed"])
     {
         UINavigationController *navController = (UINavigationController*) [segue destinationViewController];
-         MasterViewController *pMasterViewControlller = (MasterViewController *) [navController visibleViewController];
-     //   MasterViewController *pMasterViewControlller = (MasterViewController *) [segue destinationViewController];
-        [pMasterViewControlller setRootController:self];
+         MasterViewController *pMasterViewController = (MasterViewController *) [navController visibleViewController];
+     //   MasterViewController *pMasterViewController = (MasterViewController *) [segue destinationViewController];
+        [pMasterViewController setRootController:self];
     }
 }
 

@@ -32,6 +32,7 @@
 - (void)updateTextViews:(BOOL)force;
 - (void)setSourceArray:(NSArray*)array;
 - (void)setAlpha:(float)alpha;
+- (void) goToComments;
 
 @end
 

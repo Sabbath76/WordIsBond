@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="5056" systemVersion="12F45" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment defaultVersion="1552" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="FullPostController">
+            <connections>
+                <outlet property="m_author" destination="kFp-Pb-rFP" id="njQ-kh-bci"/>
+                <outlet property="m_blurredImage" destination="FD9-2S-cVz" id="k3j-Pq-Av9"/>
+                <outlet property="m_date" destination="yWo-fX-A8Z" id="8XQ-gi-h5U"/>
+                <outlet property="m_headerText" destination="WGd-p9-WNg" id="ohG-hY-vir"/>
+                <outlet property="m_image" destination="R4a-aq-3uh" id="HYY-ci-j0b"/>
+                <outlet property="m_title" destination="scZ-E1-v50" id="7WD-iw-b4x"/>
+                <outlet property="m_toolbarRegion" destination="8B8-dk-PKo" id="iXx-IZ-r7g"/>
+                <outlet property="m_webView" destination="9cj-o9-ls1" id="0ck-id-Nhy"/>
+                <outlet property="view" destination="wVR-9U-7Kf" id="00N-zw-4VU"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" horizontalHuggingPriority="999" verticalHuggingPriority="999" id="wVR-9U-7Kf">
+            <rect key="frame" x="0.0" y="0.0" width="703" height="768"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <webView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9cj-o9-ls1">
+                    <rect key="frame" x="0.0" y="0.0" width="703" height="768"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="tintColor" red="0.51764705879999995" green="0.2666666667" blue="0.20392156859999999" alpha="1" colorSpace="calibratedRGB"/>
+                </webView>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="user_avatar.png" translatesAutoresizingMaskIntoConstraints="NO" id="R4a-aq-3uh">
+                    <rect key="frame" x="0.0" y="0.0" width="703" height="250"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="250" id="Dow-6c-8NN"/>
+                    </constraints>
+                </imageView>
+                <imageView opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="user_avatar.png" translatesAutoresizingMaskIntoConstraints="NO" id="FD9-2S-cVz">
+                    <rect key="frame" x="0.0" y="0.0" width="703" height="250"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                </imageView>
+                <toolbar opaque="NO" clearsContextBeforeDrawing="NO" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8B8-dk-PKo">
+                    <rect key="frame" x="0.0" y="250" width="703" height="76"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                    <color key="backgroundColor" red="0.9108690693" green="0.90821738139999997" blue="0.9110116332" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="76" id="uXG-on-Kbs"/>
+                    </constraints>
+                    <items/>
+                    <color key="tintColor" red="0.9108690693" green="0.90821738139999997" blue="0.9110116332" alpha="1" colorSpace="calibratedRGB"/>
+                </toolbar>
+                <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WGd-p9-WNg">
+                    <rect key="frame" x="0.0" y="250" width="703" height="80"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <subviews>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="New special engines from Berlin - take up never before seen dangers" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="642" translatesAutoresizingMaskIntoConstraints="NO" id="scZ-E1-v50">
+                            <rect key="frame" x="5" y="0.0" width="642" height="49"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                            <color key="textColor" red="0.51764705879999995" green="0.2666666667" blue="0.20392156859999999" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Tuesday October 21st" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yWo-fX-A8Z">
+                            <rect key="frame" x="5" y="47" width="181" height="23"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <color key="textColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="By John Dee" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kFp-Pb-rFP">
+                            <rect key="frame" x="570" y="47" width="113" height="23"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <color key="textColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aS8-II-dLr">
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="0.0"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" red="0.51764705879999995" green="0.2666666667" blue="0.20392156859999999" alpha="1" colorSpace="calibratedRGB"/>
+                        </view>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="80" id="Fnh-nK-6X7"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="FD9-2S-cVz" firstAttribute="trailing" secondItem="9cj-o9-ls1" secondAttribute="trailing" id="4nc-E2-mI1"/>
+                <constraint firstAttribute="trailing" secondItem="8B8-dk-PKo" secondAttribute="trailing" id="8pz-w2-6Gz"/>
+                <constraint firstItem="FD9-2S-cVz" firstAttribute="trailing" secondItem="WGd-p9-WNg" secondAttribute="trailing" id="B1Y-Th-9Uc"/>
+                <constraint firstItem="WGd-p9-WNg" firstAttribute="top" secondItem="FD9-2S-cVz" secondAttribute="bottom" id="Ed6-xF-Oxt"/>
+                <constraint firstItem="FD9-2S-cVz" firstAttribute="leading" secondItem="WGd-p9-WNg" secondAttribute="leading" id="NZf-bz-mfs"/>
+                <constraint firstItem="8B8-dk-PKo" firstAttribute="top" secondItem="FD9-2S-cVz" secondAttribute="bottom" id="PQM-Zd-Acl"/>
+                <constraint firstItem="FD9-2S-cVz" firstAttribute="bottom" secondItem="R4a-aq-3uh" secondAttribute="bottom" id="UBg-R2-nVo"/>
+                <constraint firstItem="R4a-aq-3uh" firstAttribute="leading" secondItem="wVR-9U-7Kf" secondAttribute="leading" id="WJe-Aa-sHt"/>
+                <constraint firstAttribute="bottom" secondItem="9cj-o9-ls1" secondAttribute="bottom" id="WzY-eb-chk"/>
+                <constraint firstItem="FD9-2S-cVz" firstAttribute="top" secondItem="R4a-aq-3uh" secondAttribute="top" id="Xo6-oE-KFy"/>
+                <constraint firstItem="FD9-2S-cVz" firstAttribute="trailing" secondItem="R4a-aq-3uh" secondAttribute="trailing" id="b4m-ZH-rlW"/>
+                <constraint firstItem="FD9-2S-cVz" firstAttribute="leading" secondItem="R4a-aq-3uh" secondAttribute="leading" id="de2-fC-wDK"/>
+                <constraint firstItem="8B8-dk-PKo" firstAttribute="leading" secondItem="wVR-9U-7Kf" secondAttribute="leading" id="ftl-R4-zTF"/>
+                <constraint firstItem="FD9-2S-cVz" firstAttribute="top" secondItem="9cj-o9-ls1" secondAttribute="top" id="oOD-fW-X6X"/>
+                <constraint firstItem="FD9-2S-cVz" firstAttribute="leading" secondItem="9cj-o9-ls1" secondAttribute="leading" id="qoD-sa-1pw"/>
+                <constraint firstItem="R4a-aq-3uh" firstAttribute="top" secondItem="wVR-9U-7Kf" secondAttribute="top" id="vVd-gj-czq"/>
+                <constraint firstAttribute="trailing" secondItem="R4a-aq-3uh" secondAttribute="trailing" id="xJF-Fq-lo4"/>
+            </constraints>
+            <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
+            <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+            <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
+            <splitViewDetailSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="user_avatar.png" width="45" height="45"/>
+    </resources>
+</document>

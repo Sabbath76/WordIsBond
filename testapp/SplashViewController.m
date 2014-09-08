@@ -92,7 +92,14 @@
 
 - (void) receiveNewRSSFeed:(NSNotification *) notification
 {
-    [self performSegueWithIdentifier: @"OpenMain" sender:self];
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
+    {
+        [self dismissViewControllerAnimated:YES completion:^{}];
+    }
+    else
+    {
+        [self performSegueWithIdentifier: @"OpenMain" sender:self];
+    }
 }
 
 @end

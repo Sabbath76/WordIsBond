@@ -33,7 +33,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="10" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="28" y="126"/>
+            <point key="canvasLocation" x="-20" y="134"/>
         </scene>
         <!--Splash View Controller-->
         <scene sceneID="9xe-MJ-HTS">
@@ -74,7 +74,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="AyD-4w-rTM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-632" y="-1273"/>
+            <point key="canvasLocation" x="-557" y="-1261"/>
         </scene>
         <!--View Controller Root-->
         <scene sceneID="gWC-Ln-7c1">
@@ -178,7 +178,7 @@
                     </connections>
                 </panGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="-382" y="-631"/>
+            <point key="canvasLocation" x="-430" y="-623"/>
         </scene>
         <!--Master View Controller - Master-->
         <scene sceneID="18">
@@ -397,7 +397,7 @@
                                         </imageView>
                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="1" contentMode="top" text="Label" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" preferredMaxLayoutWidth="212" translatesAutoresizingMaskIntoConstraints="NO" id="dkU-4R-v4o">
                                             <rect key="frame" x="73" y="25" width="212" height="44"/>
-                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
+                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </label>
@@ -408,7 +408,7 @@
                                                 <constraint firstAttribute="height" constant="21" id="Sla-lh-VVk"/>
                                                 <constraint firstAttribute="width" constant="80" id="mGf-R3-3cs"/>
                                             </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                             <color key="textColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
@@ -523,7 +523,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="436" y="144"/>
+            <point key="canvasLocation" x="388" y="152"/>
         </scene>
         <!--Detail View Controller - Detail-->
         <scene sceneID="24">
@@ -538,15 +538,16 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" translatesAutoresizingMaskIntoConstraints="NO" id="shb-TD-ztL">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="430"/>
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="393"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <connections>
                                     <outlet property="delegate" destination="21" id="fZS-b4-gcv"/>
                                 </connections>
                             </scrollView>
                         </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="bottom" secondItem="shb-TD-ztL" secondAttribute="bottom" constant="13" id="13y-OI-1Td"/>
+                            <constraint firstAttribute="bottom" secondItem="shb-TD-ztL" secondAttribute="bottom" constant="50" id="13y-OI-1Td"/>
                             <constraint firstItem="shb-TD-ztL" firstAttribute="leading" secondItem="pKs-kg-7QB" secondAttribute="leading" id="Gl0-uS-K1z"/>
                             <constraint firstAttribute="trailing" secondItem="shb-TD-ztL" secondAttribute="trailing" id="JSQ-sm-sZX"/>
                             <constraint firstItem="shb-TD-ztL" firstAttribute="top" secondItem="pKs-kg-7QB" secondAttribute="top" id="ore-7a-Hwk"/>
@@ -574,7 +575,7 @@
                     </connections>
                 </panGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="958" y="126"/>
+            <point key="canvasLocation" x="910" y="134"/>
         </scene>
         <!--View Controller Media Player-->
         <scene sceneID="O5S-g9-H1D">
@@ -602,17 +603,17 @@
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Track" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" preferredMaxLayoutWidth="245" translatesAutoresizingMaskIntoConstraints="NO" id="x2v-w0-QCA">
-                                                    <rect key="frame" x="55" y="2" width="245" height="24"/>
+                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Track" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="x2v-w0-QCA">
+                                                    <rect key="frame" x="55" y="6" width="245" height="22"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Artist" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GfR-M9-mDU">
-                                                    <rect key="frame" x="55" y="22" width="245" height="22"/>
+                                                    <rect key="frame" x="55" y="19" width="245" height="22"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
@@ -631,8 +632,8 @@
                                                 <constraint firstAttribute="trailing" secondItem="x2v-w0-QCA" secondAttribute="trailing" constant="20" id="I1t-vK-8hK"/>
                                                 <constraint firstItem="V95-Vg-Hyp" firstAttribute="centerY" secondItem="QVF-tQ-J72" secondAttribute="centerY" id="WpN-Qz-BrL"/>
                                                 <constraint firstItem="V95-Vg-Hyp" firstAttribute="leading" secondItem="QVF-tQ-J72" secondAttribute="leading" constant="5" id="qAy-ny-Iqv"/>
-                                                <constraint firstAttribute="bottom" secondItem="x2v-w0-QCA" secondAttribute="bottom" constant="17" id="rXA-Mn-Z2Y"/>
-                                                <constraint firstItem="x2v-w0-QCA" firstAttribute="top" secondItem="QVF-tQ-J72" secondAttribute="top" constant="2" id="trd-Fu-CxA"/>
+                                                <constraint firstAttribute="bottom" secondItem="x2v-w0-QCA" secondAttribute="bottom" constant="15" id="rXA-Mn-Z2Y"/>
+                                                <constraint firstItem="x2v-w0-QCA" firstAttribute="top" secondItem="QVF-tQ-J72" secondAttribute="top" constant="6" id="trd-Fu-CxA"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -806,7 +807,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="122" y="-453"/>
+            <point key="canvasLocation" x="74" y="-445"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="PdK-XE-Na9">
@@ -823,7 +824,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vdF-t7-lxm" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-125" y="-1710"/>
+            <point key="canvasLocation" x="-173" y="-1702"/>
         </scene>
         <!--View Controller Menu-->
         <scene sceneID="Efj-jt-3LE">
@@ -983,7 +984,7 @@
                     </connections>
                 </searchDisplayController>
             </objects>
-            <point key="canvasLocation" x="246" y="-1315"/>
+            <point key="canvasLocation" x="198" y="-1307"/>
         </scene>
         <!--View Controller About-->
         <scene sceneID="JFN-yk-7Lc">
@@ -1083,7 +1084,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="N0o-0d-Eq4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="592" y="-1289"/>
+            <point key="canvasLocation" x="544" y="-1281"/>
         </scene>
     </scenes>
     <resources>
@@ -1113,6 +1114,6 @@
         <simulatedScreenMetrics key="destination"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="uIy-d6-bkf"/>
+        <segue reference="Lbf-d0-oxN"/>
     </inferredMetricsTieBreakers>
 </document>

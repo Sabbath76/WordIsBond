@@ -41,13 +41,16 @@ const NSString *notificationURL = @"http://www.thewordisbond.com/?json=register_
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+//    // TODO! Split view controller
     // Override point for customization after application launch.
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+//        id detailViewController =[splitViewController.viewControllers lastObject];
+//        splitViewController.delegate = detailViewController;
         UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
         splitViewController.delegate = (id)navigationController.topViewController;
     }
-    
+
     //--- Init the URL cache to stop it eating too much memory
     int cacheSizeMemory = 4*1024*1024; // 4MB
     int cacheSizeDisk = 32*1024*1024; // 32MB
@@ -77,7 +80,7 @@ const NSString *notificationURL = @"http://www.thewordisbond.com/?json=register_
     //--- Google Analytics
     [GAI sharedInstance].trackUncaughtExceptions = YES;
     [GAI sharedInstance].dispatchInterval = 20;
-    [[[GAI sharedInstance] logger] setLogLevel:kGAILogLevelVerbose];
+//    [[[GAI sharedInstance] logger] setLogLevel:kGAILogLevelVerbose];
     [[GAI sharedInstance] trackerWithTrackingId:@"UA-11823155-6"];
 
 /*    for (NSString* family in [UIFont familyNames])

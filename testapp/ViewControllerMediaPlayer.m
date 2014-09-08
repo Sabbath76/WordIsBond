@@ -975,7 +975,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
 //                    [btnPlay setHidden:false];
 
                     TrackInfo *trackInfo = m_audioTracks[currentTrack];
-                    trackInfo->duration = CMTimeGetSeconds(item.duration);
+                    trackInfo->duration = CMTimeGetSeconds([item asset].duration);
 
                     if (m_isPlaying)
                     {

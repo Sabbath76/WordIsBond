@@ -20,9 +20,10 @@
     __weak IBOutlet UIImageView *m_imgHighlight;
     __weak IBOutlet UIImageView *m_imgHighlightLine;
     NSArray *m_thumbnails;
+    NSTimer *m_timer;
 }
 
-@synthesize scrollView, rssFeed, detailViewController;
+@synthesize scrollView, rssFeed;
 @synthesize imageView1, imageView2, imageView3, imageView4, imageView5;
 
 - (void)awakeFromNib
@@ -45,42 +46,6 @@
     rssFeed = [RSSFeed getInstance];
     [self layoutIfNeeded];
     [self updateFeed];
-
-/*    UIImage *stretchableImage = (id)[UIImage imageNamed:@"cornerfull"];
-
-    CALayer *_maskingLayer1 = [CALayer layer];
-    CALayer *_maskingLayer2 = [CALayer layer];
-    CALayer *_maskingLayer3 = [CALayer layer];
-    CALayer *_maskingLayer4 = [CALayer layer];
-    CALayer *_maskingLayer5 = [CALayer layer];
-    
-    _maskingLayer1.frame = imageView1.bounds;
-    _maskingLayer1.contents = (id)stretchableImage.CGImage;
-    _maskingLayer1.contentsScale = [UIScreen mainScreen].scale; //<-needed for the retina display, otherwise our image will not be scaled properly
-    _maskingLayer1.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
-
-    _maskingLayer2.frame = imageView2.bounds;
-    _maskingLayer2.contents = (id)stretchableImage.CGImage;
-    _maskingLayer2.contentsScale = [UIScreen mainScreen].scale; //<-needed for the retina display, otherwise our image will not be scaled properly
-    _maskingLayer2.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
-    _maskingLayer3.frame = imageView3.bounds;
-    _maskingLayer3.contents = (id)stretchableImage.CGImage;
-    _maskingLayer3.contentsScale = [UIScreen mainScreen].scale; //<-needed for the retina display, otherwise our image will not be scaled properly
-    _maskingLayer3.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
-    _maskingLayer4.frame = imageView4.bounds;
-    _maskingLayer4.contents = (id)stretchableImage.CGImage;
-    _maskingLayer4.contentsScale = [UIScreen mainScreen].scale; //<-needed for the retina display, otherwise our image will not be scaled properly
-    _maskingLayer4.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
-    _maskingLayer5.frame = imageView4.bounds;
-    _maskingLayer5.contents = (id)stretchableImage.CGImage;
-    _maskingLayer5.contentsScale = [UIScreen mainScreen].scale; //<-needed for the retina display, otherwise our image will not be scaled properly
-    _maskingLayer5.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
-
-    [imageView1.layer setMask:_maskingLayer1];
-    [imageView2.layer setMask:_maskingLayer2];
-    [imageView3.layer setMask:_maskingLayer3];
-    [imageView4.layer setMask:_maskingLayer4];
-    [imageView5.layer setMask:_maskingLayer5];*/
     
     m_thumbnails = [[NSArray alloc] initWithObjects:imageView1, imageView2, imageView3, imageView4, imageView5, nil];
 }
@@ -88,7 +53,6 @@
 - (void) viewDidAppear
 {
     [self updateFeed];
- 
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
@@ -100,14 +64,14 @@
 
 - (IBAction)onFeature:(id)sender
 {
-    int index = leftMostFeature+[sender tag];
+    NSInteger index = leftMostFeature+[sender tag];
     [scrollView scrollRectToVisible:CGRectMake(scrollView.frame.size.width*index, 0, scrollView.frame.size.width , scrollView.frame.size.height) animated:YES];
     [self updateHighlight:index];
 }
 
-- (void)updateHighlight:(int)index
+- (void)updateHighlight:(NSInteger)index
 {
-    int thumb = index-leftMostFeature;
+    NSInteger thumb = index-leftMostFeature;
     if ((thumb >= 0) && (thumb < m_thumbnails.count))
     {
     UIButton *button = (UIButton*) m_thumbnails[thumb];
@@ -148,6 +112,9 @@
     
 	[self applyNewIndex:0 pageController:currentPage];
 	[self applyNewIndex:1 pageController:nextPage];
+
+    [m_timer invalidate];
+    m_timer = [NSTimer scheduledTimerWithTimeInterval:3.0f target:self selector:@selector(changePic) userInfo:nil repeats:NO];
 }
 
 -(void)onShowPost:(UITapGestureRecognizer *)gestureRecognizer
@@ -186,8 +153,8 @@
     
 	pageController.pageIndex = newIndex;
 
-    int maxFeatures = rssFeed.features.count;
-    int newleftmost = MAX(MIN(leftMostFeature, newIndex-1), newIndex-2);
+    NSInteger maxFeatures = rssFeed.features.count;
+    NSInteger newleftmost = MAX(MIN(leftMostFeature, newIndex-1), newIndex-2);
     newleftmost = MIN(maxFeatures - m_thumbnails.count, newleftmost);
     newleftmost = MAX(newleftmost, 0);
     if (newleftmost != leftMostFeature)
@@ -226,8 +193,8 @@
             currentPage.imageView.image = newImage;
         }
         
-        int maxFeatures = rssFeed.features.count - leftMostFeature;
-        int numImages = MIN(maxFeatures, m_thumbnails.count);
+        NSInteger maxFeatures = rssFeed.features.count - leftMostFeature;
+        NSInteger numImages = MIN(maxFeatures, m_thumbnails.count);
         
         for (int i=0; i<numImages; i++)
         {
@@ -286,6 +253,9 @@
 	
 	[currentPage updateTextViews:NO];
 	[nextPage updateTextViews:NO];
+    
+    [m_timer invalidate];
+    m_timer = NULL;
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)newScrollView
@@ -304,6 +274,26 @@
     [self updateHighlight:currentPage.pageIndex];
     
 	[currentPage updateTextViews:YES];
+
+    [m_timer invalidate];
+    m_timer = [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(changePic) userInfo:nil repeats:NO];
+}
+
+-(void)changePic
+{
+    CGFloat pageWidth = scrollView.frame.size.width;
+    float fractionalPage = scrollView.contentOffset.x / pageWidth;
+	NSInteger lowerNumber = floor(fractionalPage);
+    lowerNumber++;
+    if(lowerNumber==m_thumbnails.count)
+    {
+        lowerNumber=0;
+    }
+    [scrollView scrollRectToVisible:CGRectMake(scrollView.frame.size.width*lowerNumber, 0, scrollView.frame.size.width , scrollView.frame.size.height) animated:YES];
+    [self updateHighlight:lowerNumber];
+    
+    [m_timer invalidate];
+    m_timer = [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(changePic) userInfo:nil repeats:NO];
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)newScrollView

@@ -38,6 +38,7 @@ typedef enum
 @property (nonatomic, readwrite) int postID;
 @property (nonatomic, readwrite) Boolean requiresDownload;
 
+- (void) freeImages;
 - (UIImage *) requestImage:(id<IconDownloaderDelegate>)delegate;
 - (UIImage *) getBlurredImage;
 - (UIImage *) requestIcon:(id<IconDownloaderDelegate>)delegate;

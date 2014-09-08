@@ -17,6 +17,8 @@
 #import <Accounts/Accounts.h>
 #import "UIViewController+BackButtonHandler.h"
 
+#import "SelectedItem.h"
+
 #import "GAI.h"
 #import "GAIDictionaryBuilder.h"
 
@@ -69,7 +71,7 @@
                 itemCtr++;
             }
         }
-        if (m_itemPos > 0)
+        if (m_itemPos >= 0)
         {
             m_header.contentOffset = CGPointMake(m_header.frame.size.width*m_itemPos, 0);
         }
@@ -171,12 +173,31 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(notifyNewDetailItem:)
+                                                 name:@"SetDetailItem"
+                                               object:nil];
+    
+
     self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"top_banner_logo"]];
 
 //    m_currentPage = [[PostHeaderController alloc] initWithNibName:@"PostHeader" bundle:nil];
 //	m_nextPage = [[PostHeaderController alloc] initWithNibName:@"PostHeader" bundle:nil];
-    m_currentPage = [[FullPostController alloc] initWithNibName:@"FullPost" bundle:nil];
-	m_nextPage = [[FullPostController alloc] initWithNibName:@"FullPost" bundle:nil];
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
+    {
+        m_currentPage = [[FullPostController alloc] initWithNibName:@"FullPostiPad" bundle:nil];
+        m_nextPage = [[FullPostController alloc] initWithNibName:@"FullPostiPad" bundle:nil];
+
+        
+        [self.splitViewController performSegueWithIdentifier: @"Loading" sender:self];
+
+    }
+    else
+    {
+        m_currentPage = [[FullPostController alloc] initWithNibName:@"FullPost" bundle:nil];
+        m_nextPage = [[FullPostController alloc] initWithNibName:@"FullPost" bundle:nil];
+    }
     
     m_btnFavourite = self.btnFavourite;
 
@@ -210,6 +231,26 @@
     m_scrollOffset = 0;
     
     self.screenName = @"Post Details Screen";
+}
+
+
+- (void) notifyNewDetailItem:(NSNotification *) notification
+{
+    RSSFeed *pFeed = [RSSFeed getInstance];
+    SelectedItem *pDetailItem = (SelectedItem *)[notification object];
+    if (pDetailItem->isFavourite)
+    {
+        NSArray *favouriteList = [[[UserData get] favourites] allObjects];
+        [self setDetailItem:pDetailItem->item list:favouriteList];
+    }
+    else if (pDetailItem->isFeature)
+    {
+        [self setDetailItem:pDetailItem->item list:pFeed.features];
+    }
+    else
+    {
+        [self setDetailItem:pDetailItem->item list:pFeed.items];
+    }
 }
 
 - (void) viewDidAppear:(BOOL)animated
@@ -269,7 +310,8 @@
 
 - (void)splitViewController:(UISplitViewController *)splitController willHideViewController:(UIViewController *)viewController withBarButtonItem:(UIBarButtonItem *)barButtonItem forPopoverController:(UIPopoverController *)popoverController
 {
-    barButtonItem.title = NSLocalizedString(@"Master", @"Master");
+    [barButtonItem setImage:[UIImage imageNamed:@"icon_opt"]];
+//    barButtonItem.title = NSLocalizedString(@"Master", @"Master");
     [self.navigationItem setLeftBarButtonItem:barButtonItem animated:YES];
     self.masterPopoverController = popoverController;
 }
@@ -537,7 +579,7 @@
 
 - (IBAction)onComment:(id)sender
 {
-    [_webView stringByEvaluatingJavaScriptFromString:@"window.location.hash='comments';"];
+    [m_currentPage goToComments];
 /*
     UIAlertView *alertView = [[UIAlertView alloc]
                               initWithTitle:@"TODO"

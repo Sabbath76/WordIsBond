@@ -46,24 +46,26 @@ NSString *const FOItalicFontName = @"MyriadPro-Regular";
 - (id)initCustomWithCoder:(NSCoder *)aDecoder {
     BOOL result = [aDecoder containsValueForKey:@"UIFontDescriptor"];
     
-    if (result) {
-        UIFontDescriptor *descriptor = [aDecoder decodeObjectForKey:@"UIFontDescriptor"];
-        
-        NSString *fontName;
-        if ([descriptor.fontAttributes[@"NSCTFontUIUsageAttribute"] isEqualToString:@"CTFontRegularUsage"]) {
-            fontName = FORegularFontName;
+    if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1) {
+        if (result) {
+            UIFontDescriptor *descriptor = [aDecoder decodeObjectForKey:@"UIFontDescriptor"];
+            
+            NSString *fontName;
+            if ([descriptor.fontAttributes[@"NSCTFontUIUsageAttribute"] isEqualToString:@"CTFontRegularUsage"]) {
+                fontName = FORegularFontName;
+            }
+            else if ([descriptor.fontAttributes[@"NSCTFontUIUsageAttribute"] isEqualToString:@"CTFontEmphasizedUsage"]) {
+                fontName = FOBoldFontName;
+            }
+            else if ([descriptor.fontAttributes[@"NSCTFontUIUsageAttribute"] isEqualToString:@"CTFontObliqueUsage"]) {
+                fontName = FOItalicFontName;
+            }
+            else {
+                fontName = descriptor.fontAttributes[@"NSFontNameAttribute"];
+            }
+            
+            return [UIFont fontWithName:fontName size:descriptor.pointSize];
         }
-        else if ([descriptor.fontAttributes[@"NSCTFontUIUsageAttribute"] isEqualToString:@"CTFontEmphasizedUsage"]) {
-            fontName = FOBoldFontName;
-        }
-        else if ([descriptor.fontAttributes[@"NSCTFontUIUsageAttribute"] isEqualToString:@"CTFontObliqueUsage"]) {
-            fontName = FOItalicFontName;
-        }
-        else {
-            fontName = descriptor.fontAttributes[@"NSFontNameAttribute"];
-        }
-        
-        return [UIFont fontWithName:fontName size:descriptor.pointSize];
     }
     
     self = [self initCustomWithCoder:aDecoder];

@@ -15,7 +15,7 @@
 
 @interface FeatureCell : UITableViewCell <UIScrollViewDelegate, IconDownloaderDelegate>
 {
-    int leftMostFeature;
+    NSInteger leftMostFeature;
 	
 	FeatureController *currentPage;
 	FeatureController *nextPage;
@@ -28,7 +28,6 @@
 @property (nonatomic, retain) IBOutlet UIButton *imageView4;
 @property (weak, nonatomic) IBOutlet UIButton *imageView5;
 @property (nonatomic, retain) RSSFeed *rssFeed;
-@property (strong, nonatomic) DetailViewController *detailViewController;
 
 - (void)updateFeed;
 - (IBAction)onFeature:(id)sender;

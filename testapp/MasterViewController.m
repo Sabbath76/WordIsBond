@@ -70,7 +70,7 @@ const int ExpandedSectionSize = 120;
     
     UIView *m_quickMenu;
     
-    int m_currentQuickMenuItem;
+    NSInteger m_currentQuickMenuItem;
     
     NSIndexPath *m_expandedIndexPath;
     
@@ -290,7 +290,7 @@ const int ExpandedSectionSize = 120;
     m_quickMenu = [[[NSBundle mainBundle] loadNibNamed:@"PostQuickMenu" owner:self options:nil] objectAtIndex:0];
 
     m_searchOverlay = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"WIB_BG_blur"]];
-    CGRect vframe = self.view.frame;
+//    CGRect vframe = self.view.frame;
     CGRect frame = self.tableView.frame;
     m_searchOverlay.frame = frame;
     m_searchSpinner = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"icon_loading"]];
@@ -311,7 +311,8 @@ const int ExpandedSectionSize = 120;
     UIImageView *pImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"top_banner_logo"]];
     self.navigationItem.titleView = pImageView;
     
-    [self.navigationController.navigationBar setTintColor:[UIColor blackColor]];
+    UINavigationController *navController = self.navigationController;
+    [navController.navigationBar setTintColor:[UIColor blackColor]];
     
     UITapGestureRecognizer *singleFingerTap =
     [[UITapGestureRecognizer alloc] initWithTarget:self
@@ -525,10 +526,19 @@ const int ExpandedSectionSize = 120;
 //    CRSSItem *item = notification.object;
     [self setMenuOpen:false];
 //    [self.detailViewController setDetailItem:item];
-    m_forcedDetailItem = notification.object;
     
-    [self performSegueWithIdentifier: @"showDetailManual" sender:self];
-//    [self.navigationController pushViewController:self.detailViewController animated:true];
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
+    {
+        SelectedItem *item = notification.object;
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"SetDetailItem" object:item];
+    }
+    else
+    {
+        m_forcedDetailItem = notification.object;
+        
+        [self performSegueWithIdentifier: @"showDetailManual" sender:self];
+    //    [self.navigationController pushViewController:self.detailViewController animated:true];
+    }
 }
 
 - (void)viewDidLoad
@@ -552,7 +562,39 @@ const int ExpandedSectionSize = 120;
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
+    
     // Dispose of any resources that can be recreated.
+    
+    NSInteger minItem = _feed.items.count;
+    NSInteger maxItem = 0;
+    if (_feed.items.count > 0)
+    {
+        NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
+        for (NSIndexPath *indexPath in visiblePaths)
+        {
+            if (indexPath.section == Posts)
+            {
+                minItem = MIN(indexPath.row, minItem);
+                maxItem = MAX(indexPath.row, maxItem);
+            }
+        }
+        
+        minItem = MAX(minItem-3, 0);
+        maxItem = MIN(maxItem+4, _feed.items.count);
+        
+        for (NSUInteger i=0; i<minItem; i++)
+        {
+            CRSSItem *appRecord = _feed.items[i];
+            
+            [appRecord freeImages];
+        }
+        for (NSUInteger i=maxItem; i<_feed.items.count; i++)
+        {
+            CRSSItem *appRecord = _feed.items[i];
+            
+            [appRecord freeImages];
+        }
+    }
 }
 
 #pragma mark - Table View
@@ -755,8 +797,7 @@ const int ExpandedSectionSize = 120;
             FeatureCell *cell = newFeatureCell ? [tableView dequeueReusableCellWithIdentifier:@"FeatureCellScroll" forIndexPath:indexPath] : m_featureCell;
 
             cell.rssFeed = _feed;
-            cell.detailViewController = _detailViewController;
- 
+  
             if (newFeatureCell)
             {
                 [cell updateFeed];
@@ -832,8 +873,8 @@ const int ExpandedSectionSize = 120;
 // this method is used in case the user scrolled into a set of cells that don't have their app icons yet
 - (void) loadImagesForOnscreenRows
 {
-    int minItem = _feed.items.count;
-    int maxItem = 0;
+    NSInteger minItem = _feed.items.count;
+    NSInteger maxItem = 0;
     if (_feed.items.count > 0)
     {
         NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
@@ -850,7 +891,7 @@ const int ExpandedSectionSize = 120;
     minItem = MAX(minItem-3, 0);
     maxItem = MIN(maxItem+4, _feed.items.count);
     
-    for (int i=minItem; i<maxItem; i++)
+    for (NSInteger i=minItem; i<maxItem; i++)
     {
         CRSSItem *appRecord = _feed.items[i];
         
@@ -1034,7 +1075,7 @@ const int ExpandedSectionSize = 120;
     }
 }
 
--(void)displayPost:(int)postID
+-(void)displayPost:(NSInteger)postID
 {
     SelectedItem *item = [SelectedItem alloc];
     item->isFavourite = false;
@@ -1148,94 +1189,6 @@ const int ExpandedSectionSize = 120;
         }
     }
 }
-/*
--(void)handleLongPress:(UISwipeGestureRecognizer *)gestureRecognizer
-{
-    CGPoint p = [gestureRecognizer locationInView:self.tableView];
-    
-    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:p];
-    if (indexPath.section == Posts)
-    {
-        if (indexPath == nil)
-        {
-            //--- Cancel existing?
-        }
-        else
-        {
-//            NSLog(@"long press on table view at row %d", indexPath.row);
-            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-            if (cell)
-            {
-                if (gestureRecognizer.direction == UISwipeGestureRecognizerDirectionRight)
-                {
-                    if (m_currentQuickMenuItem != indexPath.row)
-                    {
-                        CGRect initialFrame = cell.frame;
-                        CGRect newMenuFrame = cell.frame;
-                        CGRect newFrame = cell.frame;
-                        initialFrame.origin.x = 0;
-                        initialFrame.size.width = 0;
-                        newMenuFrame.size.width = 100.0f;
-                        newFrame.origin.x = 100;
-                        
-                        // Add the side swipe view to the table below the cell
-                        [self.tableView insertSubview:m_quickMenu belowSubview:cell];
-                        
-                        CRSSItem *item = _feed.items[indexPath.row];
-                        bool isFavourite = [[[UserData get] favourites] containsObject:item];
-                        
-                        if (m_currentQuickMenuItem >= 0)
-                        {
-                            NSIndexPath *oldIndexPath = [NSIndexPath indexPathForRow:m_currentQuickMenuItem inSection:Posts];
-                            UITableViewCell *oldcell = [self.tableView cellForRowAtIndexPath:oldIndexPath];
-
-                            CGRect oldClosedFrame = oldcell.frame;
-                            oldClosedFrame.origin.x = 0;
-                            CGRect oldClosedMenuFrame = oldcell.frame;
-                            oldClosedMenuFrame.origin.x = 0;
-                            oldClosedMenuFrame.size.width = 0;
-                            [UIView animateWithDuration:0.1f
-                              animations:^
-                              {
-                                  [oldcell setFrame:oldClosedFrame];
-                                  [m_quickMenu setFrame:oldClosedMenuFrame];
-                              }
-                              completion:^(BOOL finished)
-                              {
-                                  [m_quickMenu setFrame:initialFrame];
-                                  [m_btnFavourite setSelected:isFavourite];
-                                  [UIView animateWithDuration:0.2f animations:^{[cell setFrame:newFrame];[m_quickMenu setFrame:newMenuFrame];}];
-                              }
-                              ];
-                        }
-                        else
-                        {
-                            m_quickMenu.frame = initialFrame;
-                            [m_btnFavourite setSelected:isFavourite];
-                            [UIView animateWithDuration:0.3f animations:^{[cell setFrame:newFrame];[m_quickMenu setFrame:newMenuFrame];}];
-                        }
-                        
-                        m_currentQuickMenuItem = indexPath.row;
-                    }
-                }
-                else
-                {
-                    if (indexPath.row == m_currentQuickMenuItem)
-                    {
-                        CGRect newFrame = cell.frame;
-                        newFrame.origin.x = 0;
-                        CGRect newMenuFrame = cell.frame;
-                        newMenuFrame.origin.x = 0;
-                        newMenuFrame.size.width= 0;
-                        [UIView animateWithDuration:0.3f animations:^{[cell setFrame:newFrame];[m_quickMenu setFrame:newMenuFrame];}];
-                        m_currentQuickMenuItem = -1;
-                    }
-                }
-            }
-        }
-    }
-}
-*/
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -1252,8 +1205,16 @@ const int ExpandedSectionSize = 120;
             
             if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
             {
-                CRSSItem *object = _feed.items[indexPath.row];
-                [self.detailViewController setDetailItem:object list:_feed.items];
+                SelectedItem *item = [SelectedItem alloc];
+                item->isFavourite = false;
+                item->isFeature = false;
+                item->item = _feed.items[indexPath.row];
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"SetDetailItem" object:item];
+
+
+//                CRSSItem *object = _feed.items[indexPath.row];
+//                [self.detailViewController setDetailItem:object list:_feed.items];
             }
             break;
     }

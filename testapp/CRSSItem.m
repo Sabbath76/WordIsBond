@@ -517,6 +517,12 @@ static NSDateFormatter *sDateFormatter = nil;
     [tracks addObject:track];
 }
 
+- (void) freeImages
+{
+    appIcon = NULL;
+    iconImage = NULL;
+    blurredImage = NULL;
+}
 
 - (UIImage *) requestImage:(id<IconDownloaderDelegate>)delegate;
 {
