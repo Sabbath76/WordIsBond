@@ -79,16 +79,14 @@ static UserData *s_userData;
 	if (fileExists)
 	{
 		NSArray *values = [[NSArray alloc] initWithContentsOfFile:myPath];
-        int numFavourites = values.count/2;
+        NSInteger numFavourites = values.count/2;
         for (int i=0; i<numFavourites; i++)
         {
             NSNumber *postId = [values objectAtIndex:2*i];
             NSString *postTitle = [values objectAtIndex:(2*i)+1];
             
-            CRSSItem *item = [[CRSSItem alloc] init];
-            item.postID = [postId intValue];
-            item.title = postTitle;
-            item.requiresDownload = true;
+            CRSSItem *item = [CRSSItem alloc];
+            [item initAsStub:[postId intValue] postTitle:postTitle isFeature:false];
             
             [favourites addObject:item];
         }

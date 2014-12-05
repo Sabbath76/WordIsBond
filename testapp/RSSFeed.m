@@ -123,17 +123,6 @@
     //    NSURLConnection
 }
 
-/*
-Hello Miles
-
-Lloyd is eating Shreddees
- 
-I want my mummee
-
- PoooooooooOoooooooOoooo
- 
- I luv my mummee
-*/
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
     //Reset the data as this could be fired if a redirect or other response occurs
@@ -176,18 +165,54 @@ I want my mummee
     [alertView show];
 }
 
+- (void)emptyFeed
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"FailedFeed" object:self];
+    
+    m_connectionPosts = nil;
+    m_connectionFeatures = nil;
+    
+    if (m_hasSearch)
+    {
+        UIAlertView *alertView = [[UIAlertView alloc]
+                                  initWithTitle:@"Search Failed"
+                                  message:@"No hits for search term"
+                                  delegate:self
+                                  cancelButtonTitle:@"Cancel Search"
+                                  otherButtonTitles:nil];
+        [alertView show];
+    }
+    else
+    {
+        UIAlertView *alertView = [[UIAlertView alloc]
+                                  initWithTitle:@"Cannot connect to WIB"
+                                  message:@"Please ensure that you are connected to the internet."
+                                  delegate:self
+                                  cancelButtonTitle:@"Try Again"
+                                  otherButtonTitles:nil];
+        [alertView show];
+    }
+}
+
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (buttonIndex == [alertView cancelButtonIndex])
     {
-        m_receivedData = [[NSMutableData alloc] init];
-        m_receivedDataFeatures = [[NSMutableData alloc] init];
-        
-        m_connectionPosts = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:m_lastURLPosts]] delegate:self];
-        m_connectionFeatures = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:m_lastURLFeatures]] delegate:self];
+        if (m_hasSearch)
+        {
+            [self clearSearch];
+        }
+        else
+        {
+            m_receivedData = [[NSMutableData alloc] init];
+            m_receivedDataFeatures = [[NSMutableData alloc] init];
+            
+            m_connectionPosts = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:m_lastURLPosts]] delegate:self];
+            m_connectionFeatures = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:m_lastURLFeatures]] delegate:self];
 
-        [m_connectionPosts start];
-        [m_connectionFeatures start];
+            [m_connectionPosts start];
+            [m_connectionFeatures start];
+        }
     }
 }
 
@@ -336,7 +361,7 @@ I want my mummee
             if (!skip)
             {
                 CRSSItem *newPost = [CRSSItem alloc];
-                [newPost initWithDictionary:post];
+                [newPost initWithDictionary:post isFeature:!isPosts];
             
                 if (m_insertFront)
                 {
@@ -374,7 +399,7 @@ I want my mummee
     }
     else if (isPosts)
     {
-        [self failedFeed];
+        [self emptyFeed];
     }
     
     //--- Free up our buffer

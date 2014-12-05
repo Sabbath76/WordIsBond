@@ -12,6 +12,8 @@
 
 @implementation CRSSItem
 {
+    bool isFeature;
+    
     id<PostRequestDelegate> m_delegate;
     
     NSURLConnection *m_fullPostQuery;
@@ -41,7 +43,7 @@ static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download
         NSRange range = [description rangeOfString:@"src" options:0 range:rangeToSearchWithin];
         if (range.location != NSNotFound)
         {
-            int startPos = range.location+range.length;
+            NSInteger startPos = range.location+range.length;
             NSString *subString = [description substringFromIndex:startPos];
             NSString *urlString;
             NSScanner *scanner = [NSScanner scannerWithString:subString];
@@ -143,8 +145,15 @@ static NSDateFormatter *sDateFormatter = nil;
      */
 }
 
+- (void) initAsStub:(int)postId postTitle:(NSString*)postTitle isFeature:(bool)_isFeature
+{
+    title = postTitle;
+    postID = postId;
+    isFeature = _isFeature;
+    requiresDownload = true;
+}
 
-- (void) initWithDictionary:(NSDictionary*)post
+- (void) initWithDictionary:(NSDictionary*)post isFeature:(bool)_isFeature
 {
 //    CGRect screenBounds = [[UIScreen mainScreen] bounds];
 //    CGFloat screenScale = [[UIScreen mainScreen] scale];
@@ -152,6 +161,7 @@ static NSDateFormatter *sDateFormatter = nil;
 
     title = [self convertWordPressString:[post objectForKey:@"title"]];
     description = [post objectForKey:@"content"];
+    isFeature = _isFeature;
 
     NSRange range = [description rangeOfString:@"width="];
     while(range.location != NSNotFound)
@@ -227,7 +237,15 @@ static NSDateFormatter *sDateFormatter = nil;
     }
     
     NSDictionary *thumbs = [post objectForKey:@"thumbnail_images"];
-    NSDictionary *image =[thumbs objectForKey:@"medium"];
+    NSDictionary *image;
+    if (isFeature)
+    {
+        image =[thumbs objectForKey:@"large"];
+    }
+    else
+    {
+        image =[thumbs objectForKey:@"medium"];
+    }
 //    NSNumber *objWidth = [image objectForKey:@"width"];
 //    NSNumber *objHeight = [image objectForKey:@"height"];
     imageURLString = [image objectForKey:@"url"];
@@ -359,12 +377,8 @@ static NSDateFormatter *sDateFormatter = nil;
 //    imageURLString = [self findProperty:@"img"];
     
     NSString *media = [self findProperty:@"iframe"];
-
-//    static int LAST_ID = 0;
-//    LAST_ID++;
     
     _type = Text;
-//    postID = LAST_ID;
     
     if (tracks)
     {
@@ -642,7 +656,7 @@ static NSDateFormatter *sDateFormatter = nil;
     NSDictionary* post = [json objectForKey:@"post"];
     if (post)
     {
-        [self initWithDictionary:post];
+        [self initWithDictionary:post isFeature:isFeature];
 /*        NSString *postContent = [post objectForKey:@"content"];
         if (postContent)
         {

@@ -35,7 +35,7 @@
     float m_slideInitialPos;
     float m_scrollStartPoint;
 //    int currentItem;
-    int currentTrack;
+    NSInteger currentTrack;
     bool m_isPlaying;
     bool m_autoPlay;
     
@@ -63,7 +63,7 @@
 //    UIActivityIndicatorView *m_spinner;
     __weak IBOutlet NSLayoutConstraint *m_toolbarContraint;
     
-    int m_displayedTrack;
+    NSInteger m_displayedTrack;
 }
 
 @end
@@ -122,62 +122,65 @@ float BLUR_IMAGE_RANGE = 100.0f;
     NSError *setCategoryError = nil;
     NSError *activationError = nil;
     [[AVAudioSession sharedInstance] setActive:YES error:&activationError];
-    [[AVAudioSession sharedInstance] setDelegate:self];
+//    [[AVAudioSession sharedInstance] setDelegate:self];
     [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&setCategoryError];
     
-    m_player = [[AVQueuePlayer alloc] init];
-    m_player.actionAtItemEnd = AVPlayerActionAtItemEndAdvance;
-    
-    CMTime interval = CMTimeMake(33, 1000);
-    __weak ViewControllerMediaPlayer *self_ = self;
-    self->playbackObserver = [m_player addPeriodicTimeObserverForInterval:interval queue:NULL usingBlock:^(CMTime time) {
-        if (self_ != nil)
-        {
-            ViewControllerMediaPlayer *sself = self_;
-//            AVPlayerItem *curItem = sself->m_player.currentItem;
-//            AVAsset *curAsset = curItem.asset;
-//            bool playable = [curAsset isPlayable];
-//            CMTime endTime = CMTimeConvertScale (curAsset.duration, sself->m_player.currentTime.timescale, kCMTimeRoundingMethod_RoundHalfAwayFromZero);
-            Float64 currentSeconds = CMTimeGetSeconds(sself->m_player.currentTime);
-//            if (CMTimeCompare(endTime, kCMTimeZero) != 0)
+    if (!m_player)
+    {
+        m_player = [[AVQueuePlayer alloc] init];
+        m_player.actionAtItemEnd = AVPlayerActionAtItemEndAdvance;
+        
+        CMTime interval = CMTimeMake(33, 1000);
+        __weak ViewControllerMediaPlayer *self_ = self;
+        self->playbackObserver = [m_player addPeriodicTimeObserverForInterval:interval queue:NULL usingBlock:^(CMTime time) {
+            if (self_ != nil)
             {
-                if ([sself->sldrPosition2 isTracking] == false)
+                ViewControllerMediaPlayer *sself = self_;
+    //            AVPlayerItem *curItem = sself->m_player.currentItem;
+    //            AVAsset *curAsset = curItem.asset;
+    //            bool playable = [curAsset isPlayable];
+    //            CMTime endTime = CMTimeConvertScale (curAsset.duration, sself->m_player.currentTime.timescale, kCMTimeRoundingMethod_RoundHalfAwayFromZero);
+                Float64 currentSeconds = CMTimeGetSeconds(sself->m_player.currentTime);
+    //            if (CMTimeCompare(endTime, kCMTimeZero) != 0)
                 {
-                    sself->sldrPosition2.value = currentSeconds;
+                    if ([sself->sldrPosition2 isTracking] == false)
+                    {
+                        sself->sldrPosition2.value = currentSeconds;
+                    }
                 }
-            }
-            int mins = currentSeconds/60.0;
-            int secs = fmodf(currentSeconds, 60.0);
-            NSString *minsString = [NSString stringWithFormat:@"%d", mins];
-            NSString *secsString = secs < 10 ? [NSString stringWithFormat:@"0%d", secs] : [NSString stringWithFormat:@"%d", secs];
-            sself->m_labelCurTime.text = [NSString stringWithFormat:@"%@:%@", minsString, secsString];
+                int mins = currentSeconds/60.0;
+                int secs = fmodf(currentSeconds, 60.0);
+                NSString *minsString = [NSString stringWithFormat:@"%d", mins];
+                NSString *secsString = secs < 10 ? [NSString stringWithFormat:@"0%d", secs] : [NSString stringWithFormat:@"%d", secs];
+                sself->m_labelCurTime.text = [NSString stringWithFormat:@"%@:%@", minsString, secsString];
 
-            TrackInfo *trackInfo = sself->m_audioTracks[sself->currentTrack];
-            Float64 durationSeconds = trackInfo->duration;
-//            Float64 durationSeconds = CMTimeGetSeconds(endTime);
-            Float64 timeTillEnd = durationSeconds - currentSeconds;
-            mins = timeTillEnd/60.0;
-            secs = fmodf(timeTillEnd, 60.0);
-            minsString = [NSString stringWithFormat:@"%d", mins];
-            secsString = secs < 10 ? [NSString stringWithFormat:@"0%d", secs] : [NSString stringWithFormat:@"%d", secs];
-            sself->m_labelDuration.text = [NSString stringWithFormat:@"-%@:%@", minsString, secsString];
-            
-            if (currentSeconds != 0.0f)
-            {
-                double normalizedTime = currentSeconds / durationSeconds;
-                [sself->m_trackProgress setProgress:normalizedTime];
+                TrackInfo *trackInfo = sself->m_audioTracks[sself->currentTrack];
+                Float64 durationSeconds = trackInfo->duration;
+    //            Float64 durationSeconds = CMTimeGetSeconds(endTime);
+                Float64 timeTillEnd = durationSeconds - currentSeconds;
+                mins = timeTillEnd/60.0;
+                secs = fmodf(timeTillEnd, 60.0);
+                minsString = [NSString stringWithFormat:@"%d", mins];
+                secsString = secs < 10 ? [NSString stringWithFormat:@"0%d", secs] : [NSString stringWithFormat:@"%d", secs];
+                sself->m_labelDuration.text = [NSString stringWithFormat:@"-%@:%@", minsString, secsString];
+                
+                if (currentSeconds != 0.0f)
+                {
+                    double normalizedTime = currentSeconds / durationSeconds;
+                    [sself->m_trackProgress setProgress:normalizedTime];
+                }
+    /*            if (CMTimeCompare(endTime, kCMTimeZero) != 0)
+                {
+                    double normalizedTime = (double) sself->m_player.currentTime.value / (double) endTime.value;
+                    [sself->m_trackProgress setProgress:normalizedTime];
+                }
+     */
             }
-/*            if (CMTimeCompare(endTime, kCMTimeZero) != 0)
-            {
-                double normalizedTime = (double) sself->m_player.currentTime.value / (double) endTime.value;
-                [sself->m_trackProgress setProgress:normalizedTime];
-            }
- */
-        }
-    }];
-    
-    
-    [self prepareMusic];
+        }];
+        
+        
+        [self prepareMusic];
+    }
 
 //    CGRect imageFrame = currentImage.frame;
 //    CGRect toolFrame = m_playerDock.frame;
@@ -192,6 +195,8 @@ float BLUR_IMAGE_RANGE = 100.0f;
     //End recieving events
     [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
     [self resignFirstResponder];
+    
+//    [m_player removeTimeObserver:self->playbackObserver];
 }
 
 //Make sure we can recieve remote control events
@@ -270,25 +275,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
     [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateNormal];
     [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateHighlighted];
 
-    [self.tableView setContentInset:UIEdgeInsetsMake(130, 0, 0, 0)];
-    
-//    self->topToolbar.layer.shadowOffset = CGSizeMake(0, -15);
-//    self->topToolbar.layer.shadowRadius = 5;
-//    self->topToolbar.layer.shadowOpacity = 0.5;
-    
-    
-    if (miniImage)
-    {
-        CALayer *_maskingLayer = [CALayer layer];
-        _maskingLayer.frame = miniImage.bounds;
-        UIImage *stretchableImage = (id)[UIImage imageNamed:@"cornerfull"];
-        
-        _maskingLayer.contents = (id)stretchableImage.CGImage;
-        _maskingLayer.contentsScale = [UIScreen mainScreen].scale; //<-needed for the retina display, otherwise our image will not be scaled properly
-        _maskingLayer.contentsCenter = CGRectMake(15.0/stretchableImage.size.width,15.0/stretchableImage.size.height,5.0/stretchableImage.size.width,5.0f/stretchableImage.size.height);
-        
-        [miniImage.layer setMask:_maskingLayer];
-    }
+    [self.tableView setContentInset:UIEdgeInsetsMake(145, 0, 0, 0)];
     
     m_currentPage = [[MediaTrackController alloc] initWithNibName:@"MediaPlayerHeader" bundle:nil];
 	m_nextPage = [[MediaTrackController alloc] initWithNibName:@"MediaPlayerHeader" bundle:nil];
@@ -301,36 +288,8 @@ float BLUR_IMAGE_RANGE = 100.0f;
                                              selector:@selector(receiveViewPost:)
                                                  name:@"ViewPost"
                                                object:nil];
-
-
-//    UIView *myView = self.view.superview;
-//    UIView *parentView = myView.superview;
-//    [NSLayoutConstraint constraintWithItem:myView attribute:NSLayoutAttributeTop
-//                                 relatedBy:NSLayoutRelationEqual toItem:parentView
-//                                 attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-bottomOffset];
-
-
-//    m_spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-//    [m_spinner startAnimating];
-    
-//    _bar.layer.masksToBounds = false;
-//    _bar.layer.shadowOffset = CGSizeMake(0, 15);
-//    _bar.layer.shadowRadius = 8;
-//    _bar.layer.shadowOpacity = 0.5;
-   
-//    CGRect rect = self.view.superview.frame;
-//    rect.origin.y = rect.size.height - 39;
-//    self.view.superview.frame = rect;
     
     [self receiveNewRSSFeed:nil];
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-//    float parentHeight = self.view.superview.superview.frame.size.height;
-//    CGRect rect = self.view.superview.frame;
-//    rect.origin.y = parentHeight - self->bottomOffset;
-//    self.view.superview.frame = rect;
 }
 
 - (void)didReceiveMemoryWarning
@@ -339,18 +298,6 @@ float BLUR_IMAGE_RANGE = 100.0f;
     // Dispose of any resources that can be recreated.
 }
 
-/*- (void)setItem:(CRSSItem *) rssItem
-{
-    [rssItem requestImage:self];
-//    currentImage.image = rssItem.blurredImage;
-//    [miniImage setImage:rssItem.appIcon forState:UIControlStateNormal];
-//    [miniImage setImage:rssItem.appIcon forState:UIControlStateSelected];
-//    _labelTitle.text = rssItem.title;
-//    [_tableView reloadData];
-
-    currentTrack = 0;
-    [self prepareMusic];
-}*/
 
 - (IBAction)onNext:(id)sender
 {
@@ -360,16 +307,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
         [self onNextTrack];
         
         [m_nextPage.streaming startAnimating];
-        
-/*        currentItem++;
-        if (currentItem >= m_audioItems.count)
-        {
-            currentItem = 0;
-        }
-
-        CRSSItem *rssItem = m_audioItems[currentItem];
-        [self setItem:rssItem];
-*/    }
+    }
 }
 
 - (IBAction)onPrev:(id)sender
@@ -448,7 +386,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
 
     if (m_scrollTrackHeader)
     {
-        int numItems = m_audioTracks ? m_audioTracks.count : 1;
+        NSUInteger numItems = m_audioTracks ? m_audioTracks.count : 1;
         m_scrollTrackHeader.contentSize =
         CGSizeMake(
                    m_scrollTrackHeader.frame.size.width * numItems,
@@ -462,16 +400,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
 // called by our ImageDownloader when an icon is ready to be displayed
 - (void)appImageDidLoad:(IconDownloader *)iconDownloader
 {
-/*    if (m_audioItems.count > 0)
-    {
-        if (((CRSSItem*)m_audioItems[currentItem]).postID == iconDownloader.postID)
-        {
-            currentImage.image = iconDownloader.appRecord.blurredImage;
-            [miniImage setImage:iconDownloader.appRecord.appIcon forState:UIControlStateNormal];
-            [miniImage setImage:iconDownloader.appRecord.appIcon forState:UIControlStateSelected];
-        }
-    }*/
-    
+   
     NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
     for (NSIndexPath *indexPath in visiblePaths)
     {
@@ -488,17 +417,6 @@ float BLUR_IMAGE_RANGE = 100.0f;
 
 - (void) onIconLoaded:(NSNotification *) notification
 {
-/*    CRSSItem *item = [[notification userInfo] valueForKey:@"item"];
-    if (m_audioItems.count > 0)
-    {
-        if (m_audioItems[currentItem] == item)
-        {
-            currentImage.image = item.appIcon;
-            [miniImage setImage:item.appIcon forState:UIControlStateNormal];
-            [miniImage setImage:item.appIcon forState:UIControlStateSelected];
-        }
-    }*/
-    
     NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
     for (NSIndexPath *indexPath in visiblePaths)
     {
@@ -562,6 +480,10 @@ float BLUR_IMAGE_RANGE = 100.0f;
         [m_currentPage.streaming startAnimating];
         [m_nextPage.streaming startAnimating];
 
+//        for (AVPlayerItem *item in [m_player items])
+//        {
+//            [item removeObserver:self forKeyPath:@"status"];
+//        }
         [m_player removeAllItems];
         [self streamData:resourcePath];
         TrackInfo *nextTrack = [self getNextTrack];
@@ -594,7 +516,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
      }
 }
 
-- (int) getNextTrackIdx
+- (NSInteger) getNextTrackIdx
 {
     return (currentTrack + 1)%m_audioTracks.count;
 }
@@ -641,7 +563,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
 - (void)onNextTrack
 {
     //--- Update UI
-    int newTrack = [self getNextTrackIdx];
+    NSInteger newTrack = [self getNextTrackIdx];
 
     [self updateCurrentTrack:newTrack updateListItems:true];
 /*    CRSSItem *newItem = m_audioItems[newTrack.itemID];
@@ -683,7 +605,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
 
 }
 
-- (void)updateCurrentTrack:(int)track updateListItems:(Boolean)updateListItems
+- (void)updateCurrentTrack:(NSInteger)track updateListItems:(Boolean)updateListItems
  {
     currentTrack = track;
     
@@ -725,7 +647,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
 
 - (TrackInfo *)getNextTrack
 {
-    int newTrack = [self getNextTrackIdx];
+    NSInteger newTrack = [self getNextTrackIdx];
     return m_audioTracks[newTrack];
 }
 
@@ -762,15 +684,11 @@ float BLUR_IMAGE_RANGE = 100.0f;
 
         bool isAtBottom = [m_topConstraint constant] < threshold;
         [self setTopToolbarActive:isAtBottom];
-        if (isAtBottom)
-        {
-            [m_topConstraint setConstant:max];
-        }
-        else
-        {
-            [m_topConstraint setConstant:min];
-        }
-        [UIView animateWithDuration:0.5f animations:^{[moveView layoutIfNeeded];}];
+        float newConstraint = (isAtBottom ? max : min);
+        [UIView animateWithDuration:0.5f animations:^{[m_topConstraint setConstant:newConstraint]; }];
+//        [m_topConstraint setConstant:newConstraint];
+//        [moveView setNeedsUpdateConstraints];
+//        [UIView animateWithDuration:0.5f animations:^{[moveView layoutIfNeeded];}];
 /*        CGRect parentFrame = moveView.superview.frame;
         if (moveView.frame.origin.y < (parentFrame.origin.y + (parentFrame.size.height - ((midOffset + bottomOffset) * 0.5))))
         {
@@ -909,6 +827,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
         
         [m_player insertItem:playerItem afterItem:nil];
     }
+    
     //m_player = [AVPlayer playerWithPlayerItem:playerItem];
     
 /*
@@ -931,75 +850,77 @@ float BLUR_IMAGE_RANGE = 100.0f;
     {
         AVPlayerItem *item = (AVPlayerItem *)object;
         
-        if (item == [m_player currentItem])
-        {
         //playerItem status value changed?
         if ([keyPath isEqualToString:@"status"])
         {   //yes->check it...
-            switch(item.status)
+            if (item == [m_player currentItem])
             {
-                case AVPlayerItemStatusFailed:
+                switch(item.status)
                 {
-                    [m_playSpinner setHidden:true];
-                    
-                    [m_currentPage.streaming stopAnimating];
-                    [m_nextPage.streaming stopAnimating];
-
-//                    [m_spinner removeFromSuperview];
-
-//                    [btnPlay.layer removeAllAnimations];
-//                    [btnPlay setImage:[UIImage imageNamed:@"icon_opt"] forState:UIControlStateNormal];
-//                    [btnPlay setImage:[UIImage imageNamed:@"icon_opt"] forState:UIControlStateSelected];
-//                    [btnPlay setHidden:false];
-
-                    UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead_on"];
-                    [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateNormal];
-                    [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateHighlighted];
-
-                    NSLog(@"player item status failed");
-                    
-//////TODO                    [self onNextTrack];
-                    break;
-                }
-                case AVPlayerItemStatusReadyToPlay:
-                {
-                    [m_playSpinner setHidden:true];
-
-                    [m_currentPage.streaming stopAnimating];
-                    [m_nextPage.streaming stopAnimating];
-
-//                    [m_spinner removeFromSuperview];
-//                    [btnPlay.layer removeAllAnimations];
-//                    [btnPlay setImage:[UIImage imageNamed:@"player_play_off"] forState:UIControlStateNormal];
-//                    [btnPlay setImage:[UIImage imageNamed:@"player_play_on"] forState:UIControlStateSelected];
-//                    [btnPlay setHidden:false];
-
-                    TrackInfo *trackInfo = m_audioTracks[currentTrack];
-                    trackInfo->duration = CMTimeGetSeconds([item asset].duration);
-
-                    if (m_isPlaying)
+                    case AVPlayerItemStatusFailed:
                     {
-                        [m_player play];
+                        [m_playSpinner setHidden:true];
+                        
+                        [m_currentPage.streaming stopAnimating];
+                        [m_nextPage.streaming stopAnimating];
+
+    //                    [m_spinner removeFromSuperview];
+
+    //                    [btnPlay.layer removeAllAnimations];
+    //                    [btnPlay setImage:[UIImage imageNamed:@"icon_opt"] forState:UIControlStateNormal];
+    //                    [btnPlay setImage:[UIImage imageNamed:@"icon_opt"] forState:UIControlStateSelected];
+    //                    [btnPlay setHidden:false];
+
+                        UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead_on"];
+                        [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateNormal];
+                        [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateHighlighted];
+
+                        NSLog(@"player item status failed");
+                        
+    //////TODO                    [self onNextTrack];
+                        break;
                     }
-                    [self updateTracks];
+                    case AVPlayerItemStatusReadyToPlay:
+                    {
+                        [m_playSpinner setHidden:true];
 
-                    UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead_on"];
-                    [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateNormal];
-                    [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateHighlighted];
-                    
-                    sldrPosition2.maximumValue = trackInfo->duration;
-                    sldrPosition2.value = 0.0f;
-                    
-                    m_labelCurTime.text = @"0:00";
-                    m_labelDuration.text = [NSString stringWithFormat:@"%d:%02d", (int)(trackInfo->duration / 60.0f), (int)(trackInfo)%60];
+                        [m_currentPage.streaming stopAnimating];
+                        [m_nextPage.streaming stopAnimating];
 
-//                    NSLog(@"player item status is ready to play");
+    //                    [m_spinner removeFromSuperview];
+    //                    [btnPlay.layer removeAllAnimations];
+    //                    [btnPlay setImage:[UIImage imageNamed:@"player_play_off"] forState:UIControlStateNormal];
+    //                    [btnPlay setImage:[UIImage imageNamed:@"player_play_on"] forState:UIControlStateSelected];
+    //                    [btnPlay setHidden:false];
+
+                        TrackInfo *trackInfo = m_audioTracks[currentTrack];
+                        trackInfo->duration = CMTimeGetSeconds([item asset].duration);
+
+                        if (m_isPlaying)
+                        {
+                            [m_player play];
+                        }
+                        [self updateTracks];
+
+                        UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead_on"];
+                        [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateNormal];
+                        [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateHighlighted];
+                        
+                        sldrPosition2.maximumValue = trackInfo->duration;
+                        sldrPosition2.value = 0.0f;
+                        
+                        m_labelCurTime.text = @"0:00";
+                        m_labelDuration.text = [NSString stringWithFormat:@"%d:%02d", (int)(trackInfo->duration / 60.0f), (int)(trackInfo)%60];
+
+    //                    NSLog(@"player item status is ready to play");
+                    }
+                        break;
+                    case AVPlayerItemStatusUnknown:
+                        NSLog(@"player item status is unknown");
+                        break;
                 }
-                    break;
-                case AVPlayerItemStatusUnknown:
-                    NSLog(@"player item status is unknown");
-                    break;
             }
+            [item removeObserver:self forKeyPath:@"status"];
         }
         else if ([keyPath isEqualToString:@"playbackBufferEmpty"])
         {
@@ -1007,7 +928,6 @@ float BLUR_IMAGE_RANGE = 100.0f;
             {
                 NSLog(@"player item playback buffer is empty");
             }
-        }
         }
     }
 }
@@ -1022,7 +942,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
     }
 }
 
-- (UIImage *)getImageForTrack:(int) trackID
+- (UIImage *)getImageForTrack:(NSInteger) trackID
 {
     if (m_isPlaying && (currentTrack == trackID))
     {
@@ -1043,7 +963,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
     return [UIColor colorWithRed:160.0f/256.0f green:72.0f/256.0f blue:51.0f/256.0f alpha:1.0f];
 }
 
-- (UIColor *)getTextColourForTrack:(int) trackID
+- (UIColor *)getTextColourForTrack:(NSInteger) trackID
 {
     bool isCurrent = (trackID == currentTrack);
     if (m_isPlaying && isCurrent)
@@ -1060,7 +980,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
     }
 }
 
-- (void) updateTrackCell:(int) trackIdx
+- (void) updateTrackCell:(NSInteger) trackIdx
 {
 //    TrackInfo *trackInfo = m_audioTracks[trackIdx];
     UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:trackIdx inSection:0]];
@@ -1170,7 +1090,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
 - (BOOL) gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
     UIView *touchView = touch.view;
-    UIView *parentTouchView = touchView.superview.superview;
+    UIView *parentTouchView = touchView.superview;
     if ([touchView isKindOfClass:[UIControl class]]
         || [parentTouchView isKindOfClass:[UITableViewCell class]]
         || [parentTouchView isKindOfClass:[UITableView class]])
@@ -1272,6 +1192,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
 
         if (nearestNumber == currentTrack+1)
         {
+//            [[m_player currentItem] removeObserver:self forKeyPath:@"status"];
             [m_player advanceToNextItem];
             [self onNextTrack];
         }

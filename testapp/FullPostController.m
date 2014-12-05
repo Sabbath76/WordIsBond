@@ -63,6 +63,8 @@
         }
 
         m_webView.scrollView.delegate = self;
+        
+        [m_webView stringByEvaluatingJavaScriptFromString:@"document.open();document.close();"];
 
         m_image.image = [rssItem requestImage:self];
         m_blurredImage.image = [rssItem getBlurredImage];
@@ -72,6 +74,7 @@
         {
             m_author.text = [@"By " stringByAppendingString:rssItem.author];
         }
+        
         [m_webView loadHTMLString:[rssItem blurb] baseURL:[NSURL URLWithString:[rssItem postURL]]];
         
         m_offset = 80.0f;

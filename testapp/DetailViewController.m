@@ -34,7 +34,7 @@
     FullPostController *m_currentPage;
     FullPostController *m_nextPage;
     UIBarButtonItem *m_btnFavourite;
-    int m_itemPos;
+    NSInteger m_itemPos;
     NSArray *m_sourceList;
     int m_toolbarOffset;
     bool m_loading;
@@ -146,7 +146,7 @@
         
         if (m_header)
         {
-            int numItems = m_sourceList ? m_sourceList.count : 1;
+            NSInteger numItems = m_sourceList ? m_sourceList.count : 1;
             m_header.contentSize =
                 CGSizeMake(
                            m_header.frame.size.width * numItems, 0);//
@@ -180,9 +180,6 @@
     
 
     self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"top_banner_logo"]];
-
-//    m_currentPage = [[PostHeaderController alloc] initWithNibName:@"PostHeader" bundle:nil];
-//	m_nextPage = [[PostHeaderController alloc] initWithNibName:@"PostHeader" bundle:nil];
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
     {
@@ -203,13 +200,6 @@
 
 	[m_header addSubview:m_currentPage.view];
 	[m_header addSubview:m_nextPage.view];
-/*    UIView *contentView = [[UIView alloc] initWithFrame:CGRectMake(0,0,20000,100)];
-	[m_header addSubview:contentView];
-    
-    m_header.translatesAutoresizingMaskIntoConstraints = TRUE;
-    m_currentPage.view.translatesAutoresizingMaskIntoConstraints = TRUE;
-    m_nextPage.view.translatesAutoresizingMaskIntoConstraints = TRUE;
-*/
     
     [self enableExtendedNavigationBar:true];
     
@@ -296,7 +286,6 @@
 
 - (void) webViewDidFinishLoad:(UIWebView *)webView
 {
-//    [UIView animateWithDuration:0.5f animations:^{[_webView setAlpha:1.0f]; [m_currentPage.blurredImage setAlpha:0.0f];}];
     m_loading = false;
 }
 
@@ -311,7 +300,6 @@
 - (void)splitViewController:(UISplitViewController *)splitController willHideViewController:(UIViewController *)viewController withBarButtonItem:(UIBarButtonItem *)barButtonItem forPopoverController:(UIPopoverController *)popoverController
 {
     [barButtonItem setImage:[UIImage imageNamed:@"icon_opt"]];
-//    barButtonItem.title = NSLocalizedString(@"Master", @"Master");
     [self.navigationItem setLeftBarButtonItem:barButtonItem animated:YES];
     self.masterPopoverController = popoverController;
 }
@@ -333,17 +321,6 @@
         }
         
         [post requestImage:self];
-/*
-        if (m_currentPage)
-        {
-            m_currentPage.pageIndex = m_currentPage.pageIndex;
-        }
-        
-        if (m_nextPage)
-        {
-            m_nextPage.pageIndex = m_nextPage.pageIndex;
-        }
- */
     }
 }
 
@@ -398,7 +375,6 @@
         m_extendedNavBar = enable;
         if (enable)
         {
-//            UIToolbar *toolbar = [[UIToolbar alloc] init];
             UIBarButtonItem *commentButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_comments"] style:UIBarButtonItemStylePlain target:self action:@selector(onComment:)];
             UIBarButtonItem *fbButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"facebook_off"] style:UIBarButtonItemStylePlain target:self action:@selector(onFacebook:)];
             UIBarButtonItem *twButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"twitter_off"] style:UIBarButtonItemStylePlain target:self action:@selector(onTweet:)];
@@ -413,8 +389,7 @@
             UIBarButtonItem *flexibleItem2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
             UIBarButtonItem *flexibleItem3 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
             UIBarButtonItem *flexibleItem4 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-//            toolbar.items = @[flexibleItem1, commentButton, flexibleItem2, fbButton, flexibleItem3, twButton, flexibleItem4];
-//            self.navigationItem.titleView = toolbar;
+
             [UIView animateWithDuration:0.4f animations:^{
             self.navigationItem.rightBarButtonItems = @[favButton, flexibleItem1, twButton, flexibleItem2, fbButton, flexibleItem3, commentButton, flexibleItem4 ];
             self.navigationItem.titleView = nil;
@@ -422,12 +397,6 @@
                 [m_toolbar setAlpha:0.0f];
             }];
             m_btnFavourite = favButton;
-/*            [UIView animateWithDuration:0.4f animations:^{
-            UIBarButtonItem *fbButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"social_fb"] style:UIBarButtonItemStylePlain target:self action:@selector(onFacebook:)];
-            UIBarButtonItem *twButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"social_tw"] style:UIBarButtonItemStylePlain target:self action:@selector(onTweet:)];
-            UIBarButtonItem *favButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_fav"] style:UIBarButtonItemStylePlain target:self action:@selector(onFavourite:)];
-            self.navigationItem.rightBarButtonItems = @[favButton, fbButton,twButton];
-                self.navigationItem.titleView = nil;}];*/
         }
         else
         {
@@ -445,22 +414,6 @@
 // called by our ImageDownloader when an icon is ready to be displayed
 - (void)appImageDidLoad:(IconDownloader *)iconDownloader
 {
-/*    if (iconDownloader != nil)
-    {
-        CRSSItem *featureNext = m_sourceList && (m_nextPage.pageIndex < m_sourceList.count) ? m_sourceList[m_nextPage.pageIndex] : _detailItem;
-        CRSSItem *featureCurrent = m_sourceList && (m_nextPage.pageIndex < m_sourceList.count) ? m_sourceList[m_currentPage.pageIndex] : _detailItem;
-        UIImage *newImage = iconDownloader.appRecord.appIcon;
-        if (featureNext.postID == iconDownloader.postID)
-        {
-//            m_nextPage.imageView.image = newImage;
-            m_nextPage.pageIndex = m_nextPage.pageIndex;
-        }
-        if (featureCurrent.postID == iconDownloader.postID)
-        {
-//            m_currentPage.imageView.image = newImage;
-            m_currentPage.pageIndex = m_currentPage.pageIndex;
-        }
-    }*/
 }
 
 
@@ -468,52 +421,45 @@
 {
     if (sender == m_header)
     {
-    CGFloat pageWidth = m_header.frame.size.width;
-    float fractionalPage = m_header.contentOffset.x / pageWidth;
+        CGFloat pageWidth = m_header.frame.size.width;
+        float fractionalPage = m_header.contentOffset.x / pageWidth;
+            
+        NSInteger lowerNumber = floor(fractionalPage);
+        NSInteger upperNumber = lowerNumber + 1;
         
-/*    CGSize contentSize = m_header.contentSize;
-        CGPoint contentOffset = m_header.contentOffset;
-        UIEdgeInsets contentInset = m_header.contentInset;
-        CGRect headerFrame = m_header.frame;
-        CGRect curFrame = m_currentPage.view.frame;
-        CGRect nextFrame = m_nextPage.view.frame;
-*/
-	NSInteger lowerNumber = floor(fractionalPage);
-	NSInteger upperNumber = lowerNumber + 1;
-	
-	if (lowerNumber == m_currentPage.pageIndex)
-	{
-		if (upperNumber != m_nextPage.pageIndex)
-		{
-			[self applyNewIndex:upperNumber pageController:m_nextPage];
-		}
-	}
-	else if (upperNumber == m_currentPage.pageIndex)
-	{
-		if (lowerNumber != m_nextPage.pageIndex)
-		{
-			[self applyNewIndex:lowerNumber pageController:m_nextPage];
-		}
-	}
-	else
-	{
-		if (lowerNumber == m_nextPage.pageIndex)
-		{
-			[self applyNewIndex:upperNumber pageController:m_currentPage];
-		}
-		else if (upperNumber == m_nextPage.pageIndex)
-		{
-			[self applyNewIndex:lowerNumber pageController:m_currentPage];
-		}
-		else
-		{
-			[self applyNewIndex:lowerNumber pageController:m_currentPage];
-			[self applyNewIndex:upperNumber pageController:m_nextPage];
-		}
-	}
-	
-	[m_currentPage updateTextViews:NO];
-	[m_nextPage updateTextViews:NO];
+        if (lowerNumber == m_currentPage.pageIndex)
+        {
+            if (upperNumber != m_nextPage.pageIndex)
+            {
+                [self applyNewIndex:upperNumber pageController:m_nextPage];
+            }
+        }
+        else if (upperNumber == m_currentPage.pageIndex)
+        {
+            if (lowerNumber != m_nextPage.pageIndex)
+            {
+                [self applyNewIndex:lowerNumber pageController:m_nextPage];
+            }
+        }
+        else
+        {
+            if (lowerNumber == m_nextPage.pageIndex)
+            {
+                [self applyNewIndex:upperNumber pageController:m_currentPage];
+            }
+            else if (upperNumber == m_nextPage.pageIndex)
+            {
+                [self applyNewIndex:lowerNumber pageController:m_currentPage];
+            }
+            else
+            {
+                [self applyNewIndex:lowerNumber pageController:m_currentPage];
+                [self applyNewIndex:upperNumber pageController:m_nextPage];
+            }
+        }
+        
+        [m_currentPage updateTextViews:NO];
+        [m_nextPage updateTextViews:NO];
     
         bool isPrev = (lowerNumber == m_itemPos);
         float pageFract = (fractionalPage - lowerNumber);
@@ -526,12 +472,9 @@
             nextAlpha = MIN(pageFract * 2.0f, 1.0f);
             curAlpha = MIN((1.0f-pageFract) * 2.0f, 1.0f);
         }
-//        if (!m_loading)
-        {
-//            [self.webView setAlpha:pageAlpha];
-            [m_currentPage setAlpha:curAlpha];
-            [m_nextPage setAlpha:nextAlpha];
-        }
+        
+        [m_currentPage setAlpha:curAlpha];
+        [m_nextPage setAlpha:nextAlpha];
         
         if (isPrev && (pageFract > 0.6f))
         {

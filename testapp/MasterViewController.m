@@ -392,6 +392,16 @@ const int ExpandedSectionSize = 120;
 
 - (void) failedNewRSSFeed:(NSNotification *) notification
 {
+    if (m_searchShouldBeginEditing)
+    {
+        m_searchShouldBeginEditing = FALSE;
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
+                                                                                               target:self
+                                                                                               action:@selector(onSearch:)];
+        self.navigationItem.rightBarButtonItem.tintColor = [UIColor whiteColor];
+        [self createTopBanner];
+    }
+
     if (m_isLoadingMoreData)
     {
         m_isLoadingMoreData = false;
@@ -1434,15 +1444,6 @@ const int ExpandedSectionSize = 120;
             [self spinWithOptions:UIViewAnimationOptionCurveEaseIn];
         }];
     }];
-
- //   [self performSegueWithIdentifier: @"Search" sender:self];
-
-//    [[NSNotificationCenter defaultCenter]
-//     postNotificationName:@"CloseMenu"
-//     object:self];
-    
-//    [tableFavourites setEditing:true];
-    //    [masterViewController setMenuOpen:false];
 }
 
 - (void) searchBarCancelButtonClicked:(UISearchBar *)searchBar
@@ -1459,28 +1460,6 @@ const int ExpandedSectionSize = 120;
 
     [self createTopBanner];
 }
-/*
- CGRect destination = self.navigationController.view.superview.superview.frame;
- 
- if (state)
- {
- destination.origin.x = 270;
- _btnMenu.tintColor = [UIColor blackColor];
- 
- [self.tableView setUserInteractionEnabled:false];
- }
- else
- {
- destination.origin.x = 0;
- _btnMenu.tintColor = [UIColor whiteColor];
- 
- [self.tableView setUserInteractionEnabled:true];
- }
- 
- [UIView beginAnimations:@"Bringing up menu" context:nil];
- self.navigationController.view.superview.superview.frame = destination;
- [UIView commitAnimations];
- */
 
 
 @end

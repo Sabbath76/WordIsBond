@@ -10,29 +10,29 @@
 	<string>WordIsBond</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>7D836220-DC3B-42F0-AF2F-C17CDC2AA7D6</key>
+		<key>53D54EE352373DD705019D3328BDEFA97F0FE595</key>
 		<string>https://github.com/Sabbath76/WordIsBond.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>WordIsBond.xcodeproj/project.xcworkspace</string>
+	<string>WordIsBond.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>7D836220-DC3B-42F0-AF2F-C17CDC2AA7D6</key>
+		<key>53D54EE352373DD705019D3328BDEFA97F0FE595</key>
 		<string>../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/Sabbath76/WordIsBond.git</string>
 	<key>IDESourceControlProjectVersion</key>
-	<integer>110</integer>
+	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>7D836220-DC3B-42F0-AF2F-C17CDC2AA7D6</string>
+	<string>53D54EE352373DD705019D3328BDEFA97F0FE595</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>7D836220-DC3B-42F0-AF2F-C17CDC2AA7D6</string>
+			<string>53D54EE352373DD705019D3328BDEFA97F0FE595</string>
 			<key>IDESourceControlWCCName</key>
 			<string>WordIsBond</string>
 		</dict>
