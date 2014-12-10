@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Navigation Controller-->
@@ -581,41 +582,48 @@
                                 <color key="separatorColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <color key="sectionIndexTrackingBackgroundColor" red="0.90980392160000001" green="0.90980392160000001" blue="0.90980392160000001" alpha="1" colorSpace="calibratedRGB"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="Track" id="kYf-W8-RVM">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="Track" rowHeight="44" id="kYf-W8-RVM">
                                         <rect key="frame" x="0.0" y="22" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="kYf-W8-RVM" id="QVF-tQ-J72">
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Track" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" preferredMaxLayoutWidth="245" translatesAutoresizingMaskIntoConstraints="NO" id="x2v-w0-QCA">
-                                                    <rect key="frame" x="55" y="2" width="245" height="24"/>
+                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Track" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="x2v-w0-QCA">
+                                                    <rect key="frame" x="55" y="0.0" width="245" height="24"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Artist" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GfR-M9-mDU">
+                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Artist" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GfR-M9-mDU">
                                                     <rect key="frame" x="55" y="22" width="245" height="22"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="22" id="rRs-0F-6T7"/>
+                                                    </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" tag="4" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="user_avatar.png" translatesAutoresizingMaskIntoConstraints="NO" id="V95-Vg-Hyp">
-                                                    <rect key="frame" x="5" y="2" width="42" height="39"/>
+                                                    <rect key="frame" x="5" y="2" width="42" height="40"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="42" id="Bqf-5x-CBy"/>
-                                                        <constraint firstAttribute="height" constant="39" id="yGD-Nv-0Rr"/>
+                                                        <constraint firstAttribute="height" constant="40" id="yGD-Nv-0Rr"/>
                                                     </constraints>
                                                 </imageView>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                             <constraints>
+                                                <constraint firstItem="GfR-M9-mDU" firstAttribute="top" secondItem="QVF-tQ-J72" secondAttribute="topMargin" constant="14" id="5g4-gG-2V9"/>
                                                 <constraint firstItem="x2v-w0-QCA" firstAttribute="leading" secondItem="V95-Vg-Hyp" secondAttribute="trailing" constant="8" id="BuQ-n9-W4n"/>
                                                 <constraint firstAttribute="trailing" secondItem="x2v-w0-QCA" secondAttribute="trailing" constant="20" id="I1t-vK-8hK"/>
                                                 <constraint firstItem="V95-Vg-Hyp" firstAttribute="centerY" secondItem="QVF-tQ-J72" secondAttribute="centerY" id="WpN-Qz-BrL"/>
                                                 <constraint firstItem="V95-Vg-Hyp" firstAttribute="leading" secondItem="QVF-tQ-J72" secondAttribute="leading" constant="5" id="qAy-ny-Iqv"/>
-                                                <constraint firstAttribute="bottom" secondItem="x2v-w0-QCA" secondAttribute="bottom" constant="17" id="rXA-Mn-Z2Y"/>
-                                                <constraint firstItem="x2v-w0-QCA" firstAttribute="top" secondItem="QVF-tQ-J72" secondAttribute="top" constant="2" id="trd-Fu-CxA"/>
+                                                <constraint firstAttribute="bottom" secondItem="x2v-w0-QCA" secondAttribute="bottom" constant="19" id="rXA-Mn-Z2Y"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="GfR-M9-mDU" secondAttribute="trailing" constant="12" id="rqC-ax-6I4"/>
+                                                <constraint firstItem="x2v-w0-QCA" firstAttribute="top" secondItem="QVF-tQ-J72" secondAttribute="top" id="trd-Fu-CxA"/>
+                                                <constraint firstItem="GfR-M9-mDU" firstAttribute="leading" secondItem="QVF-tQ-J72" secondAttribute="leadingMargin" constant="47" id="v69-Eo-Udq"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="GfR-M9-mDU" secondAttribute="bottom" constant="-9" id="xej-FP-Zp6"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>

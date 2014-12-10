@@ -25,22 +25,12 @@
 @interface DetailViewController ()
 {
     __weak IBOutlet UIScrollView *m_header;
-    __weak IBOutlet UIToolbar *m_toolbar;
-    __weak IBOutlet UIView *m_titleRoot;
-    __weak IBOutlet UILabel *m_title;
-    __weak IBOutlet UILabel *m_date;
-//    PostHeaderController *m_currentPage;
-//    PostHeaderController *m_nextPage;
     FullPostController *m_currentPage;
     FullPostController *m_nextPage;
     UIBarButtonItem *m_btnFavourite;
     NSInteger m_itemPos;
     NSArray *m_sourceList;
-    int m_toolbarOffset;
-    bool m_loading;
     bool m_extendedNavBar;
-    int m_scrollOffset;
-    __weak IBOutlet UIView *m_scrollViewContent;
 }
 
 @property (strong, nonatomic) UIPopoverController *masterPopoverController;
@@ -91,23 +81,6 @@
 
     if (self.detailItem)
     {
-        //self.title = [self.detailItem title];
-        //self.detailDescriptionLabel.text = [self.detailItem description];
-//        self.title = [self.detailItem title];
-        
-        
-//        if ([self.detailItem requiresDownload])
-// {
-//            [self.detailItem requestFullFeed:self];
-//        }
-        if (_webView)
-        {
-//            NSString *fullString = [NSString stringWithFormat:@"<div style='text-align:justify; font-size:45px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>", [self.detailItem description]];
-//            [_webView loadHTMLString:fullString baseURL:nil];
-            [_webView loadHTMLString:[self.detailItem blurb] baseURL:[NSURL URLWithString:[self.detailItem postURL]]];
-            m_loading = true;
-        }
-        
         //--- Send information to Google Analytics
         id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
         
@@ -128,35 +101,24 @@
             m_btnFavourite.tintColor = [UIColor blackColor];
         }
         
-        m_title.text = [self.detailItem title];
-        m_date.text = [self.detailItem dateString];
-        
         if (updateScroller)
         {
-        if (m_currentPage)
-        {
-            [m_currentPage setSourceArray:m_sourceList];
-            [self applyNewIndex:m_itemPos pageController:m_currentPage];
-        }
-        if (m_nextPage)
-        {
-            [m_nextPage setSourceArray:m_sourceList];
-            [self applyNewIndex:m_itemPos+1 pageController:m_nextPage];
-        }
-        
-        if (m_header)
-        {
-            NSInteger numItems = m_sourceList ? m_sourceList.count : 1;
-            m_header.contentSize =
-                CGSizeMake(
-                           m_header.frame.size.width * numItems, 0);//
-//                   m_header.frame.size.height);
-            //m_header.contentOffset = CGPointMake(0, 0);
+            if (m_currentPage)
+            {
+                [m_currentPage setSourceArray:m_sourceList];
+                [self applyNewIndex:m_itemPos pageController:m_currentPage];
+            }
+            if (m_nextPage)
+            {
+                [m_nextPage setSourceArray:m_sourceList];
+                [self applyNewIndex:m_itemPos+1 pageController:m_nextPage];
+            }
             
-            CGRect size = m_scrollViewContent.frame;
-            size.size.width =m_header.frame.size.width * numItems;
-            m_scrollViewContent.frame = size;
-        }
+            if (m_header)
+            {
+                NSInteger numItems = m_sourceList ? m_sourceList.count : 1;
+                m_header.contentSize = CGSizeMake(m_header.frame.size.width * numItems, 0);
+            }
         }
 
     }
@@ -203,22 +165,12 @@
     
     [self enableExtendedNavigationBar:true];
     
-    [_webView setDelegate:self];
-    
     [self configureView:true];
-    
-    self.webView.scrollView.delegate = self;
-//    float headerBottom = m_header.superview.frame.origin.y + m_header.frame.origin.y + m_header.frame.size.height;
-    float headerBottom = 150.0f+44.0f;//m_header.frame.size.height + self->m_toolbar.frame.size.height;
-    [[self.webView scrollView] setContentInset:UIEdgeInsetsMake(headerBottom, 0, -headerBottom, 0)];
     
     if (m_itemPos > 0)
     {
         m_header.contentOffset = CGPointMake(m_header.frame.size.width*m_itemPos, 0);
     }
-    
-    m_toolbarOffset = 0;
-    m_scrollOffset = 0;
     
     self.screenName = @"Post Details Screen";
 }
@@ -247,46 +199,13 @@
 {
     [super viewDidAppear:animated];
     
-    float headerBottom = 150.0f+44.0f;//m_titleRoot.frame.origin.y;//m_header.superview.frame.origin.y + m_header.frame.origin.y + m_header.frame.size.height;
-    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1)
-    {
-        headerBottom = self->m_header.frame.size.height-m_titleRoot.frame.size.height;
-        m_scrollOffset = self.navigationController.navigationBar.frame.size.height + 20.0f;
-        headerBottom += m_scrollOffset;
-    }
-    [[self.webView scrollView] setContentInset:UIEdgeInsetsMake(headerBottom, 0, -headerBottom, 0)];
-    
-//    CGSize contentSize = m_header.contentSize;
-//    CGPoint contentOffset = m_header.contentOffset;
-//    UIEdgeInsets contentInset = m_header.contentInset;
-//    CGRect headerFrame = m_header.frame;
-//    CGRect curFrame = m_currentPage.view.frame;
-//    CGRect nextFrame = m_nextPage.view.frame;
-
+   
     if (m_header)
     {
         NSInteger numItems = m_sourceList ? m_sourceList.count : 1;
         m_header.contentSize = CGSizeMake(m_header.frame.size.width * numItems, 0);
     }
 
-}
-
--(BOOL) navigationShouldPopOnBackButton
-{
-    if([_webView canGoBack])
-    {
-        [_webView goBack];
-        return NO;
-    }
-    else
-    {
-        return YES;
-    }
-}
-
-- (void) webViewDidFinishLoad:(UIWebView *)webView
-{
-    m_loading = false;
 }
 
 - (void)didReceiveMemoryWarning
@@ -309,19 +228,6 @@
     // Called when the view is shown again in the split view, invalidating the button and popover controller.
     [self.navigationItem setLeftBarButtonItem:nil animated:YES];
     self.masterPopoverController = nil;
-}
-
-- (void)fullPostDidLoad:(CRSSItem *)post
-{
-    if (post == self.detailItem)
-    {
-        if (_webView)
-        {
-            [_webView loadHTMLString:[self.detailItem blurb] baseURL:nil];
-        }
-        
-        [post requestImage:self];
-    }
 }
 
 - (IBAction)onFavourite:(id)sender
@@ -354,9 +260,6 @@
         pageFrame.size.height = m_header.frame.size.height;
         
 		pageController.view.frame = pageFrame;
-        
-	    CRSSItem *rssItem = m_sourceList ? m_sourceList[newIndex] : _detailItem;
-        [rssItem requestImage:self];
     }
 	else
 	{
@@ -394,7 +297,6 @@
             self.navigationItem.rightBarButtonItems = @[favButton, flexibleItem1, twButton, flexibleItem2, fbButton, flexibleItem3, commentButton, flexibleItem4 ];
             self.navigationItem.titleView = nil;
             self.navigationItem.title = @"";
-                [m_toolbar setAlpha:0.0f];
             }];
             m_btnFavourite = favButton;
         }
@@ -404,18 +306,11 @@
             [UIView animateWithDuration:0.4f animations:^{
             self.navigationItem.rightBarButtonItems = @[favButton];
             self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"top_banner_logo"]];
-                [m_toolbar setAlpha:1.0f];
             }];
             m_btnFavourite = favButton;
         }
     }
 }
-
-// called by our ImageDownloader when an icon is ready to be displayed
-- (void)appImageDidLoad:(IconDownloader *)iconDownloader
-{
-}
-
 
 - (void)scrollViewDidScroll:(UIScrollView *)sender
 {
@@ -424,7 +319,7 @@
         CGFloat pageWidth = m_header.frame.size.width;
         float fractionalPage = m_header.contentOffset.x / pageWidth;
             
-        NSInteger lowerNumber = floor(fractionalPage);
+        NSInteger lowerNumber = MAX(MIN(floor(fractionalPage), m_sourceList.count-2), 0);
         NSInteger upperNumber = lowerNumber + 1;
         
         if (lowerNumber == m_currentPage.pageIndex)
@@ -478,60 +373,22 @@
         
         if (isPrev && (pageFract > 0.6f))
         {
-            [UIView animateWithDuration:0.25f animations:^{[_webView setAlpha:0.0f];}];
-
             m_itemPos = upperNumber;
             _detailItem = m_sourceList[upperNumber];
             [self configureView:false];
         }
         else if (!isPrev && (pageFract < 0.4f))
         {
-            [UIView animateWithDuration:0.25f animations:^{[_webView setAlpha:0.0f];}];
             m_itemPos = lowerNumber;
             _detailItem = m_sourceList[lowerNumber];
             [self configureView:false];
         }
-    }
-    else if (sender == _webView.scrollView)
-    {
-        float senderOffset  = sender.contentOffset.y;
-        float headerPos = /*m_header.frame.origin.y + */m_header.frame.size.height;
-        float delta = senderOffset+headerPos;
-        float factor = 1.0f - (delta / (m_header.frame.size.height * 0.5f));
-        if (factor <= 0.0f)
-        {
-            [m_header setAlpha:0.0f];
-        }
-        else
-        {
-            [m_header setAlpha:MIN(factor, 1.0f)];
-        }
-        
-        senderOffset += m_scrollOffset;
-        
-        CGRect titleFrame = [m_titleRoot frame];
-        titleFrame.origin.y = MAX(-senderOffset, m_header.frame.origin.y);
-        [m_titleRoot setFrame:titleFrame];
-        CGRect tbFrame = [m_toolbar frame];
-        tbFrame.origin.y = -senderOffset + titleFrame.size.height;
-        [m_toolbar setFrame:tbFrame];
-        
-//        [self enableExtendedNavigationBar:(senderOffset > 0)];
     }
 }
 
 - (IBAction)onComment:(id)sender
 {
     [m_currentPage goToComments];
-/*
-    UIAlertView *alertView = [[UIAlertView alloc]
-                              initWithTitle:@"TODO"
-                              message:@"Implement Comments."
-                              delegate:self
-                              cancelButtonTitle:@"OK"
-                              otherButtonTitles:nil];
-    [alertView show];
-*/
 }
 
 - (IBAction)onFacebook:(id)sender

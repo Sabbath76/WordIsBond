@@ -154,27 +154,30 @@ float BLUR_IMAGE_RANGE = 100.0f;
                 NSString *secsString = secs < 10 ? [NSString stringWithFormat:@"0%d", secs] : [NSString stringWithFormat:@"%d", secs];
                 sself->m_labelCurTime.text = [NSString stringWithFormat:@"%@:%@", minsString, secsString];
 
-                TrackInfo *trackInfo = sself->m_audioTracks[sself->currentTrack];
-                Float64 durationSeconds = trackInfo->duration;
-    //            Float64 durationSeconds = CMTimeGetSeconds(endTime);
-                Float64 timeTillEnd = durationSeconds - currentSeconds;
-                mins = timeTillEnd/60.0;
-                secs = fmodf(timeTillEnd, 60.0);
-                minsString = [NSString stringWithFormat:@"%d", mins];
-                secsString = secs < 10 ? [NSString stringWithFormat:@"0%d", secs] : [NSString stringWithFormat:@"%d", secs];
-                sself->m_labelDuration.text = [NSString stringWithFormat:@"-%@:%@", minsString, secsString];
-                
-                if (currentSeconds != 0.0f)
+                if (sself->m_audioTracks.count > 0)
                 {
-                    double normalizedTime = currentSeconds / durationSeconds;
-                    [sself->m_trackProgress setProgress:normalizedTime];
+                    TrackInfo *trackInfo = sself->m_audioTracks[sself->currentTrack];
+                    Float64 durationSeconds = trackInfo->duration;
+        //            Float64 durationSeconds = CMTimeGetSeconds(endTime);
+                    Float64 timeTillEnd = durationSeconds - currentSeconds;
+                    mins = timeTillEnd/60.0;
+                    secs = fmodf(timeTillEnd, 60.0);
+                    minsString = [NSString stringWithFormat:@"%d", mins];
+                    secsString = secs < 10 ? [NSString stringWithFormat:@"0%d", secs] : [NSString stringWithFormat:@"%d", secs];
+                    sself->m_labelDuration.text = [NSString stringWithFormat:@"-%@:%@", minsString, secsString];
+                    
+                    if (currentSeconds != 0.0f)
+                    {
+                        double normalizedTime = currentSeconds / durationSeconds;
+                        [sself->m_trackProgress setProgress:normalizedTime];
+                    }
+        /*            if (CMTimeCompare(endTime, kCMTimeZero) != 0)
+                    {
+                        double normalizedTime = (double) sself->m_player.currentTime.value / (double) endTime.value;
+                        [sself->m_trackProgress setProgress:normalizedTime];
+                    }
+         */
                 }
-    /*            if (CMTimeCompare(endTime, kCMTimeZero) != 0)
-                {
-                    double normalizedTime = (double) sself->m_player.currentTime.value / (double) endTime.value;
-                    [sself->m_trackProgress setProgress:normalizedTime];
-                }
-     */
             }
         }];
         
@@ -327,6 +330,8 @@ float BLUR_IMAGE_RANGE = 100.0f;
         [self prepareMusic];
     }
 }
+
+
 
 - (void) onCloseMediaPlayer:(NSNotification *) notification
 {

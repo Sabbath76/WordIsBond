@@ -12,91 +12,138 @@
 
 @implementation RSSFeed
 {
-    NSMutableArray *sourceItems;
-    NSMutableArray *sourceFeatures;
+    NSMutableArray *m_mainItems;
+    NSMutableArray *m_mainFeatures;
+    NSMutableArray *m_searchItems;
+    NSMutableArray *m_searchFeatures;
+    NSMutableArray *m_filteredItems;
+    NSMutableArray *m_filteredFeatures;
+
+    int m_mainPage;
+    int m_mainTotalPages;
+    int m_searchPage;
+    int m_searchTotalPages;
+
     NSMutableData *m_receivedData;
     NSMutableData *m_receivedDataFeatures;
     NSURLConnection *m_connectionPosts;
     NSURLConnection *m_connectionFeatures;
     NSString *m_lastURLPosts;
     NSString *m_lastURLFeatures;
-    int m_page;
-    int m_totalPages;
+//    int m_page;
+//    int m_totalPages;
     NSString *m_lastSearch;
     Boolean m_insertFront;
     bool m_resetFeatures;
     bool m_hasSearch;
+    
+    bool m_showAudio;
+    bool m_showVideo;
+    bool m_showText;
 }
 
-@synthesize items, features, numNewBack, numNewFront, reset;
+@synthesize /*items, features,*/ numNewBack, numNewFront, reset;
 
-- (void)handleLoadedApps:(NSArray *)loadedApps
+/*- (void)handleLoadedApps:(NSArray *)loadedApps
 {
     //    [self.appRecords addObjectsFromArray:loadedApps];
     
-    sourceItems = [[NSMutableArray alloc] init];
-    sourceFeatures = [[NSMutableArray alloc] init];
+    m_sourceItems = [[NSMutableArray alloc] init];
+    m_sourceFeatures = [[NSMutableArray alloc] init];
     items = [[NSMutableArray alloc] init];
     features = [[NSMutableArray alloc] init];
     for (CRSSItem *item in loadedApps)
     {
         [items insertObject:item atIndex:0];
         [features insertObject:item atIndex:0];
-        [sourceItems insertObject:item atIndex:0];
-        [sourceFeatures insertObject:item atIndex:0];
+        [m_sourceItems insertObject:item atIndex:0];
+        [m_sourceFeatures insertObject:item atIndex:0];
     }
-}
+}*/
 
 + (RSSFeed *) getInstance
 {
     static RSSFeed *s_RSSFeed = NULL;
     if (s_RSSFeed == NULL)
     {
-        s_RSSFeed = [RSSFeed alloc];
-        s_RSSFeed->m_page = 0;
-        s_RSSFeed->m_totalPages = 0;
+        s_RSSFeed = [[RSSFeed alloc] init];
     }
     
     return s_RSSFeed;
 }
 
-- (void) Filter:(NSString *)filter showAudio:(bool)showAudio showVideo:(bool)showVideo showText:(bool)showText
+- (id) init
 {
-    if (sourceItems == nil)
+    self = [super init];
+    
+    m_mainPage = 0;
+    m_mainTotalPages = 0;
+    m_searchPage = 0;
+    m_searchTotalPages = 0;
+    
+    m_resetFeatures = false;
+    m_hasSearch = false;
+    
+    m_showAudio = true;
+    m_showVideo = true;
+    m_showText  = true;
+    
+    m_mainItems = [[NSMutableArray alloc] init];
+    m_mainFeatures = [[NSMutableArray alloc] init];
+    m_searchItems = [[NSMutableArray alloc] init];
+    m_searchFeatures = [[NSMutableArray alloc] init];
+    m_filteredItems = [[NSMutableArray alloc] init];
+    m_filteredFeatures = [[NSMutableArray alloc] init];
+    
+    return self;
+}
+
+- (void) UpdateFilteredItems
+{
+    NSMutableArray *pItems     = m_hasSearch ? m_searchItems : m_mainItems;
+    NSMutableArray *pFeatures  = m_hasSearch ? m_searchFeatures : m_mainFeatures;
+    
+    [m_filteredItems removeAllObjects];
+    [m_filteredFeatures removeAllObjects];
+    for (CRSSItem *item in pItems)
     {
-        [self LoadFeed];
+        if (!m_showAudio && (item.type == Audio))
+            continue;
+        if (!m_showVideo && (item.type == Video))
+            continue;
+        if (!m_showText && (item.type == Text))
+            continue;
+        
+        [m_filteredItems addObject:item];
     }
-    else
+    for (CRSSItem *item in pFeatures)
     {
-        [items removeAllObjects];
-        [features removeAllObjects];
-        for (CRSSItem *item in sourceItems)
-        {
-            if (!showAudio && (item.type == Audio))
-                continue;
-            if (!showVideo && (item.type == Video))
-                continue;
-            if (!showText && (item.type == Text))
-                continue;
-            if (filter && ([item.title rangeOfString:filter].location == NSNotFound))
-                continue;
-            
-            [items insertObject:item atIndex:0];
-        }
-        for (CRSSItem *item in sourceFeatures)
-        {
-            if (!showAudio && (item.type == Audio))
-                continue;
-            if (!showVideo && (item.type == Video))
-                continue;
-            if (!showText && (item.type == Text))
-                continue;
-            if (filter && ([item.title rangeOfString:filter].location == NSNotFound))
-                continue;
-            
-            [features insertObject:item atIndex:0];
-        }
+        if (!m_showAudio && (item.type == Audio))
+            continue;
+        if (!m_showVideo && (item.type == Video))
+            continue;
+        if (!m_showText && (item.type == Text))
+            continue;
+        
+        [m_filteredFeatures addObject:item];
     }
+  
+    //--- Inform the rest of the app about the new data
+    [[NSNotificationCenter defaultCenter]
+     postNotificationName:@"NewRSSFeed"
+     object:self];
+
+}
+
+- (void) showAudio:(bool)showAudio showVideo:(bool)showVideo showText:(bool)showText
+{
+    m_showAudio = showAudio;
+    m_showVideo = showVideo;
+    m_showText  = showText;
+    
+    reset = true;
+    
+    [self UpdateFilteredItems];
 }
 
 - (void) QueryAPI:(NSString *)url reset:(Boolean)doReset
@@ -319,19 +366,31 @@
     NSNumber *numItems = [json objectForKey:@"count"];
     if ((numItems.intValue > 0) || isFeatures)
     {
+        NSMutableArray *pItems     = m_hasSearch ? m_searchItems : m_mainItems;
+        NSMutableArray *pFeatures  = m_hasSearch ? m_searchFeatures : m_mainFeatures;
+
         if (isPosts && reset)
         {
-            items = [[NSMutableArray alloc] init];
+            [pItems removeAllObjects];
+//            items = [[NSMutableArray alloc] init];
         }
         else if (isFeatures && m_resetFeatures)
         {
-            features = [[NSMutableArray alloc] init];
+            [pFeatures removeAllObjects];
+//            features = [[NSMutableArray alloc] init];
         }
 
         if (isPosts)
         {
             NSNumber *pages = [json objectForKey:@"pages"];
-            m_totalPages = pages.intValue;
+            if (m_hasSearch)
+            {
+                m_searchTotalPages = pages.intValue;
+            }
+            else
+            {
+                m_mainTotalPages = pages.intValue;
+            }
 
             numNewFront = 0;
             numNewBack = 0;
@@ -347,7 +406,7 @@
             if (reset == false)
             {
                 //--- Check for inserting new posts
-                for (CRSSItem *oldPost in items)
+                for (CRSSItem *oldPost in pItems)
                 {
                     if (oldPost.postID == postIdx.integerValue)
                     {
@@ -367,24 +426,24 @@
                 {
                     if (isPosts)
                     {
-                        [items insertObject:newPost atIndex:numNewFront];
+                        [pItems insertObject:newPost atIndex:numNewFront];
                         numNewFront++;
                     }
                     else
                     {
-                        [features insertObject:newPost atIndex:numNewFront];
+                        [pFeatures insertObject:newPost atIndex:numNewFront];
                     }
                 }
                 else
                 {
                     if (isPosts)
                     {
-                        [items addObject:newPost];
+                        [pItems addObject:newPost];
                         numNewBack++;
                     }
                     else
                     {
-                        [features addObject:newPost];
+                        [pFeatures addObject:newPost];
                     }
                 }
             }
@@ -392,9 +451,11 @@
         
         if ((m_connectionPosts == nil) && (m_connectionFeatures == nil))
         {
-            [[NSNotificationCenter defaultCenter]
-             postNotificationName:@"NewRSSFeed"
-             object:self];
+            [self UpdateFilteredItems];
+            
+//            [[NSNotificationCenter defaultCenter]
+//             postNotificationName:@"NewRSSFeed"
+//             object:self];
         }
     }
     else if (isPosts)
@@ -414,10 +475,29 @@
     m_insertFront = false;
     [self QueryAPI:url reset:true];
     [self QueryAPIFeatures:urlFeatures reset:true];
-    m_page = 0;
+    m_mainPage = 0;
     m_hasSearch = false;
 }
 
+- (void) Search:(NSString *)filter
+{
+    NSString *url = [@"http://www.thewordisbond.com/?json=appqueries.get_search_results&count=20&search=" stringByAppendingString:filter];
+    NSString *urlFeatures = [@"http://www.thewordisbond.com/?json=appqueries.get_search_feature_results&count=5&search=" stringByAppendingString:filter];
+    m_lastSearch = url;
+    m_insertFront = false;
+    
+//    if(!m_hasSearch)
+//    {
+//        m_sourceItems = self.items;
+//        m_sourceFeatures = self.features;
+//    }
+    
+    [self QueryAPI:url reset:true];
+    [self QueryAPIFeatures:urlFeatures reset:true];
+    m_searchPage = 0;
+    m_hasSearch = true;
+}
+/*
 - (void) FilterJSON:(NSString *)filter showAudio:(bool)showAudio showVideo:(bool)showVideo showText:(bool)showText
 {
     NSString *url = [@"http://www.thewordisbond.com/?json=appqueries.get_search_results&count=20&search=" stringByAppendingString:filter];
@@ -427,23 +507,23 @@
     
     if(!m_hasSearch)
     {
-        sourceItems = self.items;
-        sourceFeatures = self.features;
+        m_sourceItems = self.items;
+        m_sourceFeatures = self.features;
     }
     
     [self QueryAPI:url reset:true];
     [self QueryAPIFeatures:urlFeatures reset:true];
     m_page = 0;
     m_hasSearch = true;
-}
+}*/
 
 - (int) GetPage
 {
-    return m_page;
+    return (m_hasSearch) ? m_searchPage : m_mainPage;
 }
 - (int) GetNumPages
 {
-    return m_totalPages;
+    return (m_hasSearch) ? m_searchTotalPages : m_mainTotalPages;
 }
 
 
@@ -451,8 +531,16 @@
 {
     NSString *url = [m_lastSearch stringByAppendingFormat:@"&page=%d",pageNum+1];
     [self QueryAPI:url reset:false];
-    m_insertFront = pageNum <= m_page;
-    m_page = pageNum;
+    if (m_hasSearch)
+    {
+        m_insertFront = pageNum <= m_searchPage;
+        m_searchPage = pageNum;
+    }
+    else
+    {
+        m_insertFront = pageNum <= m_mainPage;
+        m_mainPage = pageNum;
+    }
 }
 
 - (void) clearSearch
@@ -462,23 +550,39 @@
         NSString *url = @"http://www.thewordisbond.com/?json=appqueries.get_recent_posts&count=20";
         m_lastSearch = url;
         
-        self.items = sourceItems;
-        self.features = sourceFeatures;
+//        self.items = m_sourceItems;
+//        self.features = m_sourceFeatures;
         m_hasSearch = false;
         
         [m_connectionPosts cancel];
         [m_connectionFeatures cancel];
         m_connectionPosts = nil;
         m_connectionFeatures = nil;
+        
+        [m_searchItems removeAllObjects];
+        [m_searchFeatures removeAllObjects];
 
         reset = true;
 
-        [[NSNotificationCenter defaultCenter]
-         postNotificationName:@"NewRSSFeed"
-         object:self];
+//        [[NSNotificationCenter defaultCenter]
+//         postNotificationName:@"NewRSSFeed"
+//         object:self];
+        
+        [self UpdateFilteredItems];
         
     }
 }
+
+- (NSArray *) items
+{
+    return m_filteredItems;
+}
+
+- (NSArray *) features
+{
+    return m_filteredFeatures;
+}
+
 
 
 @end

@@ -128,7 +128,7 @@ const int ExpandedSectionSize = 120;
 
     [UIView animateWithDuration:0.25
                           delay:0.0
-                        options:UIViewAnimationCurveEaseOut
+                        options:UIViewAnimationOptionCurveEaseInOut
                      animations:^{
                          rootView.frame = destination;
                      }
@@ -270,13 +270,13 @@ const int ExpandedSectionSize = 120;
 //    [swipeRecognizerLeft setDirection:(UISwipeGestureRecognizerDirectionLeft)];
 //    [self.tableView addGestureRecognizer:swipeRecognizerLeft];
     
-    UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(onPan:)];
-    [panRecognizer setDelegate:self];
-    [self.tableView addGestureRecognizer:panRecognizer];
+///    UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(onPan:)];
+///    [panRecognizer setDelegate:self];
+///    [self.tableView addGestureRecognizer:panRecognizer];
 
-    UISwipeGestureRecognizer *swipeRecognizerRight = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(expandPost:)];
-    [swipeRecognizerRight setDirection:(UISwipeGestureRecognizerDirectionRight)];
-    [self.tableView addGestureRecognizer:swipeRecognizerRight];
+///    UISwipeGestureRecognizer *swipeRecognizerRight = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(expandPost:)];
+///    [swipeRecognizerRight setDirection:(UISwipeGestureRecognizerDirectionRight)];
+///    [self.tableView addGestureRecognizer:swipeRecognizerRight];
     
 //    [self.tableView registerClass:[PostCell class] forCellReuseIdentifier:@"ItemCell"];
 
@@ -376,19 +376,6 @@ const int ExpandedSectionSize = 120;
     }
 }
 
-// -------------------------------------------------------------------------------
-//  handleLoadedApps:notif
-// -------------------------------------------------------------------------------
-- (void)handleLoadedApps:(NSArray *)loadedApps
-{
-    [_feed handleLoadedApps:loadedApps];
-    
-    [[NSNotificationCenter defaultCenter]
-     postNotificationName:@"NewRSSFeed"
-     object:self];
-
-
-}
 
 - (void) failedNewRSSFeed:(NSNotification *) notification
 {
@@ -463,9 +450,9 @@ const int ExpandedSectionSize = 120;
                           withRowAnimation:UITableViewRowAnimationRight];
     }
     else
-*/    {
-        [self.tableView reloadData];
-    }
+*/ //   {
+  //      [self.tableView reloadData];
+  //  }
     [self loadImagesForOnscreenRows];
 
     [m_featureCell setNeedsDisplay];
@@ -1433,7 +1420,8 @@ const int ExpandedSectionSize = 120;
 //    showVideo = [_filterVideo isOn];
 //    showText  = [_filterText isOn];
     
-    [[RSSFeed getInstance] FilterJSON:searchBar.text showAudio:true showVideo:true showText:true];
+    [[RSSFeed getInstance] Search:searchBar.text];
+//    [[RSSFeed getInstance] FilterJSON:searchBar.text showAudio:true showVideo:true showText:true];
     
     [UIView animateWithDuration:0.5 animations:^{
         m_searchOverlay.alpha = 0.95;

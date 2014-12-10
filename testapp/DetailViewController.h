@@ -10,11 +10,9 @@
 #import "CRSSItem.h"
 #import "GAITrackedViewController.h"
 
-@interface DetailViewController : GAITrackedViewController <UISplitViewControllerDelegate, PostRequestDelegate, UIScrollViewDelegate, IconDownloaderDelegate, UIWebViewDelegate>
-@property (weak, nonatomic) IBOutlet UIWebView *webView;
+@interface DetailViewController : GAITrackedViewController <UISplitViewControllerDelegate, UIScrollViewDelegate>
 
 @property (strong, nonatomic) id detailItem;
-//@property (weak, nonatomic) IBOutlet UILabel *detailDescriptionLabel;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *btnFavourite;
 
 - (void)setDetailItem:(id)newDetailItem list:(NSArray *)sourceList;

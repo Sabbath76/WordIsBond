@@ -43,6 +43,12 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [mediaPlayerPosition setConstant:size.height-56];
+//    [[NSNotificationCenter defaultCenter] postNotificationName:@"CloseMediaPlayer" object:self];
+}
+
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     NSString * segueName = segue.identifier;

@@ -72,13 +72,14 @@
 - (void)updateHighlight:(NSInteger)index
 {
     NSInteger thumb = index-leftMostFeature;
-    if ((thumb >= 0) && (thumb < m_thumbnails.count))
+    NSInteger totFeatures = MIN(m_thumbnails.count, rssFeed.features.count - leftMostFeature);
+    if ((thumb >= 0) && (thumb < totFeatures))
     {
-    UIButton *button = (UIButton*) m_thumbnails[thumb];
+        UIButton *button = (UIButton*) m_thumbnails[thumb];
         CGRect buttonFrame  = [button frame];
         CGRect lineFrame    = [m_imgHighlightLine frame];
         lineFrame.origin.x = buttonFrame.origin.x;
-    [UIView animateWithDuration:0.4f animations:^
+        [UIView animateWithDuration:0.4f animations:^
         {
             [m_imgHighlight setFrame:buttonFrame];
             [m_imgHighlightLine setFrame:lineFrame];
@@ -155,7 +156,8 @@
 
     NSInteger maxFeatures = rssFeed.features.count;
     NSInteger newleftmost = MAX(MIN(leftMostFeature, newIndex-1), newIndex-2);
-    newleftmost = MIN(maxFeatures - m_thumbnails.count, newleftmost);
+    NSInteger leftLimit = (maxFeatures - m_thumbnails.count);
+    newleftmost = MIN(leftLimit, newleftmost);
     newleftmost = MAX(newleftmost, 0);
     if (newleftmost != leftMostFeature)
     {
@@ -167,6 +169,10 @@
             {
                 CRSSItem *rssItem = rssFeed.features[leftMostFeature+i];
                 [imageView setImage:[rssItem requestIcon:self] forState:UIControlStateNormal];
+            }
+            else
+            {
+                [imageView setImage:nil forState:UIControlStateNormal];
             }
         }
 
@@ -285,7 +291,7 @@
     float fractionalPage = scrollView.contentOffset.x / pageWidth;
 	NSInteger lowerNumber = floor(fractionalPage);
     lowerNumber++;
-    if(lowerNumber==m_thumbnails.count)
+    if(lowerNumber==MIN(m_thumbnails.count, rssFeed.features.count))
     {
         lowerNumber=0;
     }

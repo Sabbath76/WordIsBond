@@ -8,6 +8,8 @@
 
 #import "SplashViewController.h"
 #import "RSSFeed.h"
+#import "SelectedItem.h"
+
 
 @interface SplashViewController ()
 @property (weak, nonatomic) IBOutlet UIImageView *m_loadingSpinner;
@@ -92,9 +94,33 @@
 
 - (void) receiveNewRSSFeed:(NSNotification *) notification
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self ];
+//                                             selector:@selector(receiveNewRSSFeed:)
+//                                                 name:@"NewRSSFeed"
+//                                               object:nil];
+
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
     {
         [self dismissViewControllerAnimated:YES completion:^{}];
+
+        RSSFeed *pFeed = [RSSFeed getInstance];
+        if ((pFeed.features.count > 0) || (pFeed.items.count > 0))
+        {
+            SelectedItem *item = [SelectedItem alloc];
+            item->isFavourite = false;
+            if (pFeed.features.count > 0)
+            {
+                item->isFeature = true;
+                item->item = pFeed.features[0];
+            }
+            else
+            {
+                item->isFeature = false;
+                item->item = pFeed.items[0];
+            }
+
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"SetDetailItem" object:item];
+        }
     }
     else
     {

@@ -11,20 +11,25 @@
 
 @interface RSSFeed : NSObject < NSURLConnectionDelegate, UIAlertViewDelegate >
 
-@property (nonatomic, retain) NSMutableArray *items;
-@property (nonatomic, retain) NSMutableArray *features;
+//@property (nonatomic, retain) NSMutableArray *items;
+//@property (nonatomic, retain) NSMutableArray *features;
 @property (nonatomic, readonly) int numNewFront;
 @property (nonatomic, readonly) int numNewBack;
 @property (nonatomic, readonly) Boolean reset;
 
-- (void)handleLoadedApps:(NSArray *)loadedApps;
+//- (void)handleLoadedApps:(NSArray *)loadedApps;
 + (RSSFeed *) getInstance;
-- (void) Filter:(NSString *)filter showAudio:(bool)showAudio showVideo:(bool)showVideo showText:(bool)showText;
-- (void) FilterJSON:(NSString *)filter showAudio:(bool)showAudio showVideo:(bool)showVideo showText:(bool)showText;
+- (void) showAudio:(bool)showAudio showVideo:(bool)showVideo showText:(bool)showText;
+//- (void) Filter:(NSString *)filter showAudio:(bool)showAudio showVideo:(bool)showVideo showText:(bool)showText;
+//- (void) FilterJSON:(NSString *)filter showAudio:(bool)showAudio showVideo:(bool)showVideo showText:(bool)showText;
 - (int) GetPage;
 - (int) GetNumPages;
 - (void) LoadPage:(int) pageNum;
 - (void) LoadFeed;
+- (void) Search:(NSString *)filter;
 - (void) clearSearch;
+
+- (NSArray *) items;
+- (NSArray *) features;
 
 @end

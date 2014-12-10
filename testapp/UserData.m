@@ -21,6 +21,8 @@ static UserData *s_userData;
 
 - (id) init
 {
+    self = [super init];
+    
     favourites = [[NSMutableSet alloc] init];
     
     [self load];

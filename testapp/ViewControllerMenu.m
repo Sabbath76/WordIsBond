@@ -67,18 +67,19 @@
     showVideo = [_filterVideo isOn];
     showText  = [_filterText isOn];
     
-    [[RSSFeed getInstance] Filter:filter showAudio:showAudio showVideo:showVideo showText:showText];
+//    [[RSSFeed getInstance] Filter:filter showAudio:showAudio showVideo:showVideo showText:showText];
+    [[RSSFeed getInstance] showAudio:showAudio showVideo:showVideo showText:showText];
     
-    [[NSNotificationCenter defaultCenter]
-     postNotificationName:@"NewRSSFeed"
-     object:self];
+//    [[NSNotificationCenter defaultCenter]
+//     postNotificationName:@"NewRSSFeed"
+//     object:self];
 }
 
 - (IBAction)updateFilter:(id)sender
 {
     [self updateFeedFilter];
 }
-
+/*
 - (void)searchBar:(UISearchBar *)bar textDidChange:(NSString *)searchText {
     NSLog(@"searchBar:textDidChange: isFirstResponder: %i", [bar isFirstResponder]);
     if(![bar isFirstResponder])
@@ -121,7 +122,7 @@
     
     [self updateFeedFilter];
 }
-
+*/
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return true;

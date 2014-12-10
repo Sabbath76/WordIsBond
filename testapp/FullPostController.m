@@ -30,6 +30,7 @@
     __weak IBOutlet UIToolbar *m_toolbarRegion;
     __weak IBOutlet UIView *m_headerText;
     NSArray *m_sourceArray;
+    NSTimer *m_timer;
     float m_offset;
 }
 
@@ -52,7 +53,13 @@
 - (void)setPageIndex:(NSInteger)newPageIndex
 {
 	pageIndex = newPageIndex;
-	
+
+    if (m_timer)
+    {
+        [m_timer invalidate];
+        m_timer = nil;
+    }
+
 	if (pageIndex >= 0 && pageIndex < m_sourceArray.count)
 	{
         CRSSItem *rssItem = m_sourceArray[pageIndex];
@@ -63,8 +70,10 @@
         }
 
         m_webView.scrollView.delegate = self;
+        m_webView.delegate = self;
         
-        [m_webView stringByEvaluatingJavaScriptFromString:@"document.open();document.close();"];
+        [m_webView stopLoading];
+//        [m_webView stringByEvaluatingJavaScriptFromString:@"document.open();document.close();"];
 
         m_image.image = [rssItem requestImage:self];
         m_blurredImage.image = [rssItem getBlurredImage];
@@ -75,8 +84,11 @@
             m_author.text = [@"By " stringByAppendingString:rssItem.author];
         }
         
-        [m_webView loadHTMLString:[rssItem blurb] baseURL:[NSURL URLWithString:[rssItem postURL]]];
+        m_timer = [NSTimer scheduledTimerWithTimeInterval:0.2f target:self selector:@selector(updateWebView) userInfo:nil repeats:NO];
+//        [m_webView loadHTMLString:[rssItem blurb] baseURL:[NSURL URLWithString:[rssItem postURL]]];
         
+        [m_webView setHidden:TRUE];
+
         m_offset = 80.0f;
         
         float headerBottom = 220.0f;
@@ -97,6 +109,17 @@
     }
 }
 
+- (void)updateWebView
+{
+    CRSSItem *rssItem = m_sourceArray[pageIndex];
+    [m_webView loadHTMLString:[rssItem blurb] baseURL:[NSURL URLWithString:[rssItem postURL]]];
+//    [m_webView setHidden:FALSE];
+}
+
+- (void) webViewDidFinishLoad:(UIWebView *)webView
+{
+    [m_webView setHidden:FALSE];
+}
 
 - (void)updateTextViews:(BOOL)force
 {

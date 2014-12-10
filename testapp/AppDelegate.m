@@ -215,10 +215,10 @@ const NSString *notificationURL = @"http://www.thewordisbond.com/?json=register_
     NSError *error = nil;
     NSURLResponse *response;
     NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-    NSString *stringReply = (NSString *)[[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
+//    NSString *stringReply = (NSString *)[[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
 //    NSLog(@"reply from server: %@", stringReply);
-    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-    int statusCode = [httpResponse statusCode];
+//    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+//    NSInteger statusCode = [httpResponse statusCode];
 //    NSLog(@"HTTP Response Headers %@", [httpResponse allHeaderFields]);
  //   NSLog(@"HTTP Status code: %d", statusCode);
     if(error != nil)
