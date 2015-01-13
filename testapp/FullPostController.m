@@ -94,7 +94,7 @@
         float headerBottom = 220.0f;
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
         {
-            headerBottom = 300.0f;
+            headerBottom = 320.0f;
         }
         [[m_webView scrollView] setContentInset:UIEdgeInsetsMake(headerBottom, 0, 0, 0)];
     }

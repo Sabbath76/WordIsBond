@@ -14,6 +14,7 @@
 @interface IconDownloader : NSObject
 {
     CRSSItem *appRecord;
+    CRSSItem *appRecord2;
     NSIndexPath *indexPathInTableView;
     id <IconDownloaderDelegate> delegate;
     Boolean isItem;
@@ -24,6 +25,7 @@
 }
 
 @property (nonatomic, retain) CRSSItem *appRecord;
+@property (nonatomic, retain) CRSSItem *appRecord2;
 @property (nonatomic, retain) NSIndexPath *indexPathInTableView;
 @property (nonatomic, readwrite) Boolean isItem;
 @property (nonatomic, readonly) int postID;

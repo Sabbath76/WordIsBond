@@ -125,65 +125,6 @@ float BLUR_IMAGE_RANGE = 100.0f;
 //    [[AVAudioSession sharedInstance] setDelegate:self];
     [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&setCategoryError];
     
-    if (!m_player)
-    {
-        m_player = [[AVQueuePlayer alloc] init];
-        m_player.actionAtItemEnd = AVPlayerActionAtItemEndAdvance;
-        
-        CMTime interval = CMTimeMake(33, 1000);
-        __weak ViewControllerMediaPlayer *self_ = self;
-        self->playbackObserver = [m_player addPeriodicTimeObserverForInterval:interval queue:NULL usingBlock:^(CMTime time) {
-            if (self_ != nil)
-            {
-                ViewControllerMediaPlayer *sself = self_;
-    //            AVPlayerItem *curItem = sself->m_player.currentItem;
-    //            AVAsset *curAsset = curItem.asset;
-    //            bool playable = [curAsset isPlayable];
-    //            CMTime endTime = CMTimeConvertScale (curAsset.duration, sself->m_player.currentTime.timescale, kCMTimeRoundingMethod_RoundHalfAwayFromZero);
-                Float64 currentSeconds = CMTimeGetSeconds(sself->m_player.currentTime);
-    //            if (CMTimeCompare(endTime, kCMTimeZero) != 0)
-                {
-                    if ([sself->sldrPosition2 isTracking] == false)
-                    {
-                        sself->sldrPosition2.value = currentSeconds;
-                    }
-                }
-                int mins = currentSeconds/60.0;
-                int secs = fmodf(currentSeconds, 60.0);
-                NSString *minsString = [NSString stringWithFormat:@"%d", mins];
-                NSString *secsString = secs < 10 ? [NSString stringWithFormat:@"0%d", secs] : [NSString stringWithFormat:@"%d", secs];
-                sself->m_labelCurTime.text = [NSString stringWithFormat:@"%@:%@", minsString, secsString];
-
-                if (sself->m_audioTracks.count > 0)
-                {
-                    TrackInfo *trackInfo = sself->m_audioTracks[sself->currentTrack];
-                    Float64 durationSeconds = trackInfo->duration;
-        //            Float64 durationSeconds = CMTimeGetSeconds(endTime);
-                    Float64 timeTillEnd = durationSeconds - currentSeconds;
-                    mins = timeTillEnd/60.0;
-                    secs = fmodf(timeTillEnd, 60.0);
-                    minsString = [NSString stringWithFormat:@"%d", mins];
-                    secsString = secs < 10 ? [NSString stringWithFormat:@"0%d", secs] : [NSString stringWithFormat:@"%d", secs];
-                    sself->m_labelDuration.text = [NSString stringWithFormat:@"-%@:%@", minsString, secsString];
-                    
-                    if (currentSeconds != 0.0f)
-                    {
-                        double normalizedTime = currentSeconds / durationSeconds;
-                        [sself->m_trackProgress setProgress:normalizedTime];
-                    }
-        /*            if (CMTimeCompare(endTime, kCMTimeZero) != 0)
-                    {
-                        double normalizedTime = (double) sself->m_player.currentTime.value / (double) endTime.value;
-                        [sself->m_trackProgress setProgress:normalizedTime];
-                    }
-         */
-                }
-            }
-        }];
-        
-        
-        [self prepareMusic];
-    }
 
 //    CGRect imageFrame = currentImage.frame;
 //    CGRect toolFrame = m_playerDock.frame;
@@ -373,7 +314,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
     {
         [self prepareMusic];
         
-        [self updateCurrentTrack:currentTrack updateListItems:false];
+        [self updateCurrentTrack:currentTrack updateListItems:true];
     }
     
     [self.tableView reloadData];
@@ -447,6 +388,63 @@ float BLUR_IMAGE_RANGE = 100.0f;
 
 - (void) prepareMusic
 {
+    if (!m_player)
+    {
+        m_player = [[AVQueuePlayer alloc] init];
+        m_player.actionAtItemEnd = AVPlayerActionAtItemEndAdvance;
+        
+        CMTime interval = CMTimeMake(33, 1000);
+        __weak ViewControllerMediaPlayer *self_ = self;
+        self->playbackObserver = [m_player addPeriodicTimeObserverForInterval:interval queue:NULL usingBlock:^(CMTime time) {
+            if (self_ != nil)
+            {
+                ViewControllerMediaPlayer *sself = self_;
+                //            AVPlayerItem *curItem = sself->m_player.currentItem;
+                //            AVAsset *curAsset = curItem.asset;
+                //            bool playable = [curAsset isPlayable];
+                //            CMTime endTime = CMTimeConvertScale (curAsset.duration, sself->m_player.currentTime.timescale, kCMTimeRoundingMethod_RoundHalfAwayFromZero);
+                Float64 currentSeconds = CMTimeGetSeconds(sself->m_player.currentTime);
+                //            if (CMTimeCompare(endTime, kCMTimeZero) != 0)
+                {
+                    if ([sself->sldrPosition2 isTracking] == false)
+                    {
+                        sself->sldrPosition2.value = currentSeconds;
+                    }
+                }
+                int mins = currentSeconds/60.0;
+                int secs = fmodf(currentSeconds, 60.0);
+                NSString *minsString = [NSString stringWithFormat:@"%d", mins];
+                NSString *secsString = secs < 10 ? [NSString stringWithFormat:@"0%d", secs] : [NSString stringWithFormat:@"%d", secs];
+                sself->m_labelCurTime.text = [NSString stringWithFormat:@"%@:%@", minsString, secsString];
+                
+                if (sself->m_audioTracks.count > 0)
+                {
+                    TrackInfo *trackInfo = sself->m_audioTracks[sself->currentTrack];
+                    Float64 durationSeconds = trackInfo->duration;
+                    //            Float64 durationSeconds = CMTimeGetSeconds(endTime);
+                    Float64 timeTillEnd = durationSeconds - currentSeconds;
+                    mins = timeTillEnd/60.0;
+                    secs = fmodf(timeTillEnd, 60.0);
+                    minsString = [NSString stringWithFormat:@"%d", mins];
+                    secsString = secs < 10 ? [NSString stringWithFormat:@"0%d", secs] : [NSString stringWithFormat:@"%d", secs];
+                    sself->m_labelDuration.text = [NSString stringWithFormat:@"-%@:%@", minsString, secsString];
+                    
+                    if (currentSeconds != 0.0f)
+                    {
+                        double normalizedTime = currentSeconds / durationSeconds;
+                        [sself->m_trackProgress setProgress:normalizedTime];
+                    }
+                    /*            if (CMTimeCompare(endTime, kCMTimeZero) != 0)
+                     {
+                     double normalizedTime = (double) sself->m_player.currentTime.value / (double) endTime.value;
+                     [sself->m_trackProgress setProgress:normalizedTime];
+                     }
+                     */
+                }
+            }
+        }];
+    }
+
     if (currentTrack < m_audioTracks.count)
     {
         TrackInfo *trackInfo = m_audioTracks[currentTrack];
@@ -755,70 +753,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
 - (IBAction)togglePlay:(id)sender
 {
    [self setPlaying:!m_isPlaying];
- }
-
-/*
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    [super touchesMoved:touches withEvent:event];
-    
-    UIView *moveView = self.view.superview;
-    if (moveView)
-    {
-        UITouch *aTouch = [touches anyObject];
-        CGPoint prevLocation = [aTouch previousLocationInView:moveView.superview];
-        CGPoint location = [aTouch locationInView:moveView.superview];
-        
-        CGRect parentFrame = moveView.superview.frame;
-        
-        prevLocation.y = MAX(prevLocation.y, parentFrame.size.height - midOffset);
-        prevLocation.y = MIN(prevLocation.y, parentFrame.size.height - bottomOffset);
-        
-        location.y = MAX(location.y, parentFrame.size.height - midOffset);
-        location.y = MIN(location.y, parentFrame.size.height - bottomOffset);
-        
-        [UIView beginAnimations:@"Dragging A DraggableView" context:nil];
-        moveView.frame = CGRectMake(moveView.frame.origin.x, moveView.frame.origin.y + location.y - prevLocation.y,
-                                    moveView.frame.size.width, moveView.frame.size.height);
-        [UIView commitAnimations];
-    }
-    
 }
-
-- (void) touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    [super touchesEnded:touches withEvent:event];
-    
-    UIView *moveView = self.view.superview;
-    if (moveView)
-    {
-        CGRect parentFrame = moveView.superview.frame;
-        
-        if (moveView.frame.origin.y < (parentFrame.origin.y + (parentFrame.size.height / 2)))
-        {
-            [UIView beginAnimations:@"Dragging A DraggableView" context:nil];
-            moveView.frame = CGRectMake(moveView.frame.origin.x, 0,
-                                        moveView.frame.size.width, moveView.frame.size.height);
-            [UIView commitAnimations];
-            
-        }
-        else if (moveView.frame.origin.y < (parentFrame.origin.y + (parentFrame.size.height - ((midOffset + bottomOffset) * 0.5))))
-        {
-            [UIView beginAnimations:@"Dragging A DraggableView" context:nil];
-            moveView.frame = CGRectMake(moveView.frame.origin.x, parentFrame.size.height - midOffset,
-                                        moveView.frame.size.width, moveView.frame.size.height);
-            [UIView commitAnimations];
-        }
-        else
-        {
-            [UIView beginAnimations:@"Dragging A DraggableView" context:nil];
-            moveView.frame = CGRectMake(moveView.frame.origin.x, parentFrame.size.height - bottomOffset,
-                                        moveView.frame.size.width, moveView.frame.size.height);
-            [UIView commitAnimations];
-        }
-    }
-}*/
-
 
 - (void) streamData:(NSString *)url
 {
@@ -827,26 +762,11 @@ float BLUR_IMAGE_RANGE = 100.0f;
     
     if (playerItem != nil)
     {
+        [m_player insertItem:playerItem afterItem:nil];
+        
         [playerItem addObserver:self forKeyPath:@"status" options:0
                         context:nil];
-        
-        [m_player insertItem:playerItem afterItem:nil];
     }
-    
-    //m_player = [AVPlayer playerWithPlayerItem:playerItem];
-    
-/*
-    
-    m_receivedData = [[NSMutableData alloc] init];
-    
-    if (m_currentConnection)
-    {
-        [m_currentConnection cancel];
-    }
-    //Create the connection with the string URL and kick it off
-    m_currentConnection = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] delegate:self];
-    [m_currentConnection start];
-    //    NSURLConnection*/
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -905,7 +825,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
                         {
                             [m_player play];
                         }
-                        [self updateTracks];
+//                        [self updateTracks];
 
                         UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead_on"];
                         [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateNormal];
@@ -985,52 +905,34 @@ float BLUR_IMAGE_RANGE = 100.0f;
     }
 }
 
-- (void) updateTrackCell:(NSInteger) trackIdx
+- (UIImage *)getIconForTrack:(NSInteger) trackID
 {
-//    TrackInfo *trackInfo = m_audioTracks[trackIdx];
-    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:trackIdx inSection:0]];
-    UILabel *lblTitle    = (UILabel*)[cell viewWithTag:1];
-/*    UILabel *lblDuration = (UILabel*)[cell viewWithTag:2];
-    if (trackInfo->duration == 0.0f)
+    bool isCurrent = (trackID == currentTrack);
+    if (m_isPlaying && isCurrent)
     {
-        lblDuration.text = @"--:--";
+        return [UIImage imageNamed:@"player_play_on"];
+    }
+    else if (isCurrent)
+    {
+        return [UIImage imageNamed:@"player_play_off"];
     }
     else
     {
-        lblDuration.text = [NSString stringWithFormat:@"%d:%02d", (int)(trackInfo->duration / 60.0f), (int)(trackInfo)%60];
+        TrackInfo *trackInfo = m_audioTracks[trackID];
+        CRSSItem *curItem = trackInfo->pItem;
+        
+        return [curItem requestIcon:self];
     }
- */
-    [lblTitle setTextColor:[self getTextColourForTrack:trackIdx]];
 }
 
-- (void) updateTracks
+- (void) updateTrackCell:(NSInteger) trackIdx
 {
-    //TODO!
-/*    NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
-    CRSSItem *curItem = m_audioItems[currentItem];
-    for (NSIndexPath *indexPath in visiblePaths)
-    {
-        if (indexPath.section == 0)
-        {
-            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-//            UIImageView *imgView = (UIImageView *)[cell viewWithTag:4];
-            UILabel *lblTitle    = (UILabel*)[cell viewWithTag:1];
-            UILabel *lblDuration = (UILabel*)[cell viewWithTag:2];
-            TrackInfo *trackInfo = curItem.tracks[indexPath.row];
-            if (trackInfo->duration == 0.0f)
-            {
-                lblDuration.text = @"--:--";
-            }
-            else
-            {
-                lblDuration.text = [NSString stringWithFormat:@"%d:%02d", (int)(trackInfo->duration / 60.0f), (int)(trackInfo)%60];
-            }
-            //imgView.image = [self getImageForTrack:indexPath.row];
-            [lblTitle setTextColor:[self getTextColourForTrack:indexPath.row]];
-//            [imgView.layer removeAllAnimations];
+    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:trackIdx inSection:0]];
+    UILabel *lblTitle    = (UILabel*)[cell viewWithTag:1];
+    UIImageView *imgView = (UIImageView *)[cell viewWithTag:4];
 
-        }
-    }*/
+    imgView.image = [self getIconForTrack:trackIdx];
+    [lblTitle setTextColor:[self getTextColourForTrack:trackIdx]];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -1052,24 +954,15 @@ float BLUR_IMAGE_RANGE = 100.0f;
     if (indexPath.section == 0)
     {
         TrackInfo *trackInfo = m_audioTracks[indexPath.row];
-        CRSSItem *curItem = trackInfo->pItem;
         
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Track" forIndexPath:indexPath];
         UIImageView *imgView = (UIImageView *)[cell viewWithTag:4];
         UILabel *lblTitle    = (UILabel*)[cell viewWithTag:1];
         UILabel *lblArtist   = (UILabel*)[cell viewWithTag:2];
-//        UILabel *lblDuration = (UILabel*)[cell viewWithTag:2];
         lblTitle.text = trackInfo->title;
         lblArtist.text = trackInfo->artist;
-/*        if (trackInfo->duration == 0.0f)
-        {
-            lblDuration.text = @"--:--";
-        }
-        else
-        {
-            lblDuration.text = [NSString stringWithFormat:@"%d:%02d", (int)(trackInfo->duration / 60.0f), (int)(trackInfo)%60];
-        }*/
-        imgView.image = [curItem requestIcon:self];
+
+        imgView.image = [self getIconForTrack:indexPath.row];// [curItem requestIcon:self];
         [lblTitle setTextColor:[self getTextColourForTrack:indexPath.row]];
 
         return cell;
@@ -1223,18 +1116,6 @@ float BLUR_IMAGE_RANGE = 100.0f;
 {
     m_progressBar.hidden = !active;
     btnPlay.hidden = !active;
-    
-/*    if (m_fullItems == nil)
-    {
-        self.labelTitle.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
-        self.labelTitle.superview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
-//        self.labelTitle.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
-        m_fullItems = [topToolbar items];
-        m_reducedItems = @[m_fullItems[0], m_fullItems[1]];
-    }
-    
-    topToolbar.items = active ? m_fullItems : m_reducedItems;
-    [topToolbar updateConstraints];*/
 }
 
 float MP_ANIMATION_DURATION = 0.5f;

@@ -21,7 +21,7 @@
 static NSMutableDictionary *s_downloadingImages = NULL;
 static NSMutableDictionary *s_downloadingImagesByID = NULL;
 
-@synthesize appRecord;
+@synthesize appRecord, appRecord2;
 @synthesize indexPathInTableView;
 @synthesize isItem;
 @synthesize postID;
@@ -90,6 +90,7 @@ static NSMutableDictionary *s_downloadingImagesByID = NULL;
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
     dispatch_async(queue, ^{
         [self.appRecord updateImage:image];
+        [self.appRecord2 updateImage:image];
     
         dispatch_async(dispatch_get_main_queue(), ^{
             //    self.appRecord.appIcon = image;
@@ -133,6 +134,7 @@ static NSMutableDictionary *s_downloadingImagesByID = NULL;
     {
         iconDownloader = [[IconDownloader alloc] init];
         iconDownloader.appRecord = item;
+        iconDownloader.appRecord2 = nil;
         iconDownloader.indexPathInTableView = indexPathInTableView;
         iconDownloader->delegateList = [[NSMutableArray alloc] init];
         [iconDownloader->delegateList addObject:delegate];
@@ -142,6 +144,10 @@ static NSMutableDictionary *s_downloadingImagesByID = NULL;
     }
     else
     {
+        if (iconDownloader.appRecord != item)
+        {
+            iconDownloader.appRecord2 = item;
+        }
         if ([iconDownloader->delegateList containsObject:delegate] == false)
         {
             [iconDownloader->delegateList addObject:delegate];
@@ -173,6 +179,10 @@ static NSMutableDictionary *s_downloadingImagesByID = NULL;
     }
     else
     {
+        if (iconDownloader.appRecord != item)
+        {
+            iconDownloader.appRecord2 = item;
+        }
         [iconDownloader->delegateList addObject:delegate];
     }
     

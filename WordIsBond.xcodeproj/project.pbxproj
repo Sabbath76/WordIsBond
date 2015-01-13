@@ -183,6 +183,8 @@
 		0EF093FA1A38588400E8FC4A /* icon_72.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EF093F71A38588400E8FC4A /* icon_72.png */; };
 		0EF093FB1A38588400E8FC4A /* icon_76.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EF093F81A38588400E8FC4A /* icon_76.png */; };
 		0EF093FC1A38588400E8FC4A /* icon_152.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EF093F91A38588400E8FC4A /* icon_152.png */; };
+		0EF3D9261A65B77F00B55037 /* Bond_app_About_Us.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EF3D9241A65B77F00B55037 /* Bond_app_About_Us.png */; };
+		0EF3D9271A65B77F00B55037 /* Bond_app_About_Us@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EF3D9251A65B77F00B55037 /* Bond_app_About_Us@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -410,6 +412,8 @@
 		0EF093F71A38588400E8FC4A /* icon_72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_72.png; sourceTree = "<group>"; };
 		0EF093F81A38588400E8FC4A /* icon_76.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_76.png; sourceTree = "<group>"; };
 		0EF093F91A38588400E8FC4A /* icon_152.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_152.png; sourceTree = "<group>"; };
+		0EF3D9241A65B77F00B55037 /* Bond_app_About_Us.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Bond_app_About_Us.png; sourceTree = "<group>"; };
+		0EF3D9251A65B77F00B55037 /* Bond_app_About_Us@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Bond_app_About_Us@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -578,6 +582,8 @@
 		0E98F6241706E30F006E9857 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				0EF3D9241A65B77F00B55037 /* Bond_app_About_Us.png */,
+				0EF3D9251A65B77F00B55037 /* Bond_app_About_Us@2x.png */,
 				0EF093F71A38588400E8FC4A /* icon_72.png */,
 				0EF093F81A38588400E8FC4A /* icon_76.png */,
 				0EF093F91A38588400E8FC4A /* icon_152.png */,
@@ -828,6 +834,7 @@
 				0E98F6371706E30F006E9857 /* MainStoryboard_iPhone.storyboard in Resources */,
 				0EA877E3184A523E003A0B82 /* player_playhead_on@2x.png in Resources */,
 				0EBCABE117FEE92700C4FA17 /* banner_maskA.png in Resources */,
+				0EF3D9261A65B77F00B55037 /* Bond_app_About_Us.png in Resources */,
 				0EA877D2184A0163003A0B82 /* social_tw.png in Resources */,
 				0EC058E11A1E8D8500963148 /* facebook_off@2x.png in Resources */,
 				0E033055181D240E0047BA11 /* icon_57.png in Resources */,
@@ -850,6 +857,7 @@
 				0E67D74517D5FBB300CFB7C5 /* WIBNavBar.jpg in Resources */,
 				0EC5874F197E8F8400A56E03 /* linkedin.png in Resources */,
 				0E033051181D22E40047BA11 /* icon_55.png in Resources */,
+				0EF3D9271A65B77F00B55037 /* Bond_app_About_Us@2x.png in Resources */,
 				0EC78B3519A2758B004A1DB7 /* MainStoryboard_iPadNew.storyboard in Resources */,
 				0EBCDDBA198A9C2900559982 /* ModeC.otf in Resources */,
 				0EB691AF18B3EAF000FEFC7A /* goto_post_off.png in Resources */,

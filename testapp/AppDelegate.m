@@ -38,9 +38,16 @@ const NSString *notificationURL = @"http://www.thewordisbond.com/?json=register_
 //{
 //    return UIStatusBarStyleLightContent;
 //}
+void myExceptionHandler(NSException *exception)
+{
+    NSArray *stack = [exception callStackReturnAddresses];
+    NSLog(@"Stack trace: %@", stack);
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    NSSetUncaughtExceptionHandler(&myExceptionHandler);
+    
 //    // TODO! Split view controller
     // Override point for customization after application launch.
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
@@ -49,6 +56,7 @@ const NSString *notificationURL = @"http://www.thewordisbond.com/?json=register_
 //        splitViewController.delegate = detailViewController;
         UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
         splitViewController.delegate = (id)navigationController.topViewController;
+        [splitViewController setMinimumPrimaryColumnWidth:320];
     }
 
     //--- Init the URL cache to stop it eating too much memory
@@ -143,37 +151,41 @@ const NSString *notificationURL = @"http://www.thewordisbond.com/?json=register_
     NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
     NSString *appVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
     
-    NSUInteger rntypes = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
-    
     NSString *pushBadge = @"disabled";
     NSString *pushAlert = @"disabled";
     NSString *pushSound = @"disabled";
-    
-    if(rntypes == UIRemoteNotificationTypeBadge){
-        pushBadge = @"enabled";
+
+    if ([[UIApplication sharedApplication] respondsToSelector:@selector(currentUserNotificationSettings)])
+    {
+        UIUserNotificationSettings *notificationSettings = [[UIApplication sharedApplication] currentUserNotificationSettings];
+        NSUInteger rntypes = [notificationSettings types];
+        
+        if (rntypes & UIUserNotificationTypeBadge)
+        {
+            pushBadge = @"enabled";
+        }
+        if (rntypes & UIUserNotificationTypeAlert)
+        {
+            pushAlert = @"enabled";
+        }
+        if (rntypes & UIUserNotificationTypeSound)
+        {
+            pushSound = @"enabled";
+        }
     }
-    else if(rntypes == UIRemoteNotificationTypeAlert){
-        pushAlert = @"enabled";
-    }
-    else if(rntypes == UIRemoteNotificationTypeSound){
-        pushSound = @"enabled";
-    }
-    else if(rntypes == ( UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert)){
-        pushBadge = @"enabled";
-        pushAlert = @"enabled";
-    }
-    else if(rntypes == ( UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)){
-        pushBadge = @"enabled";
-        pushSound = @"enabled";
-    }
-    else if(rntypes == ( UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)){
-        pushAlert = @"enabled";
-        pushSound = @"enabled";
-    }
-    else if(rntypes == ( UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)){
-        pushBadge = @"enabled";
-        pushAlert = @"enabled";
-        pushSound = @"enabled";
+    else
+    {
+        NSUInteger rntypes = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
+        
+        if(rntypes & UIRemoteNotificationTypeBadge){
+            pushBadge = @"enabled";
+        }
+        if(rntypes & UIRemoteNotificationTypeAlert){
+            pushAlert = @"enabled";
+        }
+        if(rntypes & UIRemoteNotificationTypeSound){
+            pushSound = @"enabled";
+        }
     }
     
     UIDevice *dev = [UIDevice currentDevice];
