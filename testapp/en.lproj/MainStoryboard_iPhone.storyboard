@@ -47,22 +47,22 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="WIB_BG_blur.png" translatesAutoresizingMaskIntoConstraints="NO" id="Czh-y2-O1y">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_loading.png" translatesAutoresizingMaskIntoConstraints="NO" id="4Wz-wJ-jL9">
+                                <rect key="frame" x="105" y="185" width="111" height="111"/>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="WIB_Launch_Image.png" translatesAutoresizingMaskIntoConstraints="NO" id="Czh-y2-O1y">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                            </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_loading.png" translatesAutoresizingMaskIntoConstraints="NO" id="4Wz-wJ-jL9">
-                                <rect key="frame" x="105" y="185" width="111" height="111"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="kUT-RF-fJz" firstAttribute="top" secondItem="Czh-y2-O1y" secondAttribute="bottom" id="0I9-8d-AcN"/>
                             <constraint firstAttribute="centerX" secondItem="4Wz-wJ-jL9" secondAttribute="centerX" id="AaI-2z-fmz"/>
-                            <constraint firstItem="kUT-RF-fJz" firstAttribute="top" secondItem="Czh-y2-O1y" secondAttribute="bottom" id="MlW-rB-EVd"/>
                             <constraint firstAttribute="centerY" secondItem="4Wz-wJ-jL9" secondAttribute="centerY" id="Ni1-qG-PhP"/>
                             <constraint firstItem="Czh-y2-O1y" firstAttribute="top" secondItem="2FE-z3-0ZX" secondAttribute="top" id="Nki-Ri-p4U"/>
-                            <constraint firstItem="kUT-RF-fJz" firstAttribute="top" secondItem="Czh-y2-O1y" secondAttribute="bottom" id="QQP-0R-OJa"/>
+                            <constraint firstItem="kUT-RF-fJz" firstAttribute="top" secondItem="Czh-y2-O1y" secondAttribute="bottom" id="P82-a1-hlQ"/>
+                            <constraint firstItem="kUT-RF-fJz" firstAttribute="top" secondItem="Czh-y2-O1y" secondAttribute="bottom" id="Y2w-4Z-i7K"/>
+                            <constraint firstItem="kUT-RF-fJz" firstAttribute="top" secondItem="Czh-y2-O1y" secondAttribute="bottom" id="ncV-6w-lvZ"/>
                             <constraint firstItem="Czh-y2-O1y" firstAttribute="leading" secondItem="2FE-z3-0ZX" secondAttribute="leading" id="u98-MU-PJO"/>
                             <constraint firstAttribute="trailing" secondItem="Czh-y2-O1y" secondAttribute="trailing" id="uyS-Db-wSP"/>
                         </constraints>
@@ -895,11 +895,9 @@
                                 <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MKR-Sg-A7u">
-                                <rect key="frame" x="0.0" y="97" width="270" height="16"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                             </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" allowsSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="H0O-ED-tMS">
-                                <rect key="frame" x="10" y="281" width="260" height="199"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                                 <color key="sectionIndexColor" cocoaTouchSystemColor="lightTextColor"/>
                                 <color key="sectionIndexTrackingBackgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -1049,8 +1047,8 @@
         <image name="Bond_app_About_Us.png" width="270" height="70"/>
         <image name="Default.png" width="320" height="480"/>
         <image name="FastForward.png" width="40" height="39"/>
-        <image name="WIB_BG_blur.png" width="320" height="480"/>
         <image name="WIB_BG_white.png" width="320" height="480"/>
+        <image name="WIB_Launch_Image.png" width="320" height="480"/>
         <image name="facebook_off.png" width="22" height="22"/>
         <image name="feature_thumb_hl.png" width="63" height="63"/>
         <image name="feature_thumb_hl_tab.png" width="63" height="2"/>

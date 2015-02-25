@@ -81,8 +81,8 @@ function push_notifications_install(){
 	  `created` datetime NOT NULL,
 	  `modified` timestamp NOT NULL default '0000-00-00 00:00:00' on update CURRENT_TIMESTAMP,
 	  PRIMARY KEY  (`pid`),
-	  UNIQUE KEY `appname` (`appname`,`appversion`,`deviceuid`),
-	  KEY `devicetoken` (`devicetoken`),
+	  UNIQUE KEY `appname` (`appname`,`deviceuid`),
+	  UNIQUE KEY `devicetoken` (`devicetoken`),
 	  KEY `devicename` (`devicename`),
 	  KEY `devicemodel` (`devicemodel`),
 	  KEY `deviceversion` (`deviceversion`),
@@ -156,7 +156,6 @@ function push_notifications_uninstall(){
 /*----------------------------------*/
 /*----------------------------------*/
 
-
 function push_notifications_send($pn_push_type, $json, $message, $sound, $badge, $postID){
 
 
@@ -185,7 +184,7 @@ function push_notifications_send($pn_push_type, $json, $message, $sound, $badge,
 
 		$ssl = $ssl_sandbox;
 //		$certificate = $sandboxCertificate;
-		$certificate =  dirname(__FILE__)."/WIBComb.pem";
+		$certificate =  dirname(__FILE__)."/WIBPushComb.pem";
 		$passphrase = $pn_settings->development_cer_pass;
 		$feedback = $feedback_S;
 
@@ -259,24 +258,201 @@ function push_notifications_send($pn_push_type, $json, $message, $sound, $badge,
 
 	global $wpdb;
 	$apns_devices = $wpdb->prefix.'pn_apns_devices';
-	$devices_array = $wpdb->get_results( $wpdb->prepare ("SELECT * FROM $apns_devices", 0));
+	$post_type = 'attorneys';
+//	$devices_array = $wpdb->get_results( $wpdb->prepare ("SELECT * FROM $apns_devices", $post_type));
+	$devices_array = $wpdb->get_results( "SELECT * FROM $apns_devices");
+
+	stream_set_blocking ($fp, 0); //This allows fread() to return right away when there are no errors. But it can also miss errors during last seconds of sending, as there is a delay before error is returned. Workaround is to pause briefly AFTER sending last notification, and then do one more fread() to see if anything else is there.
 
 	for ($i=0; $i!=count($devices_array); $i++){ 
 
 		$deviceToken = $devices_array[$i]->devicetoken;
+		$deviceName = $devices_array[$i]->devicename;
 
 		$msg = chr(0) . pack('n', 32) . pack('H*', $deviceToken) . pack('n', strlen($payload)) . $payload;
 
 		$result = fwrite($fp, $msg, strlen($msg));
 
+		echo 'Sending to';
+		echo $deviceName;
+
 		if (!$result)
+		{
 			echo 'Message not delivered';
-		else
+		}
+		else 
+		{
 			echo 'Message successfully delivered';
+			echo $result;
+		}
+
+		 //Workaround to check if there were any errors during the last seconds of sending.
+	        usleep(500000); //Pause for half a second. Note I tested this with up to a 5 minute pause, and the error message was still available to be retrieved
+
+	        checkAppleErrorResponse($fp);
 
 	}
 
 	fclose($fp);	
+}
+
+    //FUNCTION to check if there is an error response from Apple
+    //         Returns TRUE if there was and FALSE if there was not
+    function checkAppleErrorResponse($fp) {
+
+       $apple_error_response = fread($fp, 6); //byte1=always 8, byte2=StatusCode, bytes3,4,5,6=identifier(rowID). Should return nothing if OK.
+       //NOTE: Make sure you set stream_set_blocking($fp, 0) or else fread will pause your script and wait forever when there is no response to be sent.
+
+       if ($apple_error_response) {
+
+            $error_response = unpack('Ccommand/Cstatus_code/Nidentifier', $apple_error_response); //unpack the error response (first byte 'command" should always be 8)
+
+            if ($error_response['status_code'] == '0') {
+                $error_response['status_code'] = '0-No errors encountered';
+
+            } else if ($error_response['status_code'] == '1') {
+                $error_response['status_code'] = '1-Processing error';
+
+            } else if ($error_response['status_code'] == '2') {
+                $error_response['status_code'] = '2-Missing device token';
+
+            } else if ($error_response['status_code'] == '3') {
+                $error_response['status_code'] = '3-Missing topic';
+
+            } else if ($error_response['status_code'] == '4') {
+                $error_response['status_code'] = '4-Missing payload';
+
+            } else if ($error_response['status_code'] == '5') {
+                $error_response['status_code'] = '5-Invalid token size';
+
+            } else if ($error_response['status_code'] == '6') {
+                $error_response['status_code'] = '6-Invalid topic size';
+
+            } else if ($error_response['status_code'] == '7') {
+                $error_response['status_code'] = '7-Invalid payload size';
+
+            } else if ($error_response['status_code'] == '8') {
+                $error_response['status_code'] = '8-Invalid token';
+
+            } else if ($error_response['status_code'] == '255') {
+                $error_response['status_code'] = '255-None (unknown)';
+
+            } else {
+                $error_response['status_code'] = $error_response['status_code'].'-Not listed';
+
+            }
+
+            echo '<br><b>+ + + + + + ERROR</b> Response Command:<b>' . $error_response['command'] . '</b>&nbsp;&nbsp;&nbsp;Identifier:<b>' . $error_response['identifier'] . '</b>&nbsp;&nbsp;&nbsp;Status:<b>' . $error_response['status_code'] . '</b><br>';
+            echo 'Identifier is the rowID (index) in the database that caused the problem, and Apple will disconnect you from server. To continue sending Push Notifications, just start at the next rowID after this Identifier.<br>';
+
+            return true;
+       }
+	else
+	{
+            echo 'No response from the Apple Server';
+	}
+
+       return false;
+    }
+
+function check_feedback()
+{
+    global $wpdb;
+    $pn_setting = $wpdb->prefix.'pn_setting';
+    $pn_settings =  $wpdb->get_results( $wpdb->prepare("SELECT * FROM $pn_setting WHERE id = %d", 1));
+    $pn_settings = $pn_settings[0];
+
+    $ssl_sandbox = 'ssl://gateway.sandbox.push.apple.com:2195';
+	$sandboxCertificate = $pn_settings->developer_cer_path;
+	$feedback_S = 'ssl://feedback.sandbox.push.apple.com:2196';
+
+	$ssl = $ssl_sandbox;
+//	$certificate = $sandboxCertificate;
+	$certificate =  dirname(__FILE__)."/WIBPushComb.pem";
+	$passphrase = $pn_settings->development_cer_pass;
+	$feedback = $feedback_S;
+
+	if (!file_exists($certificate)) 
+	{
+	    echo "error".$certificate. $passphrase. $pn_settings->development ;
+	    echo "The file $certificate does not exist! ".dirname(__FILE__);
+	}
+
+	$ctx = stream_context_create();
+	stream_context_set_option($ctx, 'ssl', 'local_cert', $certificate);
+	stream_context_set_option($ctx, 'ssl', 'passphrase', $passphrase);
+
+	$fp = stream_socket_client(
+		$feedback, 
+		$err, 
+		$errstr, 
+		2, 
+		STREAM_CLIENT_CONNECT, 
+		$ctx
+	);
+
+	if (!$fp)
+	exit("Failed to connect to APNS: $err $errstr");
+
+	echo 'Connected to APNS';
+
+    $feedback_tokens = array();
+    //and read the data on the connection:
+    while(!feof($fp)) {
+        $data = fread($fp, 38);
+        if(strlen($data)) {
+            $feedback_tokens[] = unpack("N1timestamp/n1length/H*devtoken", $data);
+        }
+    }
+    echo 'readData (';
+    var_dump($feedback_tokens);
+    echo ') end readData';
+//	$result = fread($fp, 38);
+//    	echo 'result= ' . $result;
+ }
+    
+function list_users()
+{
+    global $wpdb;
+    $apns_devices = $wpdb->prefix.'pn_apns_devices';
+    $devices_array = $wpdb->get_results( "SELECT * FROM $apns_devices");
+
+    echo "<table style='width:100%'>";
+
+    echo "<tr>";
+    echo "<td> ID </td>";
+    echo "<td> Name </td>";
+    echo "<td> UID </td>";
+    echo "<td> version </td>";
+    echo "<td> seen posts </td>";
+    echo "<td> badge </td>";
+    echo "<td> alert </td>";
+    echo "<td> Token </td>";
+    echo "</tr>";
+
+    for ($i=0; $i!=count($devices_array); $i++)
+    {
+        $deviceToken = $devices_array[$i]->devicetoken;
+        $deviceName = $devices_array[$i]->devicename;
+        $appversion = $devices_array[$i]->appversion;
+        $deviceUID = $devices_array[$i]->deviceuid;
+        $seenposts = $devices_array[$i]->seenposts;
+        $pushBadge = $devices_array[$i]->pushbadge;
+        $pushAlert = $devices_array[$i]->pushalert;
+        $pid = $devices_array[$i]->pid;
+
+        echo "<tr>";
+        echo "<td>".$pid."</td>";
+        echo "<td>".$deviceName."</td>";
+        echo "<td>".$deviceUID."</td>";
+        echo "<td>".$appversion."</td>";
+        echo "<td>".$seenposts."</td>";
+        echo "<td>".$pushBadge."</td>";
+        echo "<td>".$pushAlert."</td>";
+        echo "<td>".$deviceToken."</td>";
+        echo "</tr>";
+    }
+    echo "</table>";
 }
 
 /*----------------------------------*/
@@ -285,40 +461,40 @@ function push_notifications_send($pn_push_type, $json, $message, $sound, $badge,
 function push_notifications_logo(){
 
 
-	echo "<img width='50' height='50' src='".plugins_url()."/push-notifications-ios/img/logo.png'/>";
+	echo "<img width='50' hegiht='50' src='".plugins_url()."/push-notifications-ios/img/logo.png'/>";
 }
 
 /*----------------------------------*/
 /*----------------------------------*/
 
-function push_notifications_devices()
-{
+function push_notifications_devices(){
 
 	global $wpdb;
 
 	$apns_devices = $wpdb->prefix.'pn_apns_devices';
 	$devices_count = $wpdb->get_var("SELECT COUNT(*) FROM $apns_devices");
 
-
 	echo "
 	<div id='devices'>
 	<h2>Devices</h2>"
 	.__("Count of devices: ")."<b>".$devices_count."</b>
+	</div>
 	";
+
+/*
 
 	$devices_array = $wpdb->get_results( $wpdb->prepare ("SELECT * FROM $apns_devices", 0));
 
+	echo "<div>“;
 	for ($i=0; $i!=count($devices_array); $i++)
 	{ 
 		$deviceName = $devices_array[$i]->devicename;
 		$deviceModel = $devices_array[$i]->devicemodel;
-	   	echo “”.$deviceName.” of type ”.$deviceModel.”\n”;
+	   	echo “<p>”.$deviceName.” of type ”.$deviceModel.”</p>”;
 	}
 
-	echo "
-	</div>
-	";
-
+	echo "</div>“;
+*/
 }
 
 /*----------------------------------*/
@@ -424,7 +600,29 @@ function push_notifications_create_form(){
 
 
 	}
+	if (isset($_POST['push_notifications_feedback_push_btn'])) 
+	{   
+	   if ( function_exists('current_user_can') && 
+			!current_user_can('manage_options') )
+				die ( _e('Hacker?', 'push_notifications') );
 
+		if (function_exists ('check_admin_referer') )
+			check_admin_referer('push_notifications_form');
+
+		check_feedback();
+	}
+    if (isset($_POST['push_notifications_users_push_btn']))
+    {
+        if ( function_exists('current_user_can') &&
+            !current_user_can('manage_options') )
+            die ( _e('Hacker?', 'push_notifications') );
+        
+        if (function_exists ('check_admin_referer') )
+            check_admin_referer('push_notifications_form');
+        
+        list_users();
+    }
+    
 	echo
 		"<div id='pn_form'>
 	        <h2>Create push notification</h2>
@@ -440,13 +638,20 @@ function push_notifications_create_form(){
 							<p><input type='text' name='pn_text'   placeholder='Text' /></p>
 							<p><input type='text' name='pn_sound'  placeholder='Sound' value=''/></p>
 							<p><input type='text' name='pn_badge'  placeholder='Badge (number)' value='1' /></p>
-							<p><input type='text' name='pn_postID'  placeholder='PostID (number)' value='-1' /></p>
+                            <label for="PostID"> Linked Post ID (set to the number of a post to hotlink the app to that post):</label>
+                            <p><input type='text' name='pn_postID' id="PostID" placeholder='PostID (number)' value='-1' /></p>
 							<label><input class='pn_radio' type='radio' name='pn_push_type' value='json'><span class='overlay'></span></label>
 							<p><textarea type='text' name='json' placeholder='JSON'>{ "aps": { "badge": 1, "alert": "Hello world!"}, "action": "" }</textarea></p>
 						</div>
 						<div>
 							<input type='submit' id="push_button" class='pn blue push_button' name='push_notifications_push_btn' value='Send' />
 						</div>
+						<div>
+							<input type='submit' id="push_button" class='pn blue push_button' name='push_notifications_feedback_push_btn' value='Feedback' />
+						</div>
+                        <div>
+                            <input type='submit' id="push_button" class='pn blue push_button' name='push_notifications_users_push_btn' value='List Users' />
+                        </div>
 			</form>
 			</div>
 		<?php
@@ -577,7 +782,8 @@ Your post <a href="<?php echo get_permalink($post->ID) ?>"><?php the_title_attri
             
             $ssl = $ssl_sandbox;
             //		$certificate = $sandboxCertificate;
-            $certificate =  dirname(__FILE__)."/WIBComb.pem";
+            $certificate =  dirname(__FILE__)."/WIBPushComb.pem";
+//            $certificate =  dirname(__FILE__)."/WIBComb.pem";
             $passphrase = $pn_settings->development_cer_pass;
             $feedback = $feedback_S;
             
@@ -669,6 +875,8 @@ Your post <a href="<?php echo get_permalink($post->ID) ?>"><?php the_title_attri
         
         fclose($fp);	
     }
+
+
     
     add_action( 'publish_post', 'on_new_post' );
 /*----------------------------------*/

@@ -70,7 +70,7 @@ void myExceptionHandler(NSException *exception)
         // iOS 8 Notifications
         [application registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
         
-        [application registerForRemoteNotifications];
+//        [application registerForRemoteNotifications];
     }
     else {
         // Let the device know we want to receive push notifications
@@ -115,9 +115,17 @@ void myExceptionHandler(NSException *exception)
     return YES;
 }
 
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+{
+    if (notificationSettings.types != UIUserNotificationTypeNone)
+    {
+        [application registerForRemoteNotifications];
+    }
+}
+
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
-    if (userInfo != nil)
+/*    if (userInfo != nil)
     {
         NSNumber *postID = [userInfo objectForKey:@"postID"];
         if (postID)
@@ -127,6 +135,7 @@ void myExceptionHandler(NSException *exception)
             [[NSNotificationCenter defaultCenter] postNotificationName:@"NewRSSFeed" object:self];
         }
     }
+ */
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application {
@@ -136,7 +145,7 @@ void myExceptionHandler(NSException *exception)
 - (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken
 {
     NSString *host = @"www.thewordisbond.com/wp-content/plugins/push-notifications-ios";
-//    NSString *host = @"wordisbond.co/wp-content/plugins/push-notifications-ios";
+    ///    NSString *host = @"wordisbond.co/wp-content/plugins/push-notifications-ios";
     //http://www.thewordisbond.com/wp-content/plugins/push-notifications-ios/register_user_device.php
 
 //    http://64.207.153.141/httpdocs/wp-content/plugins/push-notifications-ios/register_user_device.php	NSLog(@"My token is: %@", deviceToken);
@@ -200,6 +209,7 @@ void myExceptionHandler(NSException *exception)
 //                             stringByReplacingOccurrencesOfString: @" " withString: @""];
 
     NSString *urlString = [@"/register_user_device.php?"stringByAppendingString:@"task=register"];//when your app launch, it send request on this page to add devise in table
+//    NSString *urlString = [@"/test.php?"stringByAppendingString:@"task=register"];//when your app launch, it send request on this page to add devise in table
 
     urlString = [urlString stringByAppendingString:@"&appname="];
     urlString = [urlString stringByAppendingString:appName];
@@ -227,8 +237,8 @@ void myExceptionHandler(NSException *exception)
     NSError *error = nil;
     NSURLResponse *response;
     NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-//    NSString *stringReply = (NSString *)[[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
-//    NSLog(@"reply from server: %@", stringReply);
+    NSString *stringReply = (NSString *)[[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
+    NSLog(@"reply from server: %@", stringReply);
 //    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
 //    NSInteger statusCode = [httpResponse statusCode];
 //    NSLog(@"HTTP Response Headers %@", [httpResponse allHeaderFields]);

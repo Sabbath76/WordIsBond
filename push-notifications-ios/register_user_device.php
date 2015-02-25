@@ -6,47 +6,16 @@
  ?>
 <?php
 
-require dirname(__FILE__)."/../../../wp-blog-header.php";
-
-echo "dance Party";
-
-
-//error_log("Big trouble, we're all out of FOOs!", 1,
-//               "tomberry76@hotmail.com");
-
-echo "boogie ON";
+require(dirname(__FILE__)."/../../../wp-load.php");
 
 $localdir =dirname(__FILE__);
 
-echo $localdir;
+//error_log("On enter ", 3, $localdir."/status.txt");
 
-echo "boogie UP";
+//require dirname(__FILE__)."/../../../wp-blog-header.php";
 
-error_log("Testing", 3, $localdir."/status.txt");
 
-echo "boogie OFF";
-
-$blogheader = $localdir."/../../../wp-blog-header.php";
-//$blogheader = "/var/www/vhosts/temp-wordisbond.co/wordisbond/wp-blog-header.php";
-//$blogheader = $_SERVER['DOCUMENT_ROOT']."/wp-blog-header.php";
-
-echo $blogheader;
-
-if (file_exists($blogheader))
-{
-	echo "I SEE IT";
-}
-else
-{
-	echo "I DONT SEE IT";
-}
-
-//require_once('wp-config.php');
-//require_once($blogheader);
-
-echo "boogie OUT";
-
-//error_log("Step 2", 3, "./status.txt');
+error_log("Register device ", 3, $localdir."/status.txt");
 
 global $wpdb;
 $apns_devices = $wpdb->prefix.'pn_apns_devices';
@@ -77,8 +46,6 @@ if (
 
 	){
 
-//error_log("Step 4", 3, dirname(__FILE__)."/status.txt');
-
 	if ( $_GET['task'] == 'register'){
 
         $count_posts = wp_count_posts();
@@ -88,8 +55,9 @@ if (
         $numPosts = (int)$published_posts;
 
         error_log($_GET['devicename'].":".$numPosts, 3, $localdir."/status.txt");
+        echo "insert device".$_GET['devicename'];
         
-		$wpdb->insert(
+		$wpdb->replace(
 				$apns_devices, 
 				array( 
 					'appname'       =>  $_GET['appname'],
@@ -119,7 +87,7 @@ if (
 				) 
 			);
 
-        error_log("post Insertion", 3, $localdir."/status.txt");
+        error_log("Done Insertion", 3, $localdir."/status.txt");
         
 //        error_log("Insertion ret = ".$ret, 3, $localdir."/status.txt");
 
@@ -131,10 +99,14 @@ if (
 //        {
 //            error_log("Not Inserted", 3, $localdir."/status.txt");
         
-        $deviceToken = $_GET['devicetoken'];
+ /*       $deviceToken = $_GET['devicetoken'];
+        
+        $pushBadges = $_GET['pushbadge'];
+        $pushAlert  = $_GET['pushalert'];
+        $pushSound  = $_GET['pushsound'];
         
         $sql = "UPDATE $apns_devices SET
-                seenposts = '$numPosts'
+                seenposts = '$numPosts', pushbadge = '$pushBadges', pushalert = '$pushAlert', pushsound = '$pushSound'
                 WHERE devicetoken = '$deviceToken'";
 
             $wpdb->query(
@@ -142,7 +114,7 @@ if (
                          );
 //        }
 
-        error_log("post query", 3, $localdir."/status.txt");
+        error_log("Done Update", 3, $localdir."/status.txt");*/
 
 	}
 
