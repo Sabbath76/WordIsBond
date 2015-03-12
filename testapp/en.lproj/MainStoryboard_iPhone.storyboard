@@ -369,12 +369,14 @@
                                                 </barButtonItem>
                                                 <barButtonItem style="plain" systemItem="flexibleSpace" id="4VX-c6-YDF"/>
                                                 <barButtonItem image="facebook_off.png" style="plain" id="PW9-QD-0Bx">
+                                                    <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                     <connections>
                                                         <action selector="onFacebook:" destination="12" id="ZVU-P8-Hdp"/>
                                                     </connections>
                                                 </barButtonItem>
                                                 <barButtonItem style="plain" systemItem="flexibleSpace" id="DtG-dH-u8e"/>
                                                 <barButtonItem image="twitter_off.png" style="plain" id="tmF-md-wpQ">
+                                                    <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                     <connections>
                                                         <action selector="onTweet:" destination="12" id="qu6-uI-gHA"/>
                                                     </connections>
@@ -604,8 +606,8 @@
                                                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <button opaque="NO" contentMode="right" contentHorizontalAlignment="right" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Sv5-04-VO0">
-                                                    <rect key="frame" x="272" y="8" width="40" height="27"/>
+                                                <button opaque="NO" contentMode="right" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Sv5-04-VO0">
+                                                    <rect key="frame" x="280" y="0.0" width="40" height="44"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="40" id="ntF-5z-wbc"/>
                                                     </constraints>
@@ -630,14 +632,14 @@
                                                 <constraint firstItem="x2v-w0-QCA" firstAttribute="leading" secondItem="V95-Vg-Hyp" secondAttribute="trailing" constant="8" id="BuQ-n9-W4n"/>
                                                 <constraint firstAttribute="trailing" secondItem="x2v-w0-QCA" secondAttribute="trailing" constant="25" id="I1t-vK-8hK"/>
                                                 <constraint firstItem="V95-Vg-Hyp" firstAttribute="centerY" secondItem="QVF-tQ-J72" secondAttribute="centerY" id="WpN-Qz-BrL"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="Sv5-04-VO0" secondAttribute="bottom" id="azo-DB-pJS"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="Sv5-04-VO0" secondAttribute="bottom" constant="-9" id="azo-DB-pJS"/>
                                                 <constraint firstItem="V95-Vg-Hyp" firstAttribute="leading" secondItem="QVF-tQ-J72" secondAttribute="leading" constant="5" id="qAy-ny-Iqv"/>
                                                 <constraint firstAttribute="bottom" secondItem="x2v-w0-QCA" secondAttribute="bottom" constant="19" id="rXA-Mn-Z2Y"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="GfR-M9-mDU" secondAttribute="trailing" constant="17" id="rqC-ax-6I4"/>
                                                 <constraint firstItem="x2v-w0-QCA" firstAttribute="top" secondItem="QVF-tQ-J72" secondAttribute="top" id="trd-Fu-CxA"/>
-                                                <constraint firstItem="Sv5-04-VO0" firstAttribute="top" secondItem="QVF-tQ-J72" secondAttribute="topMargin" id="uIT-7k-LS7"/>
+                                                <constraint firstItem="Sv5-04-VO0" firstAttribute="top" secondItem="QVF-tQ-J72" secondAttribute="topMargin" constant="-8" id="uIT-7k-LS7"/>
                                                 <constraint firstItem="GfR-M9-mDU" firstAttribute="leading" secondItem="QVF-tQ-J72" secondAttribute="leadingMargin" constant="47" id="v69-Eo-Udq"/>
-                                                <constraint firstAttribute="trailingMargin" secondItem="Sv5-04-VO0" secondAttribute="trailing" id="wtQ-Lt-YID"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="Sv5-04-VO0" secondAttribute="trailing" constant="-8" id="wtQ-Lt-YID"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="GfR-M9-mDU" secondAttribute="bottom" constant="-9" id="xej-FP-Zp6"/>
                                             </constraints>
                                         </tableViewCellContentView>
@@ -867,7 +869,7 @@
                                     <imageView opaque="NO" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="goto_post_off.png" translatesAutoresizingMaskIntoConstraints="NO" id="2Bt-iy-zEL">
                                         <rect key="frame" x="8" y="54" width="62" height="62"/>
                                     </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5ye-da-9p3">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="5ye-da-9p3">
                                         <rect key="frame" x="8" y="0.0" width="204" height="61"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>

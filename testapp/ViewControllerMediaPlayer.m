@@ -707,7 +707,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
 
 - (IBAction)onPlayList:(id)sender
 {
-    UIView *moveView = self.view.superview;
+    UIView *moveView = self.view.superview.superview;
     if (moveView)
     {
         CGRect screenRect = [[UIScreen mainScreen] bounds];
@@ -718,28 +718,12 @@ float BLUR_IMAGE_RANGE = 100.0f;
         bool isAtBottom = [m_topConstraint constant] < threshold;
         [self setTopToolbarActive:isAtBottom];
         float newConstraint = (isAtBottom ? max : min);
-        [UIView animateWithDuration:0.5f animations:^{[m_topConstraint setConstant:newConstraint]; }];
-//        [m_topConstraint setConstant:newConstraint];
-//        [moveView setNeedsUpdateConstraints];
-//        [UIView animateWithDuration:0.5f animations:^{[moveView layoutIfNeeded];}];
-/*        CGRect parentFrame = moveView.superview.frame;
-        if (moveView.frame.origin.y < (parentFrame.origin.y + (parentFrame.size.height - ((midOffset + bottomOffset) * 0.5))))
-        {
-            [UIView beginAnimations:@"Dragging A DraggableView" context:nil];
-            moveView.frame = CGRectMake(moveView.frame.origin.x, parentFrame.size.height - bottomOffset,
-                                        moveView.frame.size.width, moveView.frame.size.height);
-            
-            [UIView commitAnimations];
-        }
-        else
-        {
-            [UIView beginAnimations:@"Dragging A DraggableView" context:nil];
-            moveView.frame = CGRectMake(moveView.frame.origin.x, parentFrame.origin.y,
-                                        moveView.frame.size.width, parentFrame.size.height);
-//            self.view.frame = CGRectMake(self.view.frame.origin.x, self.view.frame.origin.y,
-//                                         self.view.frame.size.width, parentFrame.size.height);
-            [UIView commitAnimations];
-        }*/
+
+        [m_topConstraint setConstant:newConstraint];
+        [UIView animateWithDuration:0.5
+                         animations:^{
+                             [moveView layoutIfNeeded]; // Called on parent view
+                         }];
     }
 }
 
@@ -1193,7 +1177,7 @@ float MP_FAST_ANIMATION_DURATION = 0.1f;
 
             [UIView animateWithDuration:MP_ANIMATION_DURATION animations:^
             {
-                [self.view.superview layoutIfNeeded];
+                [self.view.superview.superview layoutIfNeeded];
             }];
 
             break;
@@ -1207,7 +1191,7 @@ float MP_FAST_ANIMATION_DURATION = 0.1f;
 
             [m_topConstraint setConstant:compare];
 
-            [UIView animateWithDuration:MP_FAST_ANIMATION_DURATION animations:^{[self.view.superview layoutIfNeeded];}];
+            [UIView animateWithDuration:MP_FAST_ANIMATION_DURATION animations:^{[self.view.superview.superview layoutIfNeeded];}];
             break;
         }
             
