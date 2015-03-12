@@ -17,6 +17,8 @@
 
 #import "MediaTrackController.h"
 
+#import "ViewControllerTrackMenu.h"
+
 #import "GAI.h"
 #import "GAITracker.h"
 #import "GAIDictionaryBuilder.h"
@@ -38,6 +40,8 @@
     NSInteger currentTrack;
     bool m_isPlaying;
     bool m_autoPlay;
+    
+    NSMutableArray *m_observedItems;
     
     id playbackObserver;
     
@@ -233,6 +237,8 @@ float BLUR_IMAGE_RANGE = 100.0f;
                                                  name:@"ViewPost"
                                                object:nil];
     
+    m_observedItems = [[NSMutableArray alloc] init];
+    
     [self receiveNewRSSFeed:nil];
 }
 
@@ -247,6 +253,12 @@ float BLUR_IMAGE_RANGE = 100.0f;
 {
     if (m_audioTracks.count > 0)
     {
+        AVPlayerItem *playerItem = [m_player currentItem];
+        if([m_observedItems containsObject:playerItem])
+        {
+            [playerItem removeObserver:self forKeyPath:@"status"];
+            [m_observedItems removeObject:playerItem];
+        }
         [m_player advanceToNextItem];
         [self onNextTrack];
         
@@ -483,10 +495,14 @@ float BLUR_IMAGE_RANGE = 100.0f;
         [m_currentPage.streaming startAnimating];
         [m_nextPage.streaming startAnimating];
 
-//        for (AVPlayerItem *item in [m_player items])
-//        {
-//            [item removeObserver:self forKeyPath:@"status"];
-//        }
+        for (AVPlayerItem *playerItem in [m_player items])
+        {
+            if([m_observedItems containsObject:playerItem])
+            {
+                [playerItem removeObserver:self forKeyPath:@"status"];
+            }
+        }
+        [m_observedItems removeAllObjects];
         [m_player removeAllItems];
         [self streamData:resourcePath];
         TrackInfo *nextTrack = [self getNextTrack];
@@ -606,6 +622,20 @@ float BLUR_IMAGE_RANGE = 100.0f;
     //allow for state updates, UI changes
     [self onNextTrack];
 
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([[segue identifier] isEqualToString:@"TrackMenu"])
+    {
+        UIView *parentView =[sender superview];
+        NSIndexPath *indexPath = [self.tableView indexPathForCell:(UITableViewCell*)parentView.superview];
+//        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+        [[segue destinationViewController] setTrackItem:m_audioTracks[indexPath.row]];
+
+//        CRSSItem *object = _feed.items[indexPath.row];
+//        [[segue destinationViewController] setDetailItem:object list:_feed.items];
+    }
 }
 
 - (void)updateCurrentTrack:(NSInteger)track updateListItems:(Boolean)updateListItems
@@ -766,8 +796,10 @@ float BLUR_IMAGE_RANGE = 100.0f;
         
         [playerItem addObserver:self forKeyPath:@"status" options:0
                         context:nil];
+        [m_observedItems addObject:playerItem];
     }
 }
+
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
@@ -846,6 +878,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
                 }
             }
             [item removeObserver:self forKeyPath:@"status"];
+            [m_observedItems removeObject:item];
         }
         else if ([keyPath isEqualToString:@"playbackBufferEmpty"])
         {
@@ -1090,7 +1123,13 @@ float BLUR_IMAGE_RANGE = 100.0f;
 
         if (nearestNumber == currentTrack+1)
         {
-//            [[m_player currentItem] removeObserver:self forKeyPath:@"status"];
+            AVPlayerItem *playerItem = [m_player currentItem];
+            if([m_observedItems containsObject:playerItem])
+            {
+                [playerItem removeObserver:self forKeyPath:@"status"];
+                [m_observedItems removeObject:playerItem];
+            }
+
             [m_player advanceToNextItem];
             [self onNextTrack];
         }

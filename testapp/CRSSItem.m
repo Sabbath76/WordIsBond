@@ -626,12 +626,16 @@ static NSDateFormatter *sDateFormatter = nil;
         
         NSArray *tracksArray = [json objectForKey:@"tracks"];
         NSString *artist = [json objectForKey:@"artist"];
+        NSString *albumUrl = [json objectForKey:@"url"];
+        NSRange range = [albumUrl rangeOfString:@"/album"];
+        NSString *cutUrl = [albumUrl substringToIndex:range.location];
         for (NSDictionary *track in tracksArray)
         {
             TrackInfo *newTrack = [TrackInfo alloc];
             NSString *trackArtist = [track objectForKey:@"artist"];
             newTrack->title = [track objectForKey:@"title"];
             newTrack->url = [NSString stringWithFormat:BAND_CAMP_TRACK_URL, ((NSNumber*)([track objectForKey:@"track_id"])).stringValue];
+            newTrack->sourceUrl = [cutUrl stringByAppendingString:[track objectForKey:@"url"]];
 //            newTrack->url = [track objectForKey:@"streaming_url"];
             newTrack->duration = ((NSNumber*)([track objectForKey:@"duration"])).floatValue;
             newTrack->artist = (trackArtist != nil) ? trackArtist : artist;

@@ -16,6 +16,7 @@
     NSString *title;
     NSString *artist;
     NSString *url;
+    NSString *sourceUrl;
     float duration;
     CRSSItem *pItem;
 }

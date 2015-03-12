@@ -155,7 +155,7 @@ function push_notifications_uninstall(){
 }
 /*----------------------------------*/
 /*----------------------------------*/
-
+ 
 function push_notifications_send($pn_push_type, $json, $message, $sound, $badge, $postID){
 
 
@@ -192,8 +192,8 @@ function push_notifications_send($pn_push_type, $json, $message, $sound, $badge,
 	else{
 
 		$ssl = $ssl_production;
-		$certificate = $productionCertificate;
-		$passphrase = $pn_settings->production_cer_pass;
+		$certificate = dirname(__FILE__)."/WIBPushProdComb.pem";
+        $passphrase = $pn_settings->production_cer_pass;
 		$feedback = $feedback_P;
 
 	}
@@ -264,36 +264,112 @@ function push_notifications_send($pn_push_type, $json, $message, $sound, $badge,
 
 	stream_set_blocking ($fp, 0); //This allows fread() to return right away when there are no errors. But it can also miss errors during last seconds of sending, as there is a delay before error is returned. Workaround is to pause briefly AFTER sending last notification, and then do one more fread() to see if anything else is there.
 
-	for ($i=0; $i!=count($devices_array); $i++){ 
+    $isFirstTime = true;
+    $resendAfter = -1;
+    $totalDevices = count($devices_array);
+    
+    $invalidTokens = array();
+    $numIterations = 0;
+    
+    while (($numIterations < 10) && (($resendAfter >= 0) || $isFirstTime))
+    {
+        $numIterations++;
 
-		$deviceToken = $devices_array[$i]->devicetoken;
-		$deviceName = $devices_array[$i]->devicename;
+        if ($isFirstTime == false)
+        {
+            //--- Disconnect and reconnect
+            fclose($fp);
 
-		$msg = chr(0) . pack('n', 32) . pack('H*', $deviceToken) . pack('n', strlen($payload)) . $payload;
+            $fp = stream_socket_client(
+                                       $ssl,
+                                       $err,
+                                       $errstr,
+                                       60,
+                                       STREAM_CLIENT_CONNECT|STREAM_CLIENT_PERSISTENT, 
+                                       $ctx
+                                       );
+            
+            if (!$fp)
+            {
+                exit("Failed to reconnect amarnew: $err $errstr");
+            }
 
-		$result = fwrite($fp, $msg, strlen($msg));
+            stream_set_blocking ($fp, 0); //This allows fread() to return right away when there are no errors. But it can also miss errors during last seconds of sending, as there is a delay before error is returned. Workaround is to pause briefly AFTER sending last notification, and then do one more fread() to see if anything else is there.
+            
+        }
+        $isFirstTime = false;
 
-		echo 'Sending to';
-		echo $deviceName;
+        for ($i=0; $i<$totalDevices; $i++)
+        {
+            $id = $devices_array[$i]->pid;
+            
+            if ($resendAfter >= 0)
+            {
+                if ($id == $resendAfter)
+                {
+                    echo 'Sending messages after '.$resendAfter.' again';
+                    $resendAfter = -1;
+                }
+                
+                continue;
+            }
+            $deviceName = $devices_array[$i]->devicename;
+            $deviceToken = $devices_array[$i]->devicetoken;
 
-		if (!$result)
-		{
-			echo 'Message not delivered';
-		}
-		else 
-		{
-			echo 'Message successfully delivered';
-			echo $result;
-		}
+            //--- New style
+            $frame = chr(1) . pack('n',32) . pack('H*', $deviceToken) . chr(3) . pack('n', 4) . pack('N', $id) . chr(2) . pack('n', strlen($payload)) . $payload;
+            $msg = chr(2) . pack( 'N', strlen($frame)) . $frame;
+            
+            //--- Old style
+            //		$msg = chr(0) . pack('n', 32) . pack('H*', $deviceToken) . pack('n', strlen($payload)) . $payload;
 
-		 //Workaround to check if there were any errors during the last seconds of sending.
-	        usleep(500000); //Pause for half a second. Note I tested this with up to a 5 minute pause, and the error message was still available to be retrieved
+            $result = fwrite($fp, $msg, strlen($msg));
 
-	        checkAppleErrorResponse($fp);
+//            echo 'Sending to'.$deviceName;
 
+            if (!$result)
+            {
+                echo 'Failed '.$deviceName.'('.$id.')';
+                $resendAfter = $id;
+            }
+            else 
+            {
+                echo 'Sent '.$deviceName.'('.$id.')';
+                echo $result;
+            }
+        }
+        
+        usleep(500000); //Pause for half a second. Note I tested this with up to a 5 minute pause,
+        $error = checkAppleErrorResponse($fp);
+        
+        if ($error >= 0)
+        {
+            //--- Resend all after this one
+            if (!in_array($error, $invalidTokens))
+            {
+                $resendAfter = $error;
+                $invalidTokens[] = $resendAfter;
+            }
+        }
+        else
+        {
+            $resendAfter = -1;
+        }
 	}
 
-	fclose($fp);	
+	fclose($fp);
+    
+    $totalInvalidTokens = count($invalidTokens);
+    if ($totalInvalidTokens > 0)
+    {
+        echo 'Removing '.$totalInvalidTokens.' invalid tokens';
+        for ($i=0; $i<$totalInvalidTokens; $i++)
+        {
+            $invalidTokenId = $invalidTokens[$i];
+            echo 'Removing '.$invalidTokenId;
+            $wpdb->delete( $apns_devices, array( 'pid' => $invalidTokenId ) );
+        }
+    }
 }
 
     //FUNCTION to check if there is an error response from Apple
@@ -344,15 +420,20 @@ function push_notifications_send($pn_push_type, $json, $message, $sound, $badge,
 
             echo '<br><b>+ + + + + + ERROR</b> Response Command:<b>' . $error_response['command'] . '</b>&nbsp;&nbsp;&nbsp;Identifier:<b>' . $error_response['identifier'] . '</b>&nbsp;&nbsp;&nbsp;Status:<b>' . $error_response['status_code'] . '</b><br>';
             echo 'Identifier is the rowID (index) in the database that caused the problem, and Apple will disconnect you from server. To continue sending Push Notifications, just start at the next rowID after this Identifier.<br>';
+           
+           if ($error_response['status_code'] != '0')
+           {
+               return $error_response['identifier'];
+           }
 
-            return true;
+//            return true;
        }
 	else
 	{
             echo 'No response from the Apple Server';
 	}
 
-       return false;
+       return -1;
     }
 
 function check_feedback()
@@ -362,15 +443,37 @@ function check_feedback()
     $pn_settings =  $wpdb->get_results( $wpdb->prepare("SELECT * FROM $pn_setting WHERE id = %d", 1));
     $pn_settings = $pn_settings[0];
 
+    
+    $ssl_production = 'ssl://gateway.push.apple.com:2195';
+    $feedback_P = 'ssl://feedback.push.apple.com:2196';
+    $productionCertificate = $pn_settings->production_cer_path;
+    
     $ssl_sandbox = 'ssl://gateway.sandbox.push.apple.com:2195';
-	$sandboxCertificate = $pn_settings->developer_cer_path;
-	$feedback_S = 'ssl://feedback.sandbox.push.apple.com:2196';
+    $sandboxCertificate = $pn_settings->developer_cer_path;
+    $feedback_S = 'ssl://feedback.sandbox.push.apple.com:2196';
 
-	$ssl = $ssl_sandbox;
-//	$certificate = $sandboxCertificate;
-	$certificate =  dirname(__FILE__)."/WIBPushComb.pem";
-	$passphrase = $pn_settings->development_cer_pass;
-	$feedback = $feedback_S;
+    $ssl;
+    $certificate;
+    $passphrase;
+    $feedback;
+    
+    if ($pn_settings->development == 'development'){
+        
+        $ssl = $ssl_sandbox;
+        //		$certificate = $sandboxCertificate;
+        $certificate =  dirname(__FILE__)."/WIBPushComb.pem";
+        $passphrase = $pn_settings->development_cer_pass;
+        $feedback = $feedback_S;
+        
+    }
+    else{
+        
+        $ssl = $ssl_production;
+        $certificate = dirname(__FILE__)."/WIBPushProdComb.pem";
+        $passphrase = $pn_settings->production_cer_pass;
+        $feedback = $feedback_P;
+        
+    }
 
 	if (!file_exists($certificate)) 
 	{
@@ -622,7 +725,18 @@ function push_notifications_create_form(){
         
         list_users();
     }
-    
+    if (isset($_POST['push_notifications_badge_push_btn']))
+    {
+        if ( function_exists('current_user_can') &&
+            !current_user_can('manage_options') )
+            die ( _e('Hacker?', 'push_notifications') );
+        
+        if (function_exists ('check_admin_referer') )
+            check_admin_referer('push_notifications_form');
+        
+        on_new_post(2);
+    }
+
 	echo
 		"<div id='pn_form'>
 	        <h2>Create push notification</h2>
@@ -651,6 +765,9 @@ function push_notifications_create_form(){
 						</div>
                         <div>
                             <input type='submit' id="push_button" class='pn blue push_button' name='push_notifications_users_push_btn' value='List Users' />
+                        </div>
+                        <div>
+                            <input type='submit' id="push_button" class='pn blue push_button' name='push_notifications_badge_push_btn' value='Update Badges' />
                         </div>
 			</form>
 			</div>
@@ -762,10 +879,10 @@ Your post <a href="<?php echo get_permalink($post->ID) ?>"><?php the_title_attri
         $pn_settings =  $wpdb->get_results( $wpdb->prepare("SELECT * FROM $pn_setting WHERE id = %d", 1));
         $pn_settings = $pn_settings[0];
         
+        
         $ssl_production = 'ssl://gateway.push.apple.com:2195';
         $feedback_P = 'ssl://feedback.push.apple.com:2196';
         $productionCertificate = $pn_settings->production_cer_path;
-        
         
         $ssl_sandbox = 'ssl://gateway.sandbox.push.apple.com:2195';
         $sandboxCertificate = $pn_settings->developer_cer_path;
@@ -776,14 +893,11 @@ Your post <a href="<?php echo get_permalink($post->ID) ?>"><?php the_title_attri
         $passphrase;
         $feedback;
         
-        
-        
         if ($pn_settings->development == 'development'){
             
             $ssl = $ssl_sandbox;
             //		$certificate = $sandboxCertificate;
             $certificate =  dirname(__FILE__)."/WIBPushComb.pem";
-//            $certificate =  dirname(__FILE__)."/WIBComb.pem";
             $passphrase = $pn_settings->development_cer_pass;
             $feedback = $feedback_S;
             
@@ -791,7 +905,7 @@ Your post <a href="<?php echo get_permalink($post->ID) ?>"><?php the_title_attri
         else{
             
             $ssl = $ssl_production;
-            $certificate = $productionCertificate;
+            $certificate = dirname(__FILE__)."/WIBPushProdComb.pem";
             $passphrase = $pn_settings->production_cer_pass;
             $feedback = $feedback_P;
             
@@ -826,16 +940,14 @@ Your post <a href="<?php echo get_permalink($post->ID) ?>"><?php the_title_attri
         
         if (!$fp)
             exit("Failed to connect amarnew: $err $errstr");
-        
+
         echo 'Connected to APNS';
+
+        stream_set_blocking ($fp, 0); //This allows fread() to return right away when there are no errors. But it can also miss errors during last seconds of sending, as there is a delay before error is returned. Workaround is to pause briefly AFTER sending last notification, and then do one more fread() to see if anything else is there.
         
         
         $body['aps'] = array(
                              'badge' => $numPosts
-//                             ,
-//                             'alert' => "New Posts"
-//                             ,
-//                             'sound' => $sound
                              );
         
         $json = json_encode($body);
@@ -848,32 +960,109 @@ Your post <a href="<?php echo get_permalink($post->ID) ?>"><?php the_title_attri
         $apns_devices = $wpdb->prefix.'pn_apns_devices';
         $devices_array = $wpdb->get_results( $wpdb->prepare ("SELECT * FROM $apns_devices", 0));
         
-        for ($i=0; $i!=count($devices_array); $i++){ 
-            
-            $deviceToken = $devices_array[$i]->devicetoken;
-            $lastPostCount = $devices_array[$i]->seenposts;
-            
-            $body['aps'] = array(
-                                 'badge' => $numPosts-$lastPostCount//,
-//                                 'alert' => "New Posts".$lastPostCount." from ".$numPosts
-                                 //'sound' => $sound
-                                 );
-            
-            $json = json_encode($body);
-            $payload = $json;
+        $isFirstTime = true;
+        $resendAfter = -1;
+        $totalDevices = count($devices_array);
+        
+        $invalidTokens = array();
+        $numIterations = 0;
 
-            $msg = chr(0) . pack('n', 32) . pack('H*', $deviceToken) . pack('n', strlen($payload)) . $payload;
+        while (($numIterations < 10) && (($resendAfter >= 0) || $isFirstTime))
+        {
+            $numIterations++;
             
-            $result = fwrite($fp, $msg, strlen($msg));
+            if ($isFirstTime == false)
+            {
+                //--- Disconnect and reconnect
+                fclose($fp);
+                
+                $fp = stream_socket_client(
+                                           $ssl,
+                                           $err,
+                                           $errstr,
+                                           60,
+                                           STREAM_CLIENT_CONNECT|STREAM_CLIENT_PERSISTENT,
+                                           $ctx
+                                           );
+                
+                if (!$fp)
+                {
+                    exit("Failed to reconnect amarnew: $err $errstr");
+                }
+                
+                stream_set_blocking ($fp, 0); //This allows fread() to return right away when there are no errors. But it can also miss errors during last seconds of sending, as there is a delay before error is returned. Workaround is to pause briefly AFTER sending last notification, and then do one more fread() to see if anything else is there.
+                
+            }
+            $isFirstTime = false;
+
+            for ($i=0; $i!=$totalDevices; $i++)
+            {
+                $id = $devices_array[$i]->pid;
+                
+                if ($resendAfter >= 0)
+                {
+                    if ($id == $resendAfter)
+                    {
+                        echo 'Sending messages after '.$resendAfter.' again';
+                        $resendAfter = -1;
+                    }
+                    
+                    continue;
+                }
+                
+                $deviceToken = $devices_array[$i]->devicetoken;
+                $lastPostCount = $devices_array[$i]->seenposts;
+                
+                $body['aps'] = array(
+                                     'badge' => $numPosts-$lastPostCount
+                                     );
+                
+                $json = json_encode($body);
+                $payload = $json;
+
+                $msg = chr(0) . pack('n', 32) . pack('H*', $deviceToken) . pack('n', strlen($payload)) . $payload;
+                
+                $result = fwrite($fp, $msg, strlen($msg));
+                
+                if (!$result)
+                    echo 'Message not delivered';
+                else
+                    echo 'Message successfully delivered';
+            }
             
-            if (!$result)
-                echo 'Message not delivered';
+            usleep(500000); //Pause for half a second. Note I tested this with up to a 5 minute pause,
+            $error = checkAppleErrorResponse($fp);
+            
+            if ($error >= 0)
+            {
+                //--- Resend all after this one
+                if (!in_array($error, $invalidTokens))
+                {
+                    $resendAfter = $error;
+                    $invalidTokens[] = $resendAfter;
+                }
+            }
             else
-                echo 'Message successfully delivered';
+            {
+                $resendAfter = -1;
+            }
             
         }
         
-        fclose($fp);	
+        fclose($fp);
+        
+        $totalInvalidTokens = count($invalidTokens);
+        if ($totalInvalidTokens > 0)
+        {
+            echo 'Removing '.$totalInvalidTokens.' invalid tokens';
+            for ($i=0; $i<$totalInvalidTokens; $i++)
+            {
+                $invalidTokenId = $invalidTokens[$i];
+                echo 'Removing '.$invalidTokenId;
+//                $wpdb->delete( $apns_devices, array( 'pid' => $invalidTokenId ) );
+            }
+        }
+        
     }
 
 
