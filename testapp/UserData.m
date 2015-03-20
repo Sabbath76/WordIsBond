@@ -107,3 +107,24 @@ static UserData *s_userData;
 
 
 @end
+
+
+@implementation UIColor (CustomColors)
+
++ (UIColor *)wibColour {
+    
+    static UIColor *wibColour;
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        wibColour = [UIColor colorWithRed:255.0 / 255.0
+                                    green:100.0 / 255.0
+                                     blue:10.0 / 255.0
+                                    alpha:1.0];
+    });
+    
+    return wibColour;
+}
+
+@end
+

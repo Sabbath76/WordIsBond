@@ -8,6 +8,7 @@
 
 #import "ViewControllerTrackMenu.h"
 #import "SelectedItem.h"
+#import "UserData.h"
 
 #import <Social/Social.h>
 #import <Accounts/Accounts.h>
@@ -20,6 +21,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *lblTitle;
 @property (weak, nonatomic) IBOutlet UIButton *btnViewPost;
 @property (weak, nonatomic) IBOutlet UIButton *btnBuyUrl;
+@property (weak, nonatomic) IBOutlet UIButton *btnFavourite;
 
 @end
 
@@ -33,12 +35,38 @@
 - (void) viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
+
+    CRSSItem *item = curTrackInfo->pItem;
+
     [self.lblTitle setText:curTrackInfo->title];
     
+    if (curTrackInfo->sourceUrl != nil)
+    {
+        if ([curTrackInfo->pItem audioHost] == Bandcamp)
+        {
+            [self.btnBuyUrl setImage:[UIImage imageNamed:@"bandcamp_black"] forState:UIControlStateNormal];
+        }
+        else if ([curTrackInfo->pItem audioHost] == Soundcloud)
+        {
+            [self.btnBuyUrl setImage:[UIImage imageNamed:@"soundcloud"] forState:UIControlStateNormal];
+        }
+    }
     [self.btnBuyUrl setHidden:(curTrackInfo->sourceUrl == nil)];
     
-    [self.btnViewPost setImage:[curTrackInfo->pItem iconImage] forState:UIControlStateNormal];
+    [self.btnViewPost setImage:[item iconImage] forState:UIControlStateNormal];
+    
+    NSMutableSet *favourites = [[UserData get] favourites];
+    UIImage *image = [[UIImage imageNamed:@"icon_favourite_off"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [self.btnFavourite setImage:image forState:UIControlStateNormal];
+    if ([favourites containsObject:item])
+    {
+        self.btnFavourite.tintColor = [UIColor wibColour];
+    }
+    else
+    {
+        self.btnFavourite.tintColor = [UIColor whiteColor];
+    }
+
 }
 
 - (void)didReceiveMemoryWarning {
@@ -98,6 +126,24 @@
                                   otherButtonTitles:nil];
         [alertView show];
     }
+}
+
+- (IBAction)onFavourite:(id)sender
+{
+    NSMutableSet *favourites = [[UserData get] favourites];
+    CRSSItem *item = curTrackInfo->pItem;
+    if ([favourites containsObject:item])
+    {
+        self.btnFavourite.tintColor = [UIColor whiteColor];
+        [favourites removeObject:item];
+    }
+    else
+    {
+        self.btnFavourite.tintColor = [UIColor wibColour];
+        [favourites addObject:item];
+    }
+    [[UserData get] onChanged];
+
 }
 
 - (IBAction)onBuyURL:(id)sender

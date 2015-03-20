@@ -11,6 +11,7 @@
 #import "GAI.h"
 //#import "AFHTTPClient.h"
 
+
 const NSString *notificationURL = @"http://www.thewordisbond.com/?json=register_notifications";
 
 @implementation AppDelegate

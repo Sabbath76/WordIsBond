@@ -94,11 +94,11 @@
         NSMutableSet *favourites = [[UserData get] favourites];
         if ([favourites containsObject:self.detailItem])
         {
-            m_btnFavourite.tintColor = [UIColor whiteColor];
+            m_btnFavourite.tintColor = [UIColor wibColour];
         }
         else
         {
-            m_btnFavourite.tintColor = [UIColor blackColor];
+            m_btnFavourite.tintColor = [UIColor whiteColor];
         }
         
         if (updateScroller)
@@ -235,12 +235,12 @@
     NSMutableSet *favourites = [[UserData get] favourites];
     if ([favourites containsObject:self.detailItem])
     {
-        m_btnFavourite.tintColor = [UIColor blackColor];
+        m_btnFavourite.tintColor = [UIColor whiteColor];
         [favourites removeObject:self.detailItem];
     }
     else
     {
-        m_btnFavourite.tintColor = [UIColor whiteColor];
+        m_btnFavourite.tintColor = [UIColor wibColour];
         [favourites addObject:self.detailItem];
     }
     [[UserData get] onChanged];

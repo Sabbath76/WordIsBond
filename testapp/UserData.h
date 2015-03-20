@@ -30,3 +30,10 @@
 - (void)onFavouritesChanged;
 
 @end
+
+
+@interface UIColor (CustomColors)
+
++ (UIColor *)wibColour;
+
+@end

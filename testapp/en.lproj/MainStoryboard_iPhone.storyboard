@@ -824,7 +824,7 @@
                                 <rect key="frame" x="32" y="360" width="258" height="120"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RuR-Gr-8YJ">
-                                        <rect key="frame" x="78" y="58" width="40" height="40"/>
+                                        <rect key="frame" x="43" y="8" width="40" height="40"/>
                                         <state key="normal" image="facebook_off.png">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
@@ -832,8 +832,8 @@
                                             <action selector="onFacebook:" destination="aGP-TA-dcV" eventType="touchUpInside" id="4Cz-Vd-puc"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleAspectFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="K2n-WN-9Wo">
-                                        <rect key="frame" x="8" y="54" width="62" height="62"/>
+                                    <button opaque="NO" contentMode="scaleAspectFit" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="K2n-WN-9Wo">
+                                        <rect key="frame" x="8" y="54" width="242" height="62"/>
                                         <state key="normal" image="text.png">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
@@ -841,26 +841,8 @@
                                             <action selector="onViewPost:" destination="aGP-TA-dcV" eventType="touchUpInside" id="Ble-px-ESj"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Sfs-Z2-4Sc">
-                                        <rect key="frame" x="209" y="8" width="40" height="40"/>
-                                        <state key="normal" image="bandcamp_black.png">
-                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="onBuyURL:" destination="aGP-TA-dcV" eventType="touchUpInside" id="H0q-8w-PxF"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a9B-wg-Zzy">
-                                        <rect key="frame" x="133" y="58" width="40" height="40"/>
-                                        <state key="normal" image="twitter_off.png">
-                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="onTweet:" destination="aGP-TA-dcV" eventType="touchUpInside" id="kOQ-ZK-CCX"/>
-                                        </connections>
-                                    </button>
                                     <button opaque="NO" contentMode="center" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GlN-sp-oIh">
-                                        <rect key="frame" x="194" y="58" width="55" height="54"/>
+                                        <rect key="frame" x="195" y="8" width="55" height="54"/>
                                         <state key="normal" image="close_button.png"/>
                                         <connections>
                                             <action selector="onClose:" destination="aGP-TA-dcV" eventType="touchUpInside" id="IoD-0s-VYc"/>
@@ -870,11 +852,39 @@
                                         <rect key="frame" x="8" y="54" width="62" height="62"/>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="5ye-da-9p3">
-                                        <rect key="frame" x="8" y="0.0" width="204" height="61"/>
+                                        <rect key="frame" x="78" y="54" width="180" height="61"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                        <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Sfs-Z2-4Sc">
+                                        <rect key="frame" x="0.0" y="8" width="40" height="40"/>
+                                        <state key="normal" image="bandcamp_black.png">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="onBuyURL:" destination="aGP-TA-dcV" eventType="touchUpInside" id="H0q-8w-PxF"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9iq-sv-nnh">
+                                        <rect key="frame" x="139" y="8" width="40" height="40"/>
+                                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <state key="normal" image="icon_favourite_off.png">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="onFavourite:" destination="aGP-TA-dcV" eventType="touchUpInside" id="6Ug-IN-vsC"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a9B-wg-Zzy">
+                                        <rect key="frame" x="91" y="8" width="40" height="40"/>
+                                        <state key="normal" image="twitter_off.png">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="onTweet:" destination="aGP-TA-dcV" eventType="touchUpInside" id="kOQ-ZK-CCX"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -891,6 +901,7 @@
                     </view>
                     <connections>
                         <outlet property="btnBuyUrl" destination="Sfs-Z2-4Sc" id="cf1-z0-sOt"/>
+                        <outlet property="btnFavourite" destination="9iq-sv-nnh" id="Dvp-fD-DgA"/>
                         <outlet property="btnViewPost" destination="K2n-WN-9Wo" id="qZ1-mJ-Qfj"/>
                         <outlet property="lblTitle" destination="5ye-da-9p3" id="o81-MM-C2z"/>
                     </connections>

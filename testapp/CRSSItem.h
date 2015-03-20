@@ -15,6 +15,11 @@ typedef enum
     Text, Audio, Video
 } PostType;
 
+typedef enum
+{
+    Bandcamp, Soundcloud
+} AudioHost;
+
 @protocol PostRequestDelegate;
 
 @interface CRSSItem : NSObject  < NSURLConnectionDelegate >
@@ -34,6 +39,7 @@ typedef enum
 @property (nonatomic, retain) UIImage *iconImage;
 @property (nonatomic, retain) UIImage *blurredImage;
 @property (nonatomic, readonly) PostType type;
+@property (nonatomic, readonly) AudioHost audioHost;
 @property (nonatomic, readonly) NSMutableArray *tracks;
 @property (nonatomic, readwrite) int postID;
 @property (nonatomic, readwrite) Boolean requiresDownload;

@@ -3,7 +3,13 @@
    version = "1.0">
    <ContextStates>
       <ContextState
-         contextName = "-[AppDelegate application:didFinishLaunchingWithOptions:]:AppDelegate.m">
+         contextName = "-[MasterViewController tableView:cellForRowAtIndexPath:]:MasterViewController.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[CRSSItem connectionDidFinishLoading:]:CRSSItem.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[ViewControllerMediaPlayer observeValueForKeyPath:ofObject:change:context:]:ViewControllerMediaPlayer.m">
       </ContextState>
       <ContextState
          contextName = "-[MasterViewController viewDidLoad]:MasterViewController.m">
@@ -17,7 +23,7 @@
          contextName = "-[MasterViewController tableView:didSelectRowAtIndexPath:]:MasterViewController.m">
       </ContextState>
       <ContextState
-         contextName = "-[MasterViewController tableView:cellForRowAtIndexPath:]:MasterViewController.m">
+         contextName = "-[AppDelegate application:didFinishLaunchingWithOptions:]:AppDelegate.m">
       </ContextState>
    </ContextStates>
 </VariablesViewState>

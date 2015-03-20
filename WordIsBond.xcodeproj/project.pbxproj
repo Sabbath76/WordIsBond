@@ -90,6 +90,8 @@
 		0E98F64A1706E310006E9857 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E98F61F1706E30F006E9857 /* Foundation.framework */; };
 		0E98F6521706E310006E9857 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0E98F6501706E310006E9857 /* InfoPlist.strings */; };
 		0E98F6551706E310006E9857 /* testappTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E98F6541706E310006E9857 /* testappTests.m */; };
+		0E9FF1E61ABCCD590001237B /* soundcloud.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E9FF1E41ABCCD590001237B /* soundcloud.png */; };
+		0E9FF1E71ABCCD590001237B /* soundcloud@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E9FF1E51ABCCD590001237B /* soundcloud@2x.png */; };
 		0EA47B66189E8A6000606EA4 /* PostCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EA47B65189E8A6000606EA4 /* PostCell.m */; };
 		0EA533D9191D2C7D00555273 /* option_btn_on.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EA533D7191D2C7D00555273 /* option_btn_on.png */; };
 		0EA533DA191D2C7D00555273 /* option_btn_off.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EA533D8191D2C7D00555273 /* option_btn_off.png */; };
@@ -299,6 +301,8 @@
 		0E98F6511706E310006E9857 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		0E98F6531706E310006E9857 /* testappTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = testappTests.h; sourceTree = "<group>"; };
 		0E98F6541706E310006E9857 /* testappTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = testappTests.m; sourceTree = "<group>"; };
+		0E9FF1E41ABCCD590001237B /* soundcloud.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = soundcloud.png; sourceTree = "<group>"; };
+		0E9FF1E51ABCCD590001237B /* soundcloud@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "soundcloud@2x.png"; sourceTree = "<group>"; };
 		0EA47B64189E8A6000606EA4 /* PostCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PostCell.h; sourceTree = "<group>"; };
 		0EA47B65189E8A6000606EA4 /* PostCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PostCell.m; sourceTree = "<group>"; };
 		0EA533D7191D2C7D00555273 /* option_btn_on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = option_btn_on.png; sourceTree = "<group>"; };
@@ -583,6 +587,8 @@
 		0E98F6241706E30F006E9857 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				0E9FF1E41ABCCD590001237B /* soundcloud.png */,
+				0E9FF1E51ABCCD590001237B /* soundcloud@2x.png */,
 				0E19A3831AAF404D00F02114 /* bandcamp_black.png */,
 				0E19A3841AAF404D00F02114 /* bandcamp_black@2x.png */,
 				0E19A37F1AAF223700F02114 /* close_button.png */,
@@ -873,6 +879,7 @@
 				0E67D74917D60BC600CFB7C5 /* featureCell.xib in Resources */,
 				0EB691AC18B3E99800FEFC7A /* twitter_off.png in Resources */,
 				0EA533E0191D2FFA00555273 /* icon_loading@2x.png in Resources */,
+				0E9FF1E71ABCCD590001237B /* soundcloud@2x.png in Resources */,
 				0E45E5F91A8CC28A00481DC6 /* WIB_Launch_Image.png in Resources */,
 				0EA877E2184A523E003A0B82 /* player_play_on@2x.png in Resources */,
 				0EBF97971A86736000DA36EE /* Launch Screen.xib in Resources */,
@@ -885,6 +892,7 @@
 				0EF093FC1A38588400E8FC4A /* icon_152.png in Resources */,
 				0E898AB2193E1F87001AA4D3 /* MyriadPro-Regular.otf in Resources */,
 				0EC058DD1A1E8B4A00963148 /* post_drag_on.png in Resources */,
+				0E9FF1E61ABCCD590001237B /* soundcloud.png in Resources */,
 				0EAC77A91837364F0084CE8C /* PostHeader.xib in Resources */,
 				0E2E964317FA081200FB9BD8 /* icon_opt.png in Resources */,
 				0E842E42180C89A4005723BF /* player_play_off.png in Resources */,

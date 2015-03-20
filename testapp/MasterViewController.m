@@ -648,30 +648,12 @@ const int ExpandedSectionSize = 120;
         NSMutableSet *favourites = [[UserData get] favourites];
         if ([favourites containsObject:item])
         {
-/*            if (favBtn == m_btnFavourite)
-            {
-                [m_btnFavourite setSelected:false];
-            }
-            else*/
-            {
-//                [favBtn setBackButtonBackgroundImage:[UIImage imageNamed:@"icon_favourite_off"] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
-                favBtn.tintColor = [UIColor blackColor];
-//                [favBtn setTintColor:[UIColor blackColor]];
-            }
+            favBtn.tintColor = [UIColor whiteColor];
             [favourites removeObject:item];
         }
         else
         {
-/*            if (favBtn == m_btnFavourite)
-            {
-                [m_btnFavourite setSelected:true];
-            }
-            else*/
-            {
-                favBtn.tintColor = [UIColor whiteColor];
-//                [favBtn setBackButtonBackgroundImage:[UIImage imageNamed:@"icon_favourite_on"] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
-//                [favBtn setTintColor:[UIColor whiteColor]];
-            }
+            favBtn.tintColor = [UIColor wibColour];
             [favourites addObject:item];
         }
         [[UserData get] onChanged];
@@ -830,11 +812,11 @@ const int ExpandedSectionSize = 120;
                     
                     if (isFavourite)
                     {
-                        [favourite setTintColor:[UIColor whiteColor]];
+                        [favourite setTintColor:[UIColor wibColour]];
                     }
                     else
                     {
-                        [favourite setTintColor:[UIColor blackColor]];
+                        [favourite setTintColor:[UIColor whiteColor]];
                     }
                 }
             }
@@ -1046,11 +1028,11 @@ const int ExpandedSectionSize = 120;
 
                 if (isFavourite)
                 {
-                    [favourite setTintColor:[UIColor whiteColor]];
+                    [favourite setTintColor:[UIColor wibColour]];
                 }
                 else
                 {
-                    [favourite setTintColor:[UIColor blackColor]];
+                    [favourite setTintColor:[UIColor whiteColor]];
                 }
             }
 
