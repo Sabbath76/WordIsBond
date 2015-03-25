@@ -823,15 +823,6 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MzF-5z-sOG">
                                 <rect key="frame" x="32" y="360" width="258" height="120"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RuR-Gr-8YJ">
-                                        <rect key="frame" x="43" y="8" width="40" height="40"/>
-                                        <state key="normal" image="facebook_off.png">
-                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="onFacebook:" destination="aGP-TA-dcV" eventType="touchUpInside" id="4Cz-Vd-puc"/>
-                                        </connections>
-                                    </button>
                                     <button opaque="NO" contentMode="scaleAspectFit" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="K2n-WN-9Wo">
                                         <rect key="frame" x="8" y="54" width="242" height="62"/>
                                         <state key="normal" image="text.png">
@@ -842,7 +833,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="center" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GlN-sp-oIh">
-                                        <rect key="frame" x="195" y="8" width="55" height="54"/>
+                                        <rect key="frame" x="210" y="8" width="40" height="40"/>
                                         <state key="normal" image="close_button.png"/>
                                         <connections>
                                             <action selector="onClose:" destination="aGP-TA-dcV" eventType="touchUpInside" id="IoD-0s-VYc"/>
@@ -867,7 +858,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9iq-sv-nnh">
-                                        <rect key="frame" x="139" y="8" width="40" height="40"/>
+                                        <rect key="frame" x="148" y="8" width="40" height="40"/>
                                         <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <state key="normal" image="icon_favourite_off.png">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -877,12 +868,21 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a9B-wg-Zzy">
-                                        <rect key="frame" x="91" y="8" width="40" height="40"/>
+                                        <rect key="frame" x="100" y="8" width="40" height="40"/>
                                         <state key="normal" image="twitter_off.png">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
                                         <connections>
                                             <action selector="onTweet:" destination="aGP-TA-dcV" eventType="touchUpInside" id="kOQ-ZK-CCX"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RuR-Gr-8YJ">
+                                        <rect key="frame" x="48" y="8" width="40" height="40"/>
+                                        <state key="normal" image="facebook_off.png">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="onFacebook:" destination="aGP-TA-dcV" eventType="touchUpInside" id="4Cz-Vd-puc"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -1192,7 +1192,7 @@
         <image name="WIB_BG_white.png" width="320" height="480"/>
         <image name="WIB_Launch_Image.png" width="320" height="480"/>
         <image name="bandcamp_black.png" width="30" height="30"/>
-        <image name="close_button.png" width="70" height="70"/>
+        <image name="close_button.png" width="24" height="24"/>
         <image name="facebook_off.png" width="22" height="22"/>
         <image name="feature_thumb_hl.png" width="63" height="63"/>
         <image name="feature_thumb_hl_tab.png" width="63" height="2"/>

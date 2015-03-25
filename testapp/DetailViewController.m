@@ -28,6 +28,7 @@
     FullPostController *m_currentPage;
     FullPostController *m_nextPage;
     UIBarButtonItem *m_btnFavourite;
+    UIBarButtonItem *m_btnPlay;
     NSInteger m_itemPos;
     NSArray *m_sourceList;
     bool m_extendedNavBar;
@@ -89,6 +90,7 @@
                                                              label:[[NSNumber numberWithInt:[self.detailItem postID]] stringValue]          // Event label
                                                                value:nil] build]];    // Event value
 
+        NSInteger numItems = m_sourceList ? m_sourceList.count : 1;
 
         //--- Update UI based new post selection
         NSMutableSet *favourites = [[UserData get] favourites];
@@ -99,6 +101,17 @@
         else
         {
             m_btnFavourite.tintColor = [UIColor whiteColor];
+        }
+        
+        if ((m_sourceList.count > 0) && ([m_sourceList[m_itemPos] tracks].count > 0))
+        {
+            m_btnPlay.tintColor = [UIColor whiteColor];
+            [m_btnPlay setEnabled:true];
+        }
+        else
+        {
+            m_btnPlay.tintColor = [UIColor darkGrayColor];
+            [m_btnPlay setEnabled:false];
         }
         
         if (updateScroller)
@@ -116,7 +129,6 @@
             
             if (m_header)
             {
-                NSInteger numItems = m_sourceList ? m_sourceList.count : 1;
                 m_header.contentSize = CGSizeMake(m_header.frame.size.width * numItems, 0);
             }
         }
@@ -278,6 +290,7 @@
         m_extendedNavBar = enable;
         if (enable)
         {
+            UIBarButtonItem *playButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"player_play_off"] style:UIBarButtonItemStylePlain target:self action:@selector(onPlay:)];
             UIBarButtonItem *commentButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_comments"] style:UIBarButtonItemStylePlain target:self action:@selector(onComment:)];
             UIBarButtonItem *fbButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"facebook_off"] style:UIBarButtonItemStylePlain target:self action:@selector(onFacebook:)];
             UIBarButtonItem *twButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"twitter_off"] style:UIBarButtonItemStylePlain target:self action:@selector(onTweet:)];
@@ -287,18 +300,21 @@
                 [commentButton setTintColor:[UIColor whiteColor]];
                 [fbButton setTintColor:[UIColor whiteColor]];
                 [twButton setTintColor:[UIColor whiteColor]];
+                [playButton setTintColor:[UIColor whiteColor]];
             }
             UIBarButtonItem *flexibleItem1 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
             UIBarButtonItem *flexibleItem2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
             UIBarButtonItem *flexibleItem3 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
             UIBarButtonItem *flexibleItem4 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+            UIBarButtonItem *flexibleItem5 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 
             [UIView animateWithDuration:0.4f animations:^{
-            self.navigationItem.rightBarButtonItems = @[favButton, flexibleItem1, twButton, flexibleItem2, fbButton, flexibleItem3, commentButton, flexibleItem4 ];
+            self.navigationItem.rightBarButtonItems = @[favButton, flexibleItem1, twButton, flexibleItem2, fbButton, flexibleItem3, commentButton, flexibleItem4, playButton, flexibleItem5 ];
             self.navigationItem.titleView = nil;
             self.navigationItem.title = @"";
             }];
             m_btnFavourite = favButton;
+            m_btnPlay = playButton;
         }
         else
         {
@@ -383,6 +399,14 @@
             _detailItem = m_sourceList[lowerNumber];
             [self configureView:false];
         }
+    }
+}
+
+- (IBAction)onPlay:(id)sender
+{
+    if ([m_sourceList[m_itemPos] tracks].count > 0)
+    {
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"PlayItem" object:m_sourceList[m_itemPos]];
     }
 }
 

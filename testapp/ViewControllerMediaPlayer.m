@@ -237,6 +237,11 @@ float BLUR_IMAGE_RANGE = 100.0f;
                                                  name:@"ViewPost"
                                                object:nil];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(onPlayItem:)
+                                                 name:@"PlayItem"
+                                               object:nil];
+    
     m_observedItems = [[NSMutableArray alloc] init];
     
     [self receiveNewRSSFeed:nil];
@@ -579,6 +584,28 @@ float BLUR_IMAGE_RANGE = 100.0f;
 }
 
 
+- (void) onPlayItem:(NSNotification *) notification
+{
+    CRSSItem *pItem = (CRSSItem *)notification.object;
+    if (pItem)
+    {
+        NSInteger curItem = 0;
+        for (TrackInfo *trackInfo in m_audioTracks)
+        {
+            if (trackInfo->pItem == pItem)
+            {
+                [self updateCurrentTrack:curItem updateListItems:true];
+                [self prepareMusic];
+                [self setPlaying:true];
+                break;
+            }
+            
+            curItem++;
+        }
+
+    }
+}
+
 - (void)onNextTrack
 {
     //--- Update UI
@@ -664,7 +691,13 @@ float BLUR_IMAGE_RANGE = 100.0f;
     //--- Update trackInfo centre display
     NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
     [songInfo setObject:trackInfo->title forKey:MPMediaItemPropertyTitle];
-    [songInfo setObject:newItem.title forKey:MPMediaItemPropertyArtist];
+     NSString *pArtist = trackInfo->artist;
+     if (pArtist == nil)
+     {
+         pArtist = newItem.title;
+     }
+     
+    [songInfo setObject:pArtist forKey:MPMediaItemPropertyArtist];
     [songInfo setObject:newItem.title forKey:MPMediaItemPropertyAlbumTitle];
     [songInfo setObject:[NSNumber numberWithFloat:trackInfo->duration] forKey:MPMediaItemPropertyPlaybackDuration];
     [songInfo setObject:[NSNumber numberWithInt:1] forKey:MPNowPlayingInfoPropertyPlaybackRate];
@@ -852,6 +885,8 @@ float BLUR_IMAGE_RANGE = 100.0f;
                         
                         m_labelCurTime.text = @"0:00";
                         m_labelDuration.text = [NSString stringWithFormat:@"%d:%02d", (int)(trackInfo->duration / 60.0f), (int)(trackInfo)%60];
+                        
+                        [self updateCurrentTrack:currentTrack updateListItems:false];
 
     //                    NSLog(@"player item status is ready to play");
                     }
@@ -994,6 +1029,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
     {
         [self updateCurrentTrack:indexPath.row updateListItems:true];
         [self prepareMusic];
+        [self setPlaying:true];
     }
 }
 
