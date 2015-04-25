@@ -15,7 +15,7 @@ $localdir =dirname(__FILE__);
 //require dirname(__FILE__)."/../../../wp-blog-header.php";
 
 
-error_log("Register device ", 3, $localdir."/status.txt");
+error_log("\n\rRegister device ", 3, $localdir."/status.txt");
 
 global $wpdb;
 $apns_devices = $wpdb->prefix.'pn_apns_devices';
@@ -54,7 +54,7 @@ if (
         
         $numPosts = (int)$published_posts;
 
-        error_log($_GET['devicename'].":".$numPosts, 3, $localdir."/status.txt");
+        error_log($_GET['devicename'].":".$numPosts.":".$_GET['appversion'], 3, $localdir."/status.txt");
         echo "insert device".$_GET['devicename'];
         
 		$wpdb->replace(

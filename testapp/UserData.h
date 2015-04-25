@@ -12,7 +12,7 @@
 
 @interface UserData : NSObject
 
-@property (nonatomic, retain) NSMutableSet *favourites;
+@property (nonatomic, retain) NSMutableArray *favourites;
 
 + (UserData*) get;
 - (void)addListener:(id<FavouritesChangedDelegate>) listener;

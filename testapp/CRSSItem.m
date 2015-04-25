@@ -9,6 +9,7 @@
 #import "CRSSItem.h"
 #import "UIImage+ImageEffects.h"
 #import "AVFoundation/AVUtilities.h"
+#import "CoreDefines.h"
 
 @implementation CRSSItem
 {
@@ -30,9 +31,9 @@ static UIImage *defaultIcon;
 static UIImage *defaultImage;
 static UIImage *defaultBlurredImage;
 
-static NSString * BAND_CAMP_KEY = @"godsthannlitanpalafreyregna";
-static NSString * BAND_CAMP_ALBUM_QUERY = @"http://api.bandcamp.com/api/album/2/info?key=godsthannlitanpalafreyregna&album_id=";
-static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download/track?enc=mp3-128&id=%@&stream=1";
+//static NSString * BAND_CAMP_KEY = @"godsthannlitanpalafreyregna";
+//static NSString * BAND_CAMP_ALBUM_QUERY = @"http://api.bandcamp.com/api/album/2/info?key=godsthannlitanpalafreyregna&album_id=";
+//static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download/track?enc=mp3-128&id=%@&stream=1";
 
 @synthesize title, description, imageURLString, appIcon, iconImage, mediaURLString, postID, audioHost, requiresDownload, tracks, dateString, author, blurb, postURL, blurredImage;
 
@@ -260,52 +261,6 @@ static NSDateFormatter *sDateFormatter = nil;
     NSString *blurbFormat = @"<head><style>a:link {color:#844434;text-decoration:underline;}</style></head><meta name='viewport' content='width=device-width; initial-scale=1, maximum-scale=1'><div style='text-align:justify; font-size:16px;font-family:MyriadPro-Regular;color:#FFFF;'>%@</div>";
 
     blurb = [NSString stringWithFormat:blurbFormat, description];
-    
-/*    NSString *postFormat = @"<meta name='viewport' content='width=device-width; initial-scale=1, maximum-scale=1'>\
-    <div style='font-size:15px;font-family:HelveticaNeue-CondensedBold;color:#FFFF;'><h1>%@</h1></div>\
-    <p><div style='font-size:8px;float:left'>%@</div> <div style='font-size:8px;float:right'>%@</div></p><br/>\
-    %@\
-    <div style='text-align:justify; font-size:14px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>";
-//    NSString *postFormat = @"<meta name='viewport' content='width=device-width; initial-scale=1, maximum-scale=1'>\
-//    <div style='font-size:45px;font-family:HelveticaNeue-CondensedBold;color:#0000;'><h1>%@</h1></div>\
-//    <p><div style='font-size:30px;float:left'>%@</div> <div style='font-size:30px;float:right'>%@</div></p><br/>\
-//    %@\
-//    <div style='text-align:justify; font-size:30px;font-family:HelveticaNeue-CondensedBold;color:#0000;'>%@</div>";
-    description = [NSString stringWithFormat:postFormat, title, author, dateString, fullContent, description];*/
-    
-    /*
-    NSString *disqusBlock = @"<<div id=\"disqus_thread\"></div>\
-    <script type=\"text/javascript\">\
-    var disqus_url = '%@';\
-    var disqus_identifier = '%d http://www.thewordisbond.com/?p=%d';\
-    var disqus_container_id = 'disqus_thread';\
-    var disqus_domain = 'disqus.com';\
-    var disqus_shortname = 'wordisbond';\
-    var disqus_title = \"%@\";\
-    var disqus_config = function () {\
-        var config = this; // Access to the config object\
-        config.language = '';\
-        config.callbacks.preData.push(function() {\
-            // clear out the container (its filled for SEO/legacy purposes)\
-            document.getElementById(disqus_container_id).innerHTML = '';\
-        });\
-        config.callbacks.onReady.push(function() {\
-            // sync comments in the background so we don't block the page\
-            var script = document.createElement('script');\
-            script.async = true;\
-            script.src = '?cf_action=sync_comments&post_id=%d';\
-\
-            var firstScript = document.getElementsByTagName( \"script\" )[0];\
-            firstScript.parentNode.insertBefore(script, firstScript);\
-        });\
-    };\
-    </script>\
-    <noscript>Please enable JavaScript to view the <a href=\"http://disqus.com/?ref_noscript\">comments powered by Disqus.</a></noscript>\
-    <a href=\"http://disqus.com\" class=\"dsq-brlink\">blog comments powered by <span class=\"logo-disqus\">Disqus</span></a>";
-    */
-//    description = [description stringByAppendingFormat:disqusBlock, postURL, postID, postID, title, postURL];
-    
-//    blurb = [blurb stringByAppendingFormat:disqusBlock, postURL, postID, postID, title, postURL];
     
     NSString *disqusCommentBlock = @"<a name=\"comments\"/> <div id=\"disqus_thread\"></div>\
     <script type=\"text/javascript\">\
@@ -581,7 +536,7 @@ static NSDateFormatter *sDateFormatter = nil;
 
 - (void) requestFullFeed:(id<PostRequestDelegate>)delegate
 {
-    NSString *url = [@"http://www.thewordisbond.com/?json=get_post&id=" stringByAppendingFormat:@"%d", postID];
+    NSString *url = [SERVER_REQUEST_FULL_POST_URL stringByAppendingFormat:@"%d", postID];
     
     m_delegate = delegate;
     m_receivedData = [[NSMutableData alloc] init];

@@ -93,7 +93,7 @@
         NSInteger numItems = m_sourceList ? m_sourceList.count : 1;
 
         //--- Update UI based new post selection
-        NSMutableSet *favourites = [[UserData get] favourites];
+        NSMutableArray *favourites = [[UserData get] favourites];
         if ([favourites containsObject:self.detailItem])
         {
             m_btnFavourite.tintColor = [UIColor wibColour];
@@ -194,7 +194,7 @@
     SelectedItem *pDetailItem = (SelectedItem *)[notification object];
     if (pDetailItem->isFavourite)
     {
-        NSArray *favouriteList = [[[UserData get] favourites] allObjects];
+        NSArray *favouriteList = [[UserData get] favourites];
         [self setDetailItem:pDetailItem->item list:favouriteList];
     }
     else if (pDetailItem->isFeature)
@@ -244,7 +244,7 @@
 
 - (IBAction)onFavourite:(id)sender
 {
-    NSMutableSet *favourites = [[UserData get] favourites];
+    NSMutableArray *favourites = [[UserData get] favourites];
     if ([favourites containsObject:self.detailItem])
     {
         m_btnFavourite.tintColor = [UIColor whiteColor];
@@ -253,7 +253,7 @@
     else
     {
         m_btnFavourite.tintColor = [UIColor wibColour];
-        [favourites addObject:self.detailItem];
+        [favourites insertObject:self.detailItem atIndex:0];
     }
     [[UserData get] onChanged];
 }

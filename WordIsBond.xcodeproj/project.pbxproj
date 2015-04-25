@@ -18,6 +18,7 @@
 		0E0A673817EEFBD800E5918A /* Bond_logo132@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E0A673717EEFBD800E5918A /* Bond_logo132@2x.png */; };
 		0E0A673B17EF010400E5918A /* postIconText.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E0A673917EF010400E5918A /* postIconText.png */; };
 		0E0A673C17EF010400E5918A /* postIconText@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E0A673A17EF010400E5918A /* postIconText@2x.png */; };
+		0E11811E1ADDA71D00170DE4 /* CoreDefines.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E11811D1ADDA71D00170DE4 /* CoreDefines.m */; };
 		0E19A3691AAB4B1F00F02114 /* TrackMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0E19A3681AAB4B1F00F02114 /* TrackMenu.xib */; };
 		0E19A36C1AAB55AE00F02114 /* ViewControllerTrackMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E19A36B1AAB55AE00F02114 /* ViewControllerTrackMenu.m */; };
 		0E19A3811AAF223700F02114 /* close_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E19A37F1AAF223700F02114 /* close_button.png */; };
@@ -210,6 +211,8 @@
 		0E0A673717EEFBD800E5918A /* Bond_logo132@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Bond_logo132@2x.png"; sourceTree = "<group>"; };
 		0E0A673917EF010400E5918A /* postIconText.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = postIconText.png; sourceTree = "<group>"; };
 		0E0A673A17EF010400E5918A /* postIconText@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "postIconText@2x.png"; sourceTree = "<group>"; };
+		0E11811C1ADDA34E00170DE4 /* CoreDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CoreDefines.h; sourceTree = "<group>"; };
+		0E11811D1ADDA71D00170DE4 /* CoreDefines.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDefines.m; sourceTree = "<group>"; };
 		0E19A3681AAB4B1F00F02114 /* TrackMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TrackMenu.xib; sourceTree = "<group>"; };
 		0E19A36A1AAB55AE00F02114 /* ViewControllerTrackMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewControllerTrackMenu.h; sourceTree = "<group>"; };
 		0E19A36B1AAB55AE00F02114 /* ViewControllerTrackMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewControllerTrackMenu.m; sourceTree = "<group>"; };
@@ -580,6 +583,8 @@
 				0E19A3681AAB4B1F00F02114 /* TrackMenu.xib */,
 				0E19A36A1AAB55AE00F02114 /* ViewControllerTrackMenu.h */,
 				0E19A36B1AAB55AE00F02114 /* ViewControllerTrackMenu.m */,
+				0E11811C1ADDA34E00170DE4 /* CoreDefines.h */,
+				0E11811D1ADDA71D00170DE4 /* CoreDefines.m */,
 			);
 			path = testapp;
 			sourceTree = "<group>";
@@ -976,6 +981,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0E98F62A1706E30F006E9857 /* main.m in Sources */,
+				0E11811E1ADDA71D00170DE4 /* CoreDefines.m in Sources */,
 				0E98F62E1706E30F006E9857 /* AppDelegate.m in Sources */,
 				0E98F63D1706E30F006E9857 /* MasterViewController.m in Sources */,
 				0EA47B66189E8A6000606EA4 /* PostCell.m in Sources */,

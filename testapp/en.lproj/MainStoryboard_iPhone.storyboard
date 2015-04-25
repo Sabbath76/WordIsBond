@@ -382,6 +382,13 @@
                                                     </connections>
                                                 </barButtonItem>
                                                 <barButtonItem style="plain" systemItem="flexibleSpace" id="HxX-aQ-SjS"/>
+                                                <barButtonItem image="player_play_off.png" style="plain" id="92d-8t-dm6">
+                                                    <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <connections>
+                                                        <action selector="onPlay:" destination="12" id="qil-ut-PJs"/>
+                                                    </connections>
+                                                </barButtonItem>
+                                                <barButtonItem style="plain" systemItem="flexibleSpace" id="6OZ-QB-LPM"/>
                                             </items>
                                         </toolbar>
                                         <imageView clipsSubviews="YES" tag="2" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="ss5-Rp-TxU">
@@ -811,7 +818,7 @@
         <!--View Controller Track Menu-->
         <scene sceneID="AOq-cJ-xje">
             <objects>
-                <viewController definesPresentationContext="YES" providesPresentationContextTransitionStyle="YES" modalTransitionStyle="crossDissolve" modalPresentationStyle="overCurrentContext" id="aGP-TA-dcV" customClass="ViewControllerTrackMenu" sceneMemberID="viewController">
+                <viewController definesPresentationContext="YES" modalTransitionStyle="crossDissolve" modalPresentationStyle="overCurrentContext" id="aGP-TA-dcV" customClass="ViewControllerTrackMenu" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="ped-4c-WwJ"/>
                         <viewControllerLayoutGuide type="bottom" id="IYH-63-8gt"/>

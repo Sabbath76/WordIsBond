@@ -85,12 +85,12 @@ static NSMutableDictionary *s_downloadingImagesByID = NULL;
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
     // Set appIcon and clear temporary data/image
-    UIImage *image = [[UIImage alloc] initWithData:self.activeDownload];
+    self->image = [[UIImage alloc] initWithData:self.activeDownload];
     
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
     dispatch_async(queue, ^{
-        [self.appRecord updateImage:image];
-        [self.appRecord2 updateImage:image];
+        [self.appRecord updateImage:self->image];
+        [self.appRecord2 updateImage:self->image];
     
         dispatch_async(dispatch_get_main_queue(), ^{
             //    self.appRecord.appIcon = image;

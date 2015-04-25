@@ -23,7 +23,7 @@ static UserData *s_userData;
 {
     self = [super init];
     
-    favourites = [[NSMutableSet alloc] init];
+    favourites = [[NSMutableArray alloc] init];
     
     [self load];
     m_targetPost = -1;
@@ -61,8 +61,8 @@ static UserData *s_userData;
 {
     NSMutableArray *favouriteIDs = [[NSMutableArray alloc] init];
 
-    NSArray *favouriteList = [self.favourites allObjects];
-    for( CRSSItem *item in favouriteList)
+//    NSArray *favouriteList = [self.favourites allObjects];
+    for( CRSSItem *item in self.favourites)
     {
         [favouriteIDs addObject:[NSNumber numberWithInt:item.postID]];
         [favouriteIDs addObject:item.title];

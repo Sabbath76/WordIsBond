@@ -55,7 +55,7 @@
     
     [self.btnViewPost setImage:[item iconImage] forState:UIControlStateNormal];
     
-    NSMutableSet *favourites = [[UserData get] favourites];
+    NSMutableArray *favourites = [[UserData get] favourites];
     UIImage *image = [[UIImage imageNamed:@"icon_favourite_off"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     [self.btnFavourite setImage:image forState:UIControlStateNormal];
     if ([favourites containsObject:item])
@@ -130,7 +130,7 @@
 
 - (IBAction)onFavourite:(id)sender
 {
-    NSMutableSet *favourites = [[UserData get] favourites];
+    NSMutableArray *favourites = [[UserData get] favourites];
     CRSSItem *item = curTrackInfo->pItem;
     if ([favourites containsObject:item])
     {
@@ -140,7 +140,7 @@
     else
     {
         self.btnFavourite.tintColor = [UIColor wibColour];
-        [favourites addObject:item];
+        [favourites insertObject:item atIndex:0];
     }
     [[UserData get] onChanged];
 
@@ -167,6 +167,7 @@
 
 - (IBAction)onClose:(id)sender
 {
+    [self.presentingViewController.view setAlpha:1.0f];
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 

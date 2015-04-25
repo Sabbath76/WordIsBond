@@ -136,7 +136,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Favourite" forIndexPath:indexPath];
-    NSArray *favouriteArray = [[[UserData get] favourites] allObjects];
+    NSArray *favouriteArray = [[UserData get] favourites];
     CRSSItem *item = [favouriteArray objectAtIndex:indexPath.row];
     cell.textLabel.text = item.title;
     return cell;
@@ -152,9 +152,8 @@
     if (editingStyle == UITableViewCellEditingStyleDelete)
     {
         //add code here for when you hit delete
-        NSMutableSet *favouriteSet = [[UserData get] favourites];
-        NSArray *favouriteArray = [favouriteSet allObjects];
-        [favouriteSet removeObject:[favouriteArray objectAtIndex:indexPath.row]];
+        NSMutableArray *favouriteArray = [[UserData get] favourites];
+        [favouriteArray removeObject:[favouriteArray objectAtIndex:indexPath.row]];
         [tableFavourites deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
 //        [[self delegate]didDeletedBillItemRow:row];
 //        [tableFavourites deleteRO];
@@ -168,7 +167,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSArray *favouriteArray = [[[UserData get] favourites] allObjects];
+    NSArray *favouriteArray = [[UserData get] favourites];
     CRSSItem *item = [favouriteArray objectAtIndex:indexPath.row];
     SelectedItem *selItem = [SelectedItem alloc];
     selItem->isFavourite = true;
@@ -183,7 +182,7 @@
     if ([[segue identifier] isEqualToString:@"showDetailFavourite"])
     {
         NSIndexPath *indexPath = [tableFavourites indexPathForSelectedRow];
-        NSArray *favouriteArray = [[[UserData get] favourites] allObjects];
+        NSArray *favouriteArray = [[UserData get] favourites];
         CRSSItem *item = [favouriteArray objectAtIndex:indexPath.row];
         [[segue destinationViewController] setDetailItem:item];
     }

@@ -645,7 +645,7 @@ const int ExpandedSectionSize = 120;
     if (m_currentQuickMenuItem != -1)
     {
         CRSSItem *item = _feed.items[m_currentQuickMenuItem];
-        NSMutableSet *favourites = [[UserData get] favourites];
+        NSMutableArray *favourites = [[UserData get] favourites];
         if ([favourites containsObject:item])
         {
             favBtn.tintColor = [UIColor whiteColor];
@@ -654,11 +654,20 @@ const int ExpandedSectionSize = 120;
         else
         {
             favBtn.tintColor = [UIColor wibColour];
-            [favourites addObject:item];
+            [favourites insertObject:item atIndex:0];
         }
         [[UserData get] onChanged];
         
         [self wobbleMenu];
+    }
+}
+
+- (IBAction)onPlay:(id)sender
+{
+    CRSSItem *item = _feed.items[m_currentQuickMenuItem];
+    if (item.tracks.count > 0)
+    {
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"PlayItem" object:item];
     }
 }
 
@@ -805,20 +814,7 @@ const int ExpandedSectionSize = 120;
 
             if (isExpanded)
             {
-                UIBarButtonItem *favourite = [cell.options items][1];
-                if (favourite)
-                {
-                    bool isFavourite = [[[UserData get] favourites] containsObject:_feed.items[indexPath.row]];
-                    
-                    if (isFavourite)
-                    {
-                        [favourite setTintColor:[UIColor wibColour]];
-                    }
-                    else
-                    {
-                        [favourite setTintColor:[UIColor whiteColor]];
-                    }
-                }
+                [self updateOptions:cell.options item:_feed.items[indexPath.row]];
             }
 
             //--- When initialising trigger all items to stream in images
@@ -1011,6 +1007,41 @@ const int ExpandedSectionSize = 120;
     }
 }
 
+-(void)updateOptions:(UIToolbar*)pToolbar item:(CRSSItem*)pItem
+{
+    UIBarButtonItem *favourite = [pToolbar items][1];
+    if (favourite)
+    {
+        bool isFavourite = [[[UserData get] favourites] containsObject:pItem];
+        
+        if (isFavourite)
+        {
+            [favourite setTintColor:[UIColor wibColour]];
+        }
+        else
+        {
+            [favourite setTintColor:[UIColor whiteColor]];
+        }
+    }
+    
+    UIBarButtonItem *pBtnPlay = [pToolbar items][7];
+    if (pBtnPlay)
+    {
+        bool hasTracks = (pItem.tracks.count > 0);
+        
+        [pBtnPlay setEnabled:hasTracks];
+        if (hasTracks)
+        {
+            [pBtnPlay setTintColor:[UIColor whiteColor]];
+        }
+        else
+        {
+            [pBtnPlay setTintColor:[UIColor grayColor]];
+        }
+    }
+
+}
+
 -(void)doExpandPost:(NSIndexPath*)indexPath
 {
     if(indexPath && (indexPath.section == Posts))
@@ -1018,23 +1049,9 @@ const int ExpandedSectionSize = 120;
         if (![indexPath isEqual:m_expandedIndexPath])
         {
             PostCell *cell = (PostCell*)[self.tableView cellForRowAtIndexPath:indexPath];
-            UIToolbar *toolbarMenu = cell.options;//(UIToolbar *) [cell viewWithTag:6];
+            UIToolbar *toolbarMenu = cell.options;
             [toolbarMenu setHidden:false];
-            UIBarButtonItem *favourite = [toolbarMenu items][1];
-//            UIBarButtonItem *favourite = (UIBarButtonItem*)[toolbarMenu viewWithTag:7];
-            if (favourite)
-            {
-                bool isFavourite = [[[UserData get] favourites] containsObject:_feed.items[indexPath.row]];
-
-                if (isFavourite)
-                {
-                    [favourite setTintColor:[UIColor wibColour]];
-                }
-                else
-                {
-                    [favourite setTintColor:[UIColor whiteColor]];
-                }
-            }
+            [self updateOptions:toolbarMenu item:_feed.items[indexPath.row]];
 
             m_currentQuickMenuItem = indexPath.row;
             m_expandedIndexPath = indexPath;
@@ -1236,7 +1253,7 @@ const int ExpandedSectionSize = 120;
     {
         if (m_forcedDetailItem->isFavourite)
         {
-            NSArray *favouriteList = [[[UserData get] favourites] allObjects];
+            NSArray *favouriteList = [[UserData get] favourites];
             [[segue destinationViewController] setDetailItem:m_forcedDetailItem->item list:favouriteList];
         }
         else if (m_forcedDetailItem->isFeature)

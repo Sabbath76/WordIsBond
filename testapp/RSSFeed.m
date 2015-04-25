@@ -9,6 +9,7 @@
 
 #import "CRSSItem.h"
 #import "RSSFeed.h"
+#import "CoreDefines.h"
 
 @implementation RSSFeed
 {
@@ -43,6 +44,11 @@
 }
 
 @synthesize /*items, features,*/ numNewBack, numNewFront, reset;
+
+//static NSString *SERVER_POSTS_URL = @"http://www.thewordisbond.com/?json=appqueries.get_recent_posts&count=20";
+//static NSString *SERVER_FEATURES_URL = @"http://www.thewordisbond.com/?json=appqueries.get_recent_features&count=5";
+//static NSString *SERVER_SEARCH_POSTS_URL = @"http://www.thewordisbond.com/?json=appqueries.get_search_results&count=20&search=";
+//static NSString *SERVER_SEARCH_FEATURES_URL = @"http://www.thewordisbond.com/?json=appqueries.get_search_feature_results&count=5&search=";
 
 /*- (void)handleLoadedApps:(NSArray *)loadedApps
 {
@@ -129,10 +135,11 @@
     }
   
     //--- Inform the rest of the app about the new data
+//    reset = true;
     [[NSNotificationCenter defaultCenter]
      postNotificationName:@"NewRSSFeed"
      object:self];
-
+    reset = false;
 }
 
 - (void) showAudio:(bool)showAudio showVideo:(bool)showVideo showText:(bool)showText
@@ -309,32 +316,7 @@
 
     [formatter setDateFormat:@"MMM dd"];
     return[formatter stringFromDate:myDate];
-    
-/*    NSString *month = [initialDate substringWithRange:NSMakeRange(5, 2)];
-    NSString *day = [initialDate substringWithRange:NSMakeRange(8, 2)];
-    int monthNum = [month intValue];
-    int dayNum = [day intValue];
-
-//    NSString *day = [initialDate substringWithRange:NSMakeRange(5, 2)];
-    NSDateFormatter *dateformatter = [[NSDateFormatter alloc]init];
-    NSString *extensions[4] = {@"st", @"nd", @"rd", @"th"};
-    
-    return [NSString stringWithFormat:@"%@ %d%@", [dateformatter standaloneMonthSymbols][monthNum], dayNum, extensions[MIN(dayNum, 3)]];
- */
-/*    [dateformatter setDateStyle:NSDateFormatterShortStyle];
-    [dateformatter setTimeStyle:NSDateFormatterNoStyle];
-    [dateformatter setDateFormat:@"yyyy-MM-dd"];
-    NSDate *myDate = [[NSDate alloc] init];
-    
-    //SET YOUT TIMEZONE HERE
-    dateformatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"PDT"];
-    myDate = [dateformatter dateFromString:initialDate];
-    [dateformatter standaloneMonthSymbols][]
-    myDate.month
-    
-    return [dateformatter stringFromDate:myDate];
- */
-}
+ }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
@@ -372,12 +354,10 @@
         if (isPosts && reset)
         {
             [pItems removeAllObjects];
-//            items = [[NSMutableArray alloc] init];
         }
         else if (isFeatures && m_resetFeatures)
         {
             [pFeatures removeAllObjects];
-//            features = [[NSMutableArray alloc] init];
         }
 
         if (isPosts)
@@ -452,10 +432,6 @@
         if ((m_connectionPosts == nil) && (m_connectionFeatures == nil))
         {
             [self UpdateFilteredItems];
-            
-//            [[NSNotificationCenter defaultCenter]
-//             postNotificationName:@"NewRSSFeed"
-//             object:self];
         }
     }
     else if (isPosts)
@@ -469,8 +445,8 @@
 
 - (void) LoadFeed
 {
-    NSString *url = @"http://www.thewordisbond.com/?json=appqueries.get_recent_posts&count=20";
-    NSString *urlFeatures = @"http://www.thewordisbond.com/?json=appqueries.get_recent_features&count=5";
+    NSString *url = SERVER_POSTS_URL;
+    NSString *urlFeatures = SERVER_FEATURES_URL;
     m_lastSearch = url;
     m_insertFront = false;
     [self QueryAPI:url reset:true];
@@ -481,41 +457,16 @@
 
 - (void) Search:(NSString *)filter
 {
-    NSString *url = [@"http://www.thewordisbond.com/?json=appqueries.get_search_results&count=20&search=" stringByAppendingString:filter];
-    NSString *urlFeatures = [@"http://www.thewordisbond.com/?json=appqueries.get_search_feature_results&count=5&search=" stringByAppendingString:filter];
+    NSString *url = [SERVER_SEARCH_POSTS_URL stringByAppendingString:filter];
+    NSString *urlFeatures = [SERVER_SEARCH_FEATURES_URL stringByAppendingString:filter];
     m_lastSearch = url;
     m_insertFront = false;
-    
-//    if(!m_hasSearch)
-//    {
-//        m_sourceItems = self.items;
-//        m_sourceFeatures = self.features;
-//    }
     
     [self QueryAPI:url reset:true];
     [self QueryAPIFeatures:urlFeatures reset:true];
     m_searchPage = 0;
     m_hasSearch = true;
 }
-/*
-- (void) FilterJSON:(NSString *)filter showAudio:(bool)showAudio showVideo:(bool)showVideo showText:(bool)showText
-{
-    NSString *url = [@"http://www.thewordisbond.com/?json=appqueries.get_search_results&count=20&search=" stringByAppendingString:filter];
-    NSString *urlFeatures = [@"http://www.thewordisbond.com/?json=appqueries.get_search_feature_results&count=5&search=" stringByAppendingString:filter];
-    m_lastSearch = url;
-    m_insertFront = false;
-    
-    if(!m_hasSearch)
-    {
-        m_sourceItems = self.items;
-        m_sourceFeatures = self.features;
-    }
-    
-    [self QueryAPI:url reset:true];
-    [self QueryAPIFeatures:urlFeatures reset:true];
-    m_page = 0;
-    m_hasSearch = true;
-}*/
 
 - (int) GetPage
 {
@@ -547,11 +498,9 @@
 {
     if (m_hasSearch)
     {
-        NSString *url = @"http://www.thewordisbond.com/?json=appqueries.get_recent_posts&count=20";
+        NSString *url = SERVER_POSTS_URL;
         m_lastSearch = url;
         
-//        self.items = m_sourceItems;
-//        self.features = m_sourceFeatures;
         m_hasSearch = false;
         
         [m_connectionPosts cancel];
@@ -564,10 +513,6 @@
 
         reset = true;
 
-//        [[NSNotificationCenter defaultCenter]
-//         postNotificationName:@"NewRSSFeed"
-//         object:self];
-        
         [self UpdateFilteredItems];
         
     }

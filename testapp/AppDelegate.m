@@ -9,10 +9,7 @@
 #import "AppDelegate.h"
 #import "UserData.h"
 #import "GAI.h"
-//#import "AFHTTPClient.h"
-
-
-const NSString *notificationURL = @"http://www.thewordisbond.com/?json=register_notifications";
+#import "CoreDefines.h"
 
 @implementation AppDelegate
 
@@ -145,18 +142,11 @@ void myExceptionHandler(NSException *exception)
 
 - (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken
 {
-    NSString *host = @"www.thewordisbond.com/wp-content/plugins/push-notifications-ios";
-    ///    NSString *host = @"wordisbond.co/wp-content/plugins/push-notifications-ios";
-    //http://www.thewordisbond.com/wp-content/plugins/push-notifications-ios/register_user_device.php
-
-//    http://64.207.153.141/httpdocs/wp-content/plugins/push-notifications-ios/register_user_device.php	NSLog(@"My token is: %@", deviceToken);
-    //http://64.207.153.141/wordisbond/wp-content/plugins/push-notifications-ios/register_user_device.php
+    NSString * const host = NOTIFICATION_URL;
     
 	NSString *newToken = [deviceToken description];
 	newToken = [newToken stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]];
 	newToken = [newToken stringByReplacingOccurrencesOfString:@" " withString:@""];
-
-//#if !TARGET_IPHONE_SIMULATOR
     
     NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
     NSString *appVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];

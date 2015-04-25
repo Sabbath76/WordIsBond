@@ -29,7 +29,6 @@
     MediaTrackController *m_nextPage;
     NSMutableData *m_receivedData;
     AVQueuePlayer *m_player;
-    NSMutableArray *m_audioItems;
     NSMutableArray *m_audioTracks;
     NSURLConnection *m_currentConnection;
     NSArray *m_fullItems;
@@ -134,6 +133,9 @@ float BLUR_IMAGE_RANGE = 100.0f;
 //    CGRect toolFrame = m_playerDock.frame;
 //    float headerBottom = (toolFrame.origin.y + toolFrame.size.height) - imageFrame.origin.y;
 //    [self.tableView setContentInset:UIEdgeInsetsMake(headerBottom, 0, 0, 0)];
+    
+    [self.view setAlpha:1.0f];
+
 }
 
 -(void) viewWillDisappear:(BOOL)animated
@@ -214,7 +216,6 @@ float BLUR_IMAGE_RANGE = 100.0f;
                                              selector:@selector(onCloseMediaPlayer:)
                                                  name:@"CloseMediaPlayer"
                                                object:nil];
-    m_audioItems = [[NSMutableArray alloc] init];
     m_audioTracks = [[NSMutableArray alloc] init];
     
     _labelTitle.textColor = [UIColor grayColor];
@@ -296,6 +297,19 @@ float BLUR_IMAGE_RANGE = 100.0f;
     [self setOpen:false];
 }
 
+- (Boolean) hasTrackForId: (NSInteger) id
+{
+    for (TrackInfo *pCurTrackInfo in m_audioTracks)
+    {
+        if (pCurTrackInfo->pItem.postID == id)
+        {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
 - (void) receiveNewRSSFeed:(NSNotification *) notification
 {
     RSSFeed *feed = [RSSFeed getInstance];
@@ -305,30 +319,39 @@ float BLUR_IMAGE_RANGE = 100.0f;
         if ([item waitingOnTracks])
             return;
     }
+    
+    if (feed.reset)
+    {
+        [m_audioTracks removeAllObjects];
+    }
+    
+    Boolean hadTracks = m_audioTracks.count > 0;
 
-    [m_audioItems removeAllObjects];
-    [m_audioTracks removeAllObjects];
     for (CRSSItem *item in feed.items)
     {
-        if (item.tracks)
+        if (item.tracks && ![self hasTrackForId:item.postID])
         {
-            [m_audioItems addObject:item];
-            
             for (TrackInfo *trackInfo in item.tracks)
             {
                 [m_audioTracks addObject:trackInfo];
             }
         }
-        else if (item.mediaURLString)
+    }
+    for (CRSSItem *item in feed.features)
+    {
+        if (item.tracks && ![self hasTrackForId:item.postID])
         {
-            [m_audioItems addObject:item];
+            for (TrackInfo *trackInfo in item.tracks)
+            {
+                [m_audioTracks addObject:trackInfo];
+            }
         }
     }
 
-    m_displayedTrack = 0;
-    currentTrack = 0;
-    if (m_audioTracks.count > 0)
+    if ((m_audioTracks.count > 0) && !hadTracks)
     {
+        m_displayedTrack = 0;
+        currentTrack = 0;
         [self prepareMusic];
         
         [self updateCurrentTrack:currentTrack updateListItems:true];
@@ -612,20 +635,6 @@ float BLUR_IMAGE_RANGE = 100.0f;
     NSInteger newTrack = [self getNextTrackIdx];
 
     [self updateCurrentTrack:newTrack updateListItems:true];
-/*    CRSSItem *newItem = m_audioItems[newTrack.itemID];
-    bool itemChanged = newTrack.itemID != currentItem;
-    
-    currentItem = newTrack.itemID;
-    currentTrack = newTrack.trackID;
-    if (itemChanged)
-    {
-        [newItem requestImage:self];
-        currentImage.image = newItem.blurredImage;
-        [miniImage setImage:newItem.appIcon forState:UIControlStateNormal];
-        [miniImage setImage:newItem.appIcon forState:UIControlStateSelected];
-//        [_tableView reloadData];
-    }*/
-
 
     //--- Queue up the next track
     TrackInfo *nextTrack = [self getNextTrack];
@@ -657,6 +666,8 @@ float BLUR_IMAGE_RANGE = 100.0f;
     {
         UIView *parentView =[sender superview];
         NSIndexPath *indexPath = [self.tableView indexPathForCell:(UITableViewCell*)parentView.superview];
+        
+        [self.view setAlpha:0.3f];
 //        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
         [[segue destinationViewController] setTrackItem:m_audioTracks[indexPath.row]];
 

@@ -19,6 +19,7 @@
     id <IconDownloaderDelegate> delegate;
     Boolean isItem;
 //    int postID;
+    UIImage *image;
     
     NSMutableData *activeDownload;
     NSURLConnection *imageConnection;
