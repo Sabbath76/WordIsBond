@@ -193,7 +193,8 @@ static NSDateFormatter *sDateFormatter = nil;
     author = [authorDict objectForKey:@"name"];
     
     postURL = [post objectForKey:@"url"];
-    
+    _type = Text;
+
     NSArray *attachments = [post objectForKey:@"attachments"];
 //    NSString *fullContent = @"";
     for (NSDictionary *attachment in attachments)
@@ -230,6 +231,8 @@ static NSDateFormatter *sDateFormatter = nil;
          }
          else */if ([mimeType hasPrefix:@"audio"])
          {
+             _type = Audio;
+             
              TrackInfo *trackInfo = [TrackInfo alloc];
              trackInfo->url = [attachment objectForKey:@"url"];
              trackInfo->title = [attachment objectForKey:@"title"];
@@ -237,6 +240,29 @@ static NSDateFormatter *sDateFormatter = nil;
              
              [self addTrack:trackInfo];
          }
+    }
+    
+    NSDictionary *customData = [post objectForKey:@"custom_fields"];
+    if (customData)
+    {
+        NSArray *pMediaUrl = [customData objectForKey:@"vw_post_format_audio_oembed_url"];
+        if (!pMediaUrl)
+        {
+            pMediaUrl = [customData objectForKey:@"vw_post_format_audio_oembed_code"];
+        }
+        
+        if (pMediaUrl)
+        {
+            NSString *pMediaUrlString = pMediaUrl[0];
+            [self setMediaURL:pMediaUrlString];
+        }
+    }
+    
+    if (_type == Text)
+    {
+        //--- Not found anything else? Fallback to the iFrame
+        NSString *media = [self findProperty:@"iframe"];
+        [self setMediaURL:media];
     }
     
     NSDictionary *thumbs = [post objectForKey:@"thumbnail_images"];
@@ -329,120 +355,129 @@ static NSDateFormatter *sDateFormatter = nil;
     return newImage;
 }
 
+- (void) setMediaURL:(NSString *)media
+{
+    NSRange rangeOuter = [media rangeOfString:@"soundcloud"];
+    if (rangeOuter.location != NSNotFound)
+    {
+        audioHost = Soundcloud;
+        NSRange rangeToSearchWithin = NSMakeRange(rangeOuter.location, media.length - rangeOuter.location);
+        NSRange range = [media rangeOfString:@"url" options:0 range:rangeToSearchWithin];
+        if (range.location != NSNotFound)
+        {
+            NSRange rangeToSearchWithin2 = NSMakeRange(range.location, media.length - range.location);
+            NSRange range2 = [media rangeOfString:@"&" options:0 range:rangeToSearchWithin2];
+            NSRange urlRange;
+            if (range2.location == NSNotFound)
+            {
+                urlRange = NSMakeRange(range.location+4, [media length]-(range.location+4));
+            }
+            else
+            {
+                urlRange = NSMakeRange(range.location+4, range2.location-(range.location+4));
+            }
+            mediaURLString = [media substringWithRange:urlRange];
+            mediaURLString = [mediaURLString stringByReplacingOccurrencesOfString:@"%3A" withString:@":"];
+            mediaURLString = [mediaURLString stringByReplacingOccurrencesOfString:@"%2F" withString:@"/"];
+            mediaURLString = [mediaURLString stringByReplacingOccurrencesOfString:@" " withString:@""];
+            
+            if ([mediaURLString containsString:@"playlist"])
+            {
+                mediaURLString = [mediaURLString stringByAppendingString:@".json?client_id=YOUR_CLIENT_ID"];
+                m_receivedDataTracks = [[NSMutableData alloc] init];
+                m_tracksQuery = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:mediaURLString]] delegate:self];
+                [m_tracksQuery start];
+            }
+            else if ([mediaURLString containsString:@"track"])
+            {
+                mediaURLString = [mediaURLString stringByAppendingString:@"/stream?client_id=YOUR_CLIENT_ID"];
+                
+                TrackInfo *newTrack = [TrackInfo alloc];
+                newTrack->title = self.title;
+                newTrack->url = mediaURLString;
+                newTrack->duration = 0.0f;
+                [self addTrack:newTrack];
+                
+                _type = Audio;
+            }
+        }
+            else
+            {
+                mediaURLString = [NSString stringWithFormat:@"http://api.soundcloud.com/resolve.json?url=%@/tracks&client_id=YOUR_CLIENT_ID", media];
+                m_receivedDataTracks = [[NSMutableData alloc] init];
+                m_tracksQuery = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:mediaURLString]] delegate:self];
+                [m_tracksQuery start];
+//                [@"http://api.soundcloud.com/resolve.json?url=" stringByAppendingFormat:@"%@/tracks" media];
+//                permalink_url+'/tracks&client_id='+client_id
+                _type = Audio;
+            }
+    }
+    else if ([media rangeOfString:@"bandcamp"].location != NSNotFound)
+    {
+        audioHost = Bandcamp;
+        NSRange range = [media rangeOfString:@"track="];
+        if (range.location != NSNotFound)
+        {
+            NSRange rangeToSearchWithin = NSMakeRange(range.location, media.length - range.location);
+            NSRange rangeEnd = [media rangeOfString:@"/" options:0 range:rangeToSearchWithin];
+            
+            if ((range.location != NSNotFound)
+                && (rangeEnd.location != NSNotFound))
+            {
+                range.location += 6;
+                range.length = media.length - rangeEnd.location;
+                mediaURLString = [NSString stringWithFormat:BAND_CAMP_TRACK_URL, [media substringWithRange:range]];
+                
+                TrackInfo *newTrack = [TrackInfo alloc];
+                newTrack->title = self.title;
+                newTrack->url = mediaURLString;
+                newTrack->duration = 0.0f;
+                [self addTrack:newTrack];
+                
+                _type = Audio;
+            }
+        }
+        else
+        {
+            NSRange albumRange = [media rangeOfString:@"album="];
+            if (albumRange.location != NSNotFound)
+            {
+                NSRange rangeToSearchWithin = NSMakeRange(albumRange.location, media.length - albumRange.location);
+                NSRange rangeEnd = [media rangeOfString:@"/" options:0 range:rangeToSearchWithin];
+                
+                if (rangeEnd.location != NSNotFound)
+                {
+                    albumRange.location += 6;
+                    albumRange.length = rangeEnd.location-albumRange.location;
+                    NSString *url = [BAND_CAMP_ALBUM_QUERY stringByAppendingString:[media substringWithRange:albumRange]];
+                    
+                    m_receivedDataTracks = [[NSMutableData alloc] init];
+                    
+                    //Create the connection with the string URL and kick it off
+                    m_tracksQuery = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] delegate:self];
+                    [m_tracksQuery start];
+                }
+            }
+        }
+    }
+    else if ([media rangeOfString:@"youtube"].location != NSNotFound)
+    {
+        _type = Video;
+    }
+}
+
 - (void) setup
 {
 //    imageURLString = [self findProperty:@"img"];
     
-    NSString *media = [self findProperty:@"iframe"];
     
-    _type = Text;
+//    NSString *media = [self findProperty:@"iframe"];
     
-    if (tracks)
-    {
-        _type = Audio;
-    }
-
-    if (media)
-    {
+//    if (media)
+//    {
+//        [self setMediaURL:media];
 //        https://api.soundcloud.com/tracks/3100297/stream?client_id=YOUR_CLIENT_ID
-        NSRange rangeOuter = [media rangeOfString:@"soundcloud"];
-        if (rangeOuter.location != NSNotFound)
-        {
-            audioHost = Soundcloud;
-            NSRange rangeToSearchWithin = NSMakeRange(rangeOuter.location, media.length - rangeOuter.location);
-            NSRange range = [media rangeOfString:@"url" options:0 range:rangeToSearchWithin];
-            if (range.location != NSNotFound)
-            {
-                NSRange rangeToSearchWithin2 = NSMakeRange(range.location, media.length - range.location);
-                NSRange range2 = [media rangeOfString:@"&" options:0 range:rangeToSearchWithin2];
-                NSRange urlRange;
-                if (range2.location == NSNotFound)
-                {
-                    urlRange = NSMakeRange(range.location+4, [media length]-(range.location+4));
-                }
-                else
-                {
-                    urlRange = NSMakeRange(range.location+4, range2.location-(range.location+4));
-                }
-                mediaURLString = [media substringWithRange:urlRange];
-                mediaURLString = [mediaURLString stringByReplacingOccurrencesOfString:@"%3A" withString:@":"];
-                mediaURLString = [mediaURLString stringByReplacingOccurrencesOfString:@"%2F" withString:@"/"];
-                mediaURLString = [mediaURLString stringByReplacingOccurrencesOfString:@" " withString:@""];
-
-                if ([mediaURLString containsString:@"playlist"])
-                {
-                    mediaURLString = [mediaURLString stringByAppendingString:@".json?client_id=YOUR_CLIENT_ID"];
-                    m_receivedDataTracks = [[NSMutableData alloc] init];
-                    m_tracksQuery = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:mediaURLString]] delegate:self];
-                    [m_tracksQuery start];
-                }
-                else if ([mediaURLString containsString:@"track"])
-                {
-                    mediaURLString = [mediaURLString stringByAppendingString:@"/stream?client_id=YOUR_CLIENT_ID"];
-                    
-                    TrackInfo *newTrack = [TrackInfo alloc];
-                    newTrack->title = self.title;
-                    newTrack->url = mediaURLString;
-                    newTrack->duration = 0.0f;
-                    [self addTrack:newTrack];
-                    
-                    _type = Audio;
-                }
-            }
-        }
-        else if ([media rangeOfString:@"bandcamp"].location != NSNotFound)
-        {
-            audioHost = Bandcamp;
-            NSRange range = [media rangeOfString:@"track="];
-            if (range.location != NSNotFound)
-            {
-                NSRange rangeToSearchWithin = NSMakeRange(range.location, media.length - range.location);
-                NSRange rangeEnd = [media rangeOfString:@"/" options:0 range:rangeToSearchWithin];
-
-                if ((range.location != NSNotFound)
-                    && (rangeEnd.location != NSNotFound))
-                {
-                    range.location += 6;
-                    range.length = media.length - rangeEnd.location;
-                    mediaURLString = [NSString stringWithFormat:BAND_CAMP_TRACK_URL, [media substringWithRange:range]];
-                
-                    TrackInfo *newTrack = [TrackInfo alloc];
-                    newTrack->title = self.title;
-                    newTrack->url = mediaURLString;
-                    newTrack->duration = 0.0f;
-                    [self addTrack:newTrack];
-
-                    _type = Audio;
-                }
-            }
-            else
-            {
-                NSRange albumRange = [media rangeOfString:@"album="];
-                if (albumRange.location != NSNotFound)
-                {
-                    NSRange rangeToSearchWithin = NSMakeRange(albumRange.location, media.length - albumRange.location);
-                    NSRange rangeEnd = [media rangeOfString:@"/" options:0 range:rangeToSearchWithin];
-
-                    if (rangeEnd.location != NSNotFound)
-                    {
-                        albumRange.location += 6;
-                        albumRange.length = rangeEnd.location-albumRange.location;
-                        NSString *url = [BAND_CAMP_ALBUM_QUERY stringByAppendingString:[media substringWithRange:albumRange]];
-                        
-                        m_receivedDataTracks = [[NSMutableData alloc] init];
-
-                        //Create the connection with the string URL and kick it off
-                        m_tracksQuery = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] delegate:self];
-                        [m_tracksQuery start];
-                    }
-                }
-            }
-        }
-        else if ([media rangeOfString:@"youtube"].location != NSNotFound)
-        {
-            _type = Video;
-        }
-    }
+//    }
 
 /*            //    			https://api.soundcloud.com/tracks/3100297/stream?client_id=YOUR_CLIENT_ID
             _mediaSource = theWebView.replace("http://w.soundcloud.com/player/?url=", "");
@@ -542,8 +577,9 @@ static NSDateFormatter *sDateFormatter = nil;
     m_receivedData = [[NSMutableData alloc] init];
     requiresDownload = false;
     
+    NSURLRequest *pRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReturnCacheDataElseLoad timeoutInterval:10.0];
     //Create the connection with the string URL and kick it off
-    NSURLConnection *urlConnection = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] delegate:self];
+    NSURLConnection *urlConnection = [NSURLConnection connectionWithRequest:pRequest delegate:self];
     [urlConnection start];
 }
 
@@ -600,40 +636,73 @@ static NSDateFormatter *sDateFormatter = nil;
         {
             artist = [json objectForKey:@"title"];
         }
-        NSString *albumUrl = [json objectForKey:@"url"];
-        NSRange range = [albumUrl rangeOfString:@"/album"];
-        NSString *cutUrl = [albumUrl substringToIndex:range.location];
-        for (NSDictionary *track in tracksArray)
+        if (tracksArray)
         {
-            TrackInfo *newTrack = [TrackInfo alloc];
-            
-            if (audioHost == Bandcamp)
+            NSString *albumUrl = [json objectForKey:@"url"];
+            NSRange range = [albumUrl rangeOfString:@"/album"];
+            NSString *cutUrl = [albumUrl substringToIndex:range.location];
+            for (NSDictionary *track in tracksArray)
             {
-                NSString *trackArtist = [track objectForKey:@"artist"];
-                newTrack->title = [track objectForKey:@"title"];
-                newTrack->url = [NSString stringWithFormat:BAND_CAMP_TRACK_URL, ((NSNumber*)([track objectForKey:@"track_id"])).stringValue];
-                newTrack->sourceUrl = [cutUrl stringByAppendingString:[track objectForKey:@"url"]];
-    //            newTrack->url = [track objectForKey:@"streaming_url"];
-                newTrack->duration = ((NSNumber*)([track objectForKey:@"duration"])).floatValue;
-                newTrack->artist = (trackArtist != nil) ? trackArtist : artist;
-            }
-            else if (audioHost == Soundcloud)
-            {
-                newTrack->title = [track objectForKey:@"title"];
-                newTrack->url = [track objectForKey:@"stream_url"];
-                newTrack->url = [newTrack->url stringByAppendingString:@"?client_id=YOUR_CLIENT_ID"];
-                if ([track objectForKey:@"purchase_url"] != [NSNull null])
+                TrackInfo *newTrack = [TrackInfo alloc];
+                
+                if (audioHost == Bandcamp)
                 {
-                    newTrack->sourceUrl = [track objectForKey:@"purchase_url"];
+                    NSString *trackArtist = [track objectForKey:@"artist"];
+                    newTrack->title = [track objectForKey:@"title"];
+                    newTrack->url = [NSString stringWithFormat:BAND_CAMP_TRACK_URL, ((NSNumber*)([track objectForKey:@"track_id"])).stringValue];
+                    newTrack->sourceUrl = [cutUrl stringByAppendingString:[track objectForKey:@"url"]];
+        //            newTrack->url = [track objectForKey:@"streaming_url"];
+                    newTrack->duration = ((NSNumber*)([track objectForKey:@"duration"])).floatValue;
+                    newTrack->artist = (trackArtist != nil) ? trackArtist : artist;
+                }
+                else if (audioHost == Soundcloud)
+                {
+                    newTrack->title = [track objectForKey:@"title"];
+                    newTrack->url = [track objectForKey:@"stream_url"];
+                    newTrack->url = [newTrack->url stringByAppendingString:@"?client_id=YOUR_CLIENT_ID"];
+                    if ([track objectForKey:@"purchase_url"] != [NSNull null])
+                    {
+                        newTrack->sourceUrl = [track objectForKey:@"purchase_url"];
+                    }
+                    else
+                    {
+                        newTrack->sourceUrl = [track objectForKey:@"permalink_url"];
+                    }
+                    newTrack->duration = ((NSNumber*)([track objectForKey:@"duration"])).floatValue/1000.0f;
+                    newTrack->artist = artist;
+                }
+                [self addTrack:newTrack];
+            }
+        }
+        else
+        {
+            NSString *streamUrl = [json objectForKey:@"stream_url"];
+            
+            if (streamUrl)
+            {
+                TrackInfo *newTrack = [TrackInfo alloc];
+                newTrack->title = [json objectForKey:@"title"];
+                if ([streamUrl containsString:@"?"])
+                {
+                    newTrack->url = [streamUrl stringByAppendingString:@"&"];
                 }
                 else
                 {
-                    newTrack->sourceUrl = [track objectForKey:@"permalink_url"];
+                    newTrack->url = [streamUrl stringByAppendingString:@"?"];
                 }
-                newTrack->duration = ((NSNumber*)([track objectForKey:@"duration"])).floatValue/1000.0f;
+                newTrack->url = [newTrack->url stringByAppendingString:@"client_id=YOUR_CLIENT_ID"];
+                if ([json objectForKey:@"purchase_url"] != [NSNull null])
+                {
+                    newTrack->sourceUrl = [json objectForKey:@"purchase_url"];
+                }
+                else
+                {
+                    newTrack->sourceUrl = [json objectForKey:@"permalink_url"];
+                }
+                newTrack->duration = ((NSNumber*)([json objectForKey:@"duration"])).floatValue/1000.0f;
                 newTrack->artist = artist;
+                [self addTrack:newTrack];
             }
-            [self addTrack:newTrack];
         }
         _type = Audio;
         

@@ -134,7 +134,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
 //    float headerBottom = (toolFrame.origin.y + toolFrame.size.height) - imageFrame.origin.y;
 //    [self.tableView setContentInset:UIEdgeInsetsMake(headerBottom, 0, 0, 0)];
     
-    [self.view setAlpha:1.0f];
+//    [self.view setAlpha:1.0f];
 
 }
 
@@ -615,7 +615,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
         NSInteger curItem = 0;
         for (TrackInfo *trackInfo in m_audioTracks)
         {
-            if (trackInfo->pItem == pItem)
+            if (trackInfo->pItem.postID == pItem.postID)
             {
                 [self updateCurrentTrack:curItem updateListItems:true];
                 [self prepareMusic];
@@ -667,7 +667,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
         UIView *parentView =[sender superview];
         NSIndexPath *indexPath = [self.tableView indexPathForCell:(UITableViewCell*)parentView.superview];
         
-        [self.view setAlpha:0.3f];
+//        [self.view setAlpha:0.3f];
 //        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
         [[segue destinationViewController] setTrackItem:m_audioTracks[indexPath.row]];
 

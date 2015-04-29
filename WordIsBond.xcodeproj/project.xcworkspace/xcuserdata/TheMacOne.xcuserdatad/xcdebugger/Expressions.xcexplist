@@ -3,15 +3,6 @@
    version = "1.0">
    <ContextStates>
       <ContextState
-         contextName = "-[MasterViewController tableView:cellForRowAtIndexPath:]:MasterViewController.m">
-      </ContextState>
-      <ContextState
-         contextName = "-[CRSSItem connectionDidFinishLoading:]:CRSSItem.m">
-      </ContextState>
-      <ContextState
-         contextName = "-[ViewControllerMediaPlayer observeValueForKeyPath:ofObject:change:context:]:ViewControllerMediaPlayer.m">
-      </ContextState>
-      <ContextState
          contextName = "-[MasterViewController viewDidLoad]:MasterViewController.m">
          <PersistentStrings>
             <PersistentString
@@ -20,10 +11,30 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "-[MasterViewController tableView:didSelectRowAtIndexPath:]:MasterViewController.m">
+         contextName = "-[ViewControllerMediaPlayer observeValueForKeyPath:ofObject:change:context:]:ViewControllerMediaPlayer.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[CRSSItem initWithDictionary:isFeature:]:CRSSItem.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[CRSSItem setMediaURL:]:CRSSItem.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[MasterViewController tableView:cellForRowAtIndexPath:]:MasterViewController.m">
       </ContextState>
       <ContextState
          contextName = "-[AppDelegate application:didFinishLaunchingWithOptions:]:AppDelegate.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[CRSSItem connectionDidFinishLoading:]:CRSSItem.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "json">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[MasterViewController tableView:didSelectRowAtIndexPath:]:MasterViewController.m">
       </ContextState>
    </ContextStates>
 </VariablesViewState>

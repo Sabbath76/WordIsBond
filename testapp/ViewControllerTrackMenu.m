@@ -66,6 +66,10 @@
     {
         self.btnFavourite.tintColor = [UIColor whiteColor];
     }
+    
+    [UIView animateWithDuration:0.5 animations:^{
+        [self.presentingViewController.view setAlpha:0.2f];
+    }];
 
 }
 
@@ -167,7 +171,9 @@
 
 - (IBAction)onClose:(id)sender
 {
-    [self.presentingViewController.view setAlpha:1.0f];
+    [UIView animateWithDuration:0.5 animations:^{
+        [self.presentingViewController.view setAlpha:1.0f];
+    }];
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
