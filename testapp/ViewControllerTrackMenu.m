@@ -38,6 +38,8 @@
 
     CRSSItem *item = curTrackInfo->pItem;
 
+    self.screenName = @"TrackMenu";
+
     [self.lblTitle setText:curTrackInfo->title];
     
     if (curTrackInfo->sourceUrl != nil)
@@ -165,7 +167,9 @@
     item->item = track->pItem;
     [[NSNotificationCenter defaultCenter] postNotificationName:@"ViewPost" object:item];
 
-
+    [UIView animateWithDuration:0.5 animations:^{
+        [self.presentingViewController.view setAlpha:1.0f];
+    }];
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 

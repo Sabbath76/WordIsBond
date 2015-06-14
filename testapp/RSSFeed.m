@@ -331,11 +331,13 @@
     {
         m_connectionPosts = nil;
         data = m_receivedData;
+        m_receivedData = nil;
     }
     else if (isFeatures)
     {
         m_connectionFeatures = nil;
         data = m_receivedDataFeatures;
+        m_receivedDataFeatures = nil;
     }
     
     //Start the XML parser with the delegate pointing at the current object
@@ -440,13 +442,14 @@
     }
     
     //--- Free up our buffer
-    [data setLength:0];
+//    [data setLength:0];
 }
 
 - (void) LoadFeed
 {
     NSString *url = SERVER_POSTS_URL;
     NSString *urlFeatures = SERVER_FEATURES_URL;
+    
     m_lastSearch = url;
     m_insertFront = false;
     [self QueryAPI:url reset:true];
@@ -457,11 +460,11 @@
 
 - (void) Search:(NSString *)filter
 {
-    NSString *url = [SERVER_SEARCH_POSTS_URL stringByAppendingString:filter];
-    NSString *urlFeatures = [SERVER_SEARCH_FEATURES_URL stringByAppendingString:filter];
+    NSString *url = [[SERVER_SEARCH_POSTS_URL stringByAppendingString:filter] stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
+    NSString *urlFeatures = [[SERVER_SEARCH_FEATURES_URL stringByAppendingString:filter] stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
     m_lastSearch = url;
     m_insertFront = false;
-    
+
     [self QueryAPI:url reset:true];
     [self QueryAPIFeatures:urlFeatures reset:true];
     m_searchPage = 0;

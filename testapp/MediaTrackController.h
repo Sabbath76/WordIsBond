@@ -19,7 +19,7 @@
 {
 	NSInteger pageIndex;
 	BOOL textViewNeedsUpdate;
-	IBOutlet UILabel *label;
+	__weak IBOutlet UILabel *label;
     __weak IBOutlet UILabel *dateView;
     __weak IBOutlet UILabel *author;
     __weak IBOutlet UILabel *artist;

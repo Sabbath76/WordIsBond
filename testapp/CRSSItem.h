@@ -56,6 +56,7 @@ typedef enum
 - (Boolean) waitingOnTracks;
 
 + (void) setupDefaults;
++ (void) clearDefaults;
 
 @end
 

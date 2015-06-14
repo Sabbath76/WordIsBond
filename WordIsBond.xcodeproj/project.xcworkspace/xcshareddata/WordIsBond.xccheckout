@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>06F20F30-E406-4516-9CBF-31646CF3D111</string>
 	<key>IDESourceControlProjectName</key>
-	<string>WordIsBond</string>
+	<string>project</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>53D54EE352373DD705019D3328BDEFA97F0FE595</key>
 		<string>https://github.com/Sabbath76/WordIsBond.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>WordIsBond.xcodeproj</string>
+	<string>WordIsBond.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>53D54EE352373DD705019D3328BDEFA97F0FE595</key>

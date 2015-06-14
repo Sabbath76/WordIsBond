@@ -72,6 +72,13 @@ static UIImage *defaultBlurredImage;
     }
 }
 
++ (void) clearDefaults
+{
+    defaultImage = nil;
+    defaultBlurredImage = nil;
+    defaultIcon = nil;
+}
+
 - (CRSSItem *) init
 {
     static int LAST_ID = 0;
@@ -162,7 +169,7 @@ static NSDateFormatter *sDateFormatter = nil;
 //    CGFloat screenScale = [[UIScreen mainScreen] scale];
 //    float width = screenBounds.size.width * screenScale;
 
-    title = [self convertWordPressString:[post objectForKey:@"title"]];
+    title = [self convertWordPressString:[post objectForKey:@"title_plain"]];
     description = [post objectForKey:@"content"];
     isFeature = _isFeature;
 
@@ -262,7 +269,10 @@ static NSDateFormatter *sDateFormatter = nil;
     {
         //--- Not found anything else? Fallback to the iFrame
         NSString *media = [self findProperty:@"iframe"];
-        [self setMediaURL:media];
+        if (media)
+        {
+            [self setMediaURL:media];
+        }
     }
     
     NSDictionary *thumbs = [post objectForKey:@"thumbnail_images"];
@@ -288,7 +298,7 @@ static NSDateFormatter *sDateFormatter = nil;
 
     blurb = [NSString stringWithFormat:blurbFormat, description];
     
-    NSString *disqusCommentBlock = @"<a name=\"comments\"/> <div id=\"disqus_thread\"></div>\
+/*    NSString *disqusCommentBlock = @"<a name=\"comments\"/> <div id=\"disqus_thread\"></div>\
     <script type=\"text/javascript\">\
     var disqus_shortname = 'wordisbond';\
     (function() {\
@@ -300,7 +310,7 @@ static NSDateFormatter *sDateFormatter = nil;
     <noscript>Please enable JavaScript to view the <a href=\"http://disqus.com/?ref_noscript\">comments powered by Disqus.</a></noscript>\
     <a href=\"http://disqus.com\" class=\"dsq-brlink\">blog comments powered by <span class=\"logo-disqus\">Disqus</span></a>";
  
-    blurb = [blurb stringByAppendingString:disqusCommentBlock];
+    blurb = [blurb stringByAppendingString:disqusCommentBlock];*/
 
     [self setup];
 }
@@ -360,6 +370,7 @@ static NSDateFormatter *sDateFormatter = nil;
     NSRange rangeOuter = [media rangeOfString:@"soundcloud"];
     if (rangeOuter.location != NSNotFound)
     {
+        _type = Audio;
         audioHost = Soundcloud;
         NSRange rangeToSearchWithin = NSMakeRange(rangeOuter.location, media.length - rangeOuter.location);
         NSRange range = [media rangeOfString:@"url" options:0 range:rangeToSearchWithin];
@@ -398,7 +409,6 @@ static NSDateFormatter *sDateFormatter = nil;
                 newTrack->duration = 0.0f;
                 [self addTrack:newTrack];
                 
-                _type = Audio;
             }
         }
             else
@@ -409,11 +419,11 @@ static NSDateFormatter *sDateFormatter = nil;
                 [m_tracksQuery start];
 //                [@"http://api.soundcloud.com/resolve.json?url=" stringByAppendingFormat:@"%@/tracks" media];
 //                permalink_url+'/tracks&client_id='+client_id
-                _type = Audio;
             }
     }
     else if ([media rangeOfString:@"bandcamp"].location != NSNotFound)
     {
+        _type = Audio;
         audioHost = Bandcamp;
         NSRange range = [media rangeOfString:@"track="];
         if (range.location != NSNotFound)
@@ -433,8 +443,6 @@ static NSDateFormatter *sDateFormatter = nil;
                 newTrack->url = mediaURLString;
                 newTrack->duration = 0.0f;
                 [self addTrack:newTrack];
-                
-                _type = Audio;
             }
         }
         else
@@ -741,6 +749,8 @@ static NSDateFormatter *sDateFormatter = nil;
     }
     requiresDownload = false;
     }
+    
+    m_receivedData = nil;
 }
 
 - (void) updateImage:(UIImage *)image

@@ -10,10 +10,11 @@
 #import "CoreDefines.h"
 
 
-//#define WEB_HOST @"www.thewordisbond.com/"
-//#define WEB_URL @"http://www.thewordisbond.com/"
-#define WEB_HOST @"wordisbond.co/"
-#define WEB_URL @"http://wordisbond.co/"
+#define WEB_HOST @"www.thewordisbond.com/"
+#define WEB_URL @"http://www.thewordisbond.com/"
+//#define WEB_HOST @"wordisbond.co/"
+//#define WEB_URL @"http://wordisbond.co/"
+//http://www.thewordisbond.com/?json=appqueries.get_recent_features&count=5
 
 
 NSString * const BASE_WEB_URL               = WEB_URL;

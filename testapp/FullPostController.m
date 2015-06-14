@@ -96,7 +96,7 @@
         {
             headerBottom = 320.0f;
         }
-        [[m_webView scrollView] setContentInset:UIEdgeInsetsMake(headerBottom, 0, 0, 0)];
+        [[m_webView scrollView] setContentInset:UIEdgeInsetsMake(headerBottom, 0, 64, 0)];
     }
 }
 

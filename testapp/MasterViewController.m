@@ -12,7 +12,6 @@
 
 #import "ViewControllerRoot.h"
 
-#import "RSSParser.h"
 #import "RSSFeed.h"
 
 #import "FeatureCell.h"
@@ -55,13 +54,11 @@ const int ExpandedSectionSize = 120;
     __weak IBOutlet UIButton *m_btnFavourite;
     
     RSSFeed *_feed;
-
-    RSSParser *m_parser;
     
-    FeatureCell *m_featureCell;
+    __weak FeatureCell *m_featureCell;
     
-    FeatureViewController *m_featuresController;
-    ViewControllerRoot *m_rootViewController;
+    __weak FeatureViewController *m_featuresController;
+    __weak ViewControllerRoot *m_rootViewController;
     
     UIImageView *m_searchOverlay;
     UIImageView *m_searchSpinner;
@@ -199,7 +196,6 @@ const int ExpandedSectionSize = 120;
     
     [CRSSItem setupDefaults];
     
-    m_parser = [RSSParser alloc];
     self.imageDownloadsInProgress = [NSMutableDictionary dictionary];
     
     _feed = [RSSFeed getInstance];
@@ -213,8 +209,8 @@ const int ExpandedSectionSize = 120;
 
     [self createTopBanner];
     
-    UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"WIB_BG"]];
-    self.tableView.backgroundView = imageView;
+//    UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"WIB_BG"]];
+//    self.tableView.backgroundView = imageView;
     
     [super awakeFromNib];
     
@@ -246,6 +242,11 @@ const int ExpandedSectionSize = 120;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(updateTargetPost:)
                                                  name:@"UpdateTargetPost"
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(onBeginRefresh:)
+                                                 name:@"OnBeginRefresh"
                                                object:nil];
     
     
@@ -304,6 +305,8 @@ const int ExpandedSectionSize = 120;
     
     //--- Load the first few items straight away
     [self loadImagesForOnscreenRows];
+    
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationSlide];
 }
 
 - (void) createTopBanner
@@ -537,6 +540,25 @@ const int ExpandedSectionSize = 120;
     //    [self.navigationController pushViewController:self.detailViewController animated:true];
     }
 }
+
+
+- (void) onBeginRefresh:(NSNotification *) notification
+{
+    [self setMenuOpen:false];
+    [self updateSearchBlur:true];
+
+    [UIView animateWithDuration:0.5 animations:^{
+        m_searchOverlay.alpha = 0.95;
+    } completion:^(BOOL finished) {
+        [UIView animateWithDuration:0.5 animations:^{
+            m_searchSpinner.alpha = 1.0;
+        } completion:^(BOOL finished) {
+            [self spinWithOptions:UIViewAnimationOptionCurveEaseIn];
+        }];
+    }];
+
+}
+
 
 - (void)viewDidLoad
 {

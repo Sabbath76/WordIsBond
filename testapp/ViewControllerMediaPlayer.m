@@ -35,7 +35,6 @@
     NSArray *m_reducedItems;
     float m_slideInitialPos;
     float m_scrollStartPoint;
-//    int currentItem;
     NSInteger currentTrack;
     bool m_isPlaying;
     bool m_autoPlay;
@@ -49,22 +48,20 @@
     __weak IBOutlet UIButton *btnPlay;
     __weak IBOutlet UIBarButtonItem *btnPlay2;
     __weak IBOutlet UISlider *sldrPosition2;
-    __weak IBOutlet UIButton *miniImage;
-    __weak IBOutlet UIToolbar *toolbar;
+//    __weak IBOutlet UIButton *miniImage;
+//    __weak IBOutlet UIToolbar *toolbar;
     __weak IBOutlet UIToolbar *topToolbar;
-    __weak IBOutlet UIView *m_playerDock;
+//    __weak IBOutlet UIView *m_playerDock;
     
-    __weak IBOutlet UIBarButtonItem *m_currentTitle;
+//    __weak IBOutlet UIBarButtonItem *m_currentTitle;
     __weak IBOutlet UILabel *m_labelCurTime;
     __weak IBOutlet UILabel *m_labelDuration;
     
     __weak IBOutlet UIProgressView *m_progressBar;
     
-    __weak IBOutlet UIActivityIndicatorView *m_playSpinner;
-//    __weak IBOutlet NSLayoutConstraint *m_topConstraint;
+//    __weak IBOutlet UIActivityIndicatorView *m_playSpinner;
     __weak NSLayoutConstraint *m_topConstraint;
-//    UIActivityIndicatorView *m_spinner;
-    __weak IBOutlet NSLayoutConstraint *m_toolbarContraint;
+//    __weak IBOutlet NSLayoutConstraint *m_toolbarContraint;
     
     NSInteger m_displayedTrack;
 }
@@ -99,43 +96,32 @@ float BLUR_IMAGE_RANGE = 100.0f;
 {
     [super viewDidAppear:animated];
 
-/*    UIView *myView = self.view.superview;
-    UIView *parentView = myView.superview;
-//    NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:myView attribute:NSLayoutAttributeTop
-//                                 relatedBy:NSLayoutRelationEqual toItem:parentView
-//                                 attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-bottomOffset];
-//    [myView addConstraint:constraint];
-
-
-    CGRect parentRect = parentView.frame;
-    float parentHeight = parentRect.origin.y + parentRect.size.height;
-    CGRect rect = myView.frame;
-    rect.origin.y = parentHeight - self->bottomOffset;
-//    rect.origin.y = rect.size.height - self->bottomOffset;
- ///   [UIView animateWithDuration:0.3f animations:^{[myView setFrame:rect];}];
-//    myView.frame = rect;
-    
-    [UIView beginAnimations:@"Dragging A DraggableView" context:nil];
-    myView.frame = rect;
-    [UIView commitAnimations];*/
     //Once the view has loaded then we can register to begin recieving controls and we can become the first responder
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     [self becomeFirstResponder];
     
-    NSError *setCategoryError = nil;
+    [[NSNotificationCenter defaultCenter] addObserver: self
+                                             selector: @selector(audioSessionInterrupted:)
+                                                 name: AVAudioSessionInterruptionNotification
+                                               object: [AVAudioSession sharedInstance]]; 
+    
+    NSError *categoryError = nil;
+    [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error:&categoryError];
+    
+    if (categoryError) {
+        NSLog(@"Error setting category! %@", [categoryError description]);
+    }
+    
+    //activation of audio session
     NSError *activationError = nil;
-    [[AVAudioSession sharedInstance] setActive:YES error:&activationError];
-//    [[AVAudioSession sharedInstance] setDelegate:self];
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&setCategoryError];
-    
-
-//    CGRect imageFrame = currentImage.frame;
-//    CGRect toolFrame = m_playerDock.frame;
-//    float headerBottom = (toolFrame.origin.y + toolFrame.size.height) - imageFrame.origin.y;
-//    [self.tableView setContentInset:UIEdgeInsetsMake(headerBottom, 0, 0, 0)];
-    
-//    [self.view setAlpha:1.0f];
-
+    BOOL success = [[AVAudioSession sharedInstance] setActive: YES error: &activationError];
+    if (!success) {
+        if (activationError) {
+            NSLog(@"Could not activate audio session. %@", [activationError localizedDescription]);
+        } else {
+            NSLog(@"audio session could not be activated!");
+        }
+    }
 }
 
 -(void) viewWillDisappear:(BOOL)animated
@@ -152,6 +138,12 @@ float BLUR_IMAGE_RANGE = 100.0f;
 //Make sure we can recieve remote control events
 - (BOOL)canBecomeFirstResponder {
     return YES;
+}
+
+#pragma mark - notifications
+-(void)audioSessionInterrupted:(NSNotification*)interruptionNotification
+{
+    NSLog(@"interruption received: %@", interruptionNotification);
 }
 
 - (void)remoteControlReceivedWithEvent:(UIEvent *)event
@@ -276,17 +268,28 @@ float BLUR_IMAGE_RANGE = 100.0f;
 {
     if (m_audioTracks.count > 0)
     {
-        if (currentTrack == 0)
+        Float64 skipToStartTime = 5.0;
+        
+        //--- Rewind to start of current
+        Float64 currentSeconds = CMTimeGetSeconds(m_player.currentTime);
+        if (currentSeconds > skipToStartTime)
         {
-            currentTrack = m_audioTracks.count - 1;
+            [m_player seekToTime:CMTimeMakeWithSeconds(0.0, 10)];
         }
         else
         {
-            currentTrack--;
-        }
+            if (currentTrack == 0)
+            {
+                currentTrack = m_audioTracks.count - 1;
+            }
+            else
+            {
+                currentTrack--;
+            }
 
-        [self updateCurrentTrack:currentTrack updateListItems:true];
-        [self prepareMusic];
+            [self updateCurrentTrack:currentTrack updateListItems:true];
+            [self prepareMusic];
+        }
     }
 }
 
@@ -642,9 +645,14 @@ float BLUR_IMAGE_RANGE = 100.0f;
     {
         [self streamData:nextTrack->url];
 
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                              selector:@selector(playerItemDidReachEnd:)
-                                              name:AVPlayerItemDidPlayToEndTimeNotification object:[m_player currentItem]];
+//        NSLog(@"onNextTrack %u %@", [m_player items].count, [m_player currentItem].description);
+        
+        if ([m_player items].count > 1)
+        {
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                  selector:@selector(playerItemDidReachEnd:)
+                                                  name:AVPlayerItemDidPlayToEndTimeNotification object:[m_player items][1]];
+        }
     }
     
 //    [self updateTracks];
@@ -655,9 +663,11 @@ float BLUR_IMAGE_RANGE = 100.0f;
 
 - (void)playerItemDidReachEnd:(NSNotification *)notification
 {
+    NSLog(@"playerItemDidReachEnd");
+    
     //allow for state updates, UI changes
     [self onNextTrack];
-
+    
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -696,8 +706,8 @@ float BLUR_IMAGE_RANGE = 100.0f;
     CRSSItem *newItem = trackInfo->pItem;
     [newItem requestImage:self];
     currentImage.image = newItem.blurredImage;
-    [miniImage setImage:newItem.appIcon forState:UIControlStateNormal];
-    [miniImage setImage:newItem.appIcon forState:UIControlStateSelected];
+//    [miniImage setImage:newItem.appIcon forState:UIControlStateNormal];
+//    [miniImage setImage:newItem.appIcon forState:UIControlStateSelected];
     
     //--- Update trackInfo centre display
     NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
@@ -711,7 +721,8 @@ float BLUR_IMAGE_RANGE = 100.0f;
     [songInfo setObject:pArtist forKey:MPMediaItemPropertyArtist];
     [songInfo setObject:newItem.title forKey:MPMediaItemPropertyAlbumTitle];
     [songInfo setObject:[NSNumber numberWithFloat:trackInfo->duration] forKey:MPMediaItemPropertyPlaybackDuration];
-    [songInfo setObject:[NSNumber numberWithInt:1] forKey:MPNowPlayingInfoPropertyPlaybackRate];
+    [songInfo setObject:[NSNumber numberWithFloat:0.0f] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+    [songInfo setObject:[NSNumber numberWithInt:m_isPlaying] forKey:MPNowPlayingInfoPropertyPlaybackRate];
     _labelTitle.text = trackInfo->title;
     
     if ([newItem appIcon] != nil)
@@ -805,6 +816,12 @@ float BLUR_IMAGE_RANGE = 100.0f;
             [btnPlay2 setTintColor:m_isPlaying?[self getActiveColour]:[UIColor lightGrayColor]];
             [self updateTrackCell:m_displayedTrack];
         }
+        
+        NSMutableDictionary *currentlyPlayingTrackInfo = [NSMutableDictionary dictionaryWithDictionary:[[MPNowPlayingInfoCenter defaultCenter] nowPlayingInfo]];
+        [currentlyPlayingTrackInfo setObject:[NSNumber numberWithFloat:CMTimeGetSeconds([m_player currentItem].duration)] forKey:MPMediaItemPropertyPlaybackDuration];
+        [currentlyPlayingTrackInfo setObject:[NSNumber numberWithFloat:CMTimeGetSeconds([m_player currentTime])] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+        [currentlyPlayingTrackInfo setObject:[NSNumber numberWithInt:m_isPlaying] forKey:MPNowPlayingInfoPropertyPlaybackRate];
+        [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:currentlyPlayingTrackInfo];
     }
 }
 
@@ -828,6 +845,14 @@ float BLUR_IMAGE_RANGE = 100.0f;
     }
 }
 
+- (void)audioPlayerEndInterruption:(AVAudioPlayer *)player
+{
+    if (m_isPlaying)
+    {
+        [player play];
+    }
+}
+
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
@@ -838,13 +863,16 @@ float BLUR_IMAGE_RANGE = 100.0f;
         //playerItem status value changed?
         if ([keyPath isEqualToString:@"status"])
         {   //yes->check it...
+            
+//            NSLog(@"observeValueForKeyPath %u %@", item.status, (item == [m_player currentItem]) ? @"latest" : @"different");
+            
             if (item == [m_player currentItem])
             {
                 switch(item.status)
                 {
                     case AVPlayerItemStatusFailed:
                     {
-                        [m_playSpinner setHidden:true];
+//                        [m_playSpinner setHidden:true];
                         
                         [m_currentPage.streaming stopAnimating];
                         [m_nextPage.streaming stopAnimating];
@@ -867,7 +895,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
                     }
                     case AVPlayerItemStatusReadyToPlay:
                     {
-                        [m_playSpinner setHidden:true];
+//                        [m_playSpinner setHidden:true];
 
                         [m_currentPage.streaming stopAnimating];
                         [m_nextPage.streaming stopAnimating];

@@ -8,7 +8,6 @@
 
 #import "DetailViewController.h"
 #import "UserData.h"
-#import "PostHeaderController.h"
 #import "FullPostController.h"
 #import "RSSFeed.h"
 
@@ -27,8 +26,8 @@
     __weak IBOutlet UIScrollView *m_header;
     FullPostController *m_currentPage;
     FullPostController *m_nextPage;
-    UIBarButtonItem *m_btnFavourite;
-    UIBarButtonItem *m_btnPlay;
+    __weak UIBarButtonItem *m_btnFavourite;
+    __weak UIBarButtonItem *m_btnPlay;
     NSInteger m_itemPos;
     NSArray *m_sourceList;
     bool m_extendedNavBar;
@@ -64,7 +63,7 @@
         }
         if (m_itemPos >= 0)
         {
-            m_header.contentOffset = CGPointMake(m_header.frame.size.width*m_itemPos, 0);
+            m_header.contentOffset = CGPointMake(m_header.frame.size.width*m_itemPos, 30);
         }
 
         // Update the view.
@@ -181,10 +180,12 @@
     
     if (m_itemPos > 0)
     {
-        m_header.contentOffset = CGPointMake(m_header.frame.size.width*m_itemPos, 0);
+        m_header.contentOffset = CGPointMake(m_header.frame.size.width*m_itemPos, 30);
     }
     
     self.screenName = @"Post Details Screen";
+//    self.automaticallyAdjustsScrollViewInsets = NO;
+//    [m_header setContentInset:UIEdgeInsetsMake(64, 0, 64, 0)];
 }
 
 
@@ -233,6 +234,15 @@
     [barButtonItem setImage:[UIImage imageNamed:@"icon_opt"]];
     [self.navigationItem setLeftBarButtonItem:barButtonItem animated:YES];
     self.masterPopoverController = popoverController;
+
+    if (m_currentPage)
+    {
+        [self applyNewIndex:m_itemPos pageController:m_currentPage];
+    }
+    if (m_nextPage)
+    {
+        [self applyNewIndex:m_itemPos+1 pageController:m_nextPage];
+    }
 }
 
 - (void)splitViewController:(UISplitViewController *)splitController willShowViewController:(UIViewController *)viewController invalidatingBarButtonItem:(UIBarButtonItem *)barButtonItem
@@ -240,6 +250,16 @@
     // Called when the view is shown again in the split view, invalidating the button and popover controller.
     [self.navigationItem setLeftBarButtonItem:nil animated:YES];
     self.masterPopoverController = nil;
+    
+    if (m_currentPage)
+    {
+        [self applyNewIndex:m_itemPos pageController:m_currentPage];
+    }
+    if (m_nextPage)
+    {
+        [self applyNewIndex:m_itemPos+1 pageController:m_nextPage];
+    }
+
 }
 
 - (IBAction)onFavourite:(id)sender
@@ -291,13 +311,13 @@
         if (enable)
         {
             UIBarButtonItem *playButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"player_play_off"] style:UIBarButtonItemStylePlain target:self action:@selector(onPlay:)];
-            UIBarButtonItem *commentButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_comments"] style:UIBarButtonItemStylePlain target:self action:@selector(onComment:)];
+//            UIBarButtonItem *commentButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_comments"] style:UIBarButtonItemStylePlain target:self action:@selector(onComment:)];
             UIBarButtonItem *fbButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"facebook_off"] style:UIBarButtonItemStylePlain target:self action:@selector(onFacebook:)];
             UIBarButtonItem *twButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"twitter_off"] style:UIBarButtonItemStylePlain target:self action:@selector(onTweet:)];
             UIBarButtonItem *favButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_favourite_off"] style:UIBarButtonItemStylePlain target:self action:@selector(onFavourite:)];
             if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1)
             {
-                [commentButton setTintColor:[UIColor whiteColor]];
+//                [commentButton setTintColor:[UIColor whiteColor]];
                 [fbButton setTintColor:[UIColor whiteColor]];
                 [twButton setTintColor:[UIColor whiteColor]];
                 [playButton setTintColor:[UIColor whiteColor]];
@@ -306,10 +326,9 @@
             UIBarButtonItem *flexibleItem2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
             UIBarButtonItem *flexibleItem3 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
             UIBarButtonItem *flexibleItem4 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-            UIBarButtonItem *flexibleItem5 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 
             [UIView animateWithDuration:0.4f animations:^{
-            self.navigationItem.rightBarButtonItems = @[favButton, flexibleItem1, twButton, flexibleItem2, fbButton, flexibleItem3, commentButton, flexibleItem4, playButton, flexibleItem5 ];
+            self.navigationItem.rightBarButtonItems = @[playButton, flexibleItem1, twButton, flexibleItem2, fbButton, flexibleItem3, favButton, flexibleItem4 ];
             self.navigationItem.titleView = nil;
             self.navigationItem.title = @"";
             }];
@@ -424,7 +443,7 @@
         
         [mySLComposerSheet setInitialText:item.title];
         
-  //      [mySLComposerSheet addImage:item.appIcon];
+        [mySLComposerSheet addImage:item.appIcon];
         
         [mySLComposerSheet addURL:[NSURL URLWithString:item.postURL]];
         
@@ -451,7 +470,7 @@
         
         [mySLComposerSheet setInitialText:item.title];
         
- //       [mySLComposerSheet addImage:item.appIcon];
+        [mySLComposerSheet addImage:item.appIcon];
         
         [mySLComposerSheet addURL:[NSURL URLWithString:item.postURL]];
         

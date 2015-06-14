@@ -46,6 +46,8 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
+    self.screenName = @"Menu";
+    
     shouldBeginEditing = true;
     showAudio = true;
     showVideo = true;

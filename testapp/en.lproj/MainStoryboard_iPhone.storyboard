@@ -47,7 +47,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="WIB_Launch_Image.png" translatesAutoresizingMaskIntoConstraints="NO" id="Czh-y2-O1y">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="splash640x1136.png" translatesAutoresizingMaskIntoConstraints="NO" id="Czh-y2-O1y">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                             </imageView>
@@ -99,7 +99,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                                 <subviews>
                                     <containerView contentMode="scaleToFill" restorationIdentifier="Main View" translatesAutoresizingMaskIntoConstraints="NO" id="9cX-mw-k1L">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="443"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="424"/>
                                         <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                         <connections>
                                             <segue destination="3" kind="embed" identifier="main_embed" id="DBW-YM-Rmp"/>
@@ -127,7 +127,7 @@
                                     <constraint firstItem="Sko-nq-bhn" firstAttribute="leading" secondItem="rAN-bf-cMa" secondAttribute="leading" id="cJG-7c-PrZ"/>
                                     <constraint firstItem="Sko-nq-bhn" firstAttribute="trailing" secondItem="9cX-mw-k1L" secondAttribute="trailing" id="dK4-Hk-SUx"/>
                                     <constraint firstAttribute="width" constant="320" id="hGp-qr-t7G"/>
-                                    <constraint firstAttribute="bottom" secondItem="9cX-mw-k1L" secondAttribute="bottom" constant="37" id="kV8-Hv-VQa"/>
+                                    <constraint firstAttribute="bottom" secondItem="9cX-mw-k1L" secondAttribute="bottom" constant="56" id="kV8-Hv-VQa"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -183,7 +183,7 @@
             <objects>
                 <tableViewController storyboardIdentifier="MasterViewController" title="Master" wantsFullScreenLayout="YES" extendedLayoutIncludesOpaqueBars="YES" useStoryboardIdentifierAsRestorationIdentifier="YES" id="12" customClass="MasterViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="13">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="443"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="424"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
@@ -532,18 +532,18 @@
                         <viewControllerLayoutGuide type="bottom" id="M9s-F2-GeP"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="pKs-kg-7QB">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="443"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="424"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" translatesAutoresizingMaskIntoConstraints="NO" id="shb-TD-ztL">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="430"/>
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="424"/>
                                 <connections>
                                     <outlet property="delegate" destination="21" id="fZS-b4-gcv"/>
                                 </connections>
                             </scrollView>
                         </subviews>
                         <constraints>
-                            <constraint firstAttribute="bottom" secondItem="shb-TD-ztL" secondAttribute="bottom" constant="13" id="13y-OI-1Td"/>
+                            <constraint firstAttribute="bottom" secondItem="shb-TD-ztL" secondAttribute="bottom" id="13y-OI-1Td"/>
                             <constraint firstItem="shb-TD-ztL" firstAttribute="leading" secondItem="pKs-kg-7QB" secondAttribute="leading" id="Gl0-uS-K1z"/>
                             <constraint firstAttribute="trailing" secondItem="shb-TD-ztL" secondAttribute="trailing" id="JSQ-sm-sZX"/>
                             <constraint firstItem="shb-TD-ztL" firstAttribute="top" secondItem="pKs-kg-7QB" secondAttribute="top" id="ore-7a-Hwk"/>
@@ -1197,7 +1197,6 @@
         <image name="Default.png" width="320" height="480"/>
         <image name="FastForward.png" width="40" height="39"/>
         <image name="WIB_BG_white.png" width="320" height="480"/>
-        <image name="WIB_Launch_Image.png" width="320" height="480"/>
         <image name="bandcamp_black.png" width="30" height="30"/>
         <image name="close_button.png" width="24" height="24"/>
         <image name="facebook_off.png" width="22" height="22"/>
@@ -1212,6 +1211,7 @@
         <image name="option_btn_off.png" width="6" height="24"/>
         <image name="play_icon.png" width="65" height="68"/>
         <image name="player_play_off.png" width="23" height="23"/>
+        <image name="splash640x1136.png" width="640" height="1136"/>
         <image name="text.png" width="67" height="68"/>
         <image name="twitter_off.png" width="22" height="22"/>
         <image name="user_avatar.png" width="45" height="45"/>

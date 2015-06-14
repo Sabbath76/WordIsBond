@@ -144,41 +144,40 @@
 
 	    CRSSItem *rssItem = rssFeed.features[newIndex];
         [rssItem requestImage:self];
+        pageController.pageIndex = newIndex;
+
+        NSInteger maxFeatures = rssFeed.features.count;
+        NSInteger newleftmost = MAX(MIN(leftMostFeature, newIndex-1), newIndex-2);
+        NSInteger leftLimit = (maxFeatures - m_thumbnails.count);
+        newleftmost = MIN(leftLimit, newleftmost);
+        newleftmost = MAX(newleftmost, 0);
+        if (newleftmost != leftMostFeature)
+        {
+            leftMostFeature = newleftmost;
+            for (int i=0; i<m_thumbnails.count; i++)
+            {
+                UIButton *imageView = m_thumbnails[i];
+                if (imageView && leftMostFeature + i < pageCount)
+                {
+                    CRSSItem *rssItem = rssFeed.features[leftMostFeature+i];
+                    [imageView setImage:[rssItem requestIcon:self] forState:UIControlStateNormal];
+                }
+                else
+                {
+                    [imageView setImage:nil forState:UIControlStateNormal];
+                }
+            }
+            
+            [self updateHighlight:currentPage.pageIndex];
+        }
     }
 	else
 	{
 		CGRect pageFrame = pageController.view.frame;
 		pageFrame.origin.y = scrollView.frame.size.height;
 		pageController.view.frame = pageFrame;
+        pageController.pageIndex = -1;
 	}
-    
-	pageController.pageIndex = newIndex;
-
-    NSInteger maxFeatures = rssFeed.features.count;
-    NSInteger newleftmost = MAX(MIN(leftMostFeature, newIndex-1), newIndex-2);
-    NSInteger leftLimit = (maxFeatures - m_thumbnails.count);
-    newleftmost = MIN(leftLimit, newleftmost);
-    newleftmost = MAX(newleftmost, 0);
-    if (newleftmost != leftMostFeature)
-    {
-        leftMostFeature = newleftmost;
-        for (int i=0; i<m_thumbnails.count; i++)
-        {
-            UIButton *imageView = m_thumbnails[i];
-            if (imageView && leftMostFeature + i < pageCount)
-            {
-                CRSSItem *rssItem = rssFeed.features[leftMostFeature+i];
-                [imageView setImage:[rssItem requestIcon:self] forState:UIControlStateNormal];
-            }
-            else
-            {
-                [imageView setImage:nil forState:UIControlStateNormal];
-            }
-        }
-
-       [self updateHighlight:currentPage.pageIndex];
-    }
-
 }
 
 
@@ -187,14 +186,14 @@
 {
     if (iconDownloader != nil)
     {
-        CRSSItem *featureNext = rssFeed.features[nextPage.pageIndex];
-        CRSSItem *featureCurrent = rssFeed.features[currentPage.pageIndex];
+        NSInteger nextPostID = (nextPage.pageIndex >= 0) ? [rssFeed.features[nextPage.pageIndex] postID] : -1;
+        NSInteger currPostID = (currentPage.pageIndex >= 0) ? [rssFeed.features[currentPage.pageIndex] postID] : -1;
         UIImage *newImage = iconDownloader.appRecord.appIcon;
-        if (featureNext.postID == iconDownloader.postID)
+        if (nextPostID == iconDownloader.postID)
         {
             nextPage.imageView.image = newImage;
         }
-        if (featureCurrent.postID == iconDownloader.postID)
+        if (currPostID == iconDownloader.postID)
         {
             currentPage.imageView.image = newImage;
         }

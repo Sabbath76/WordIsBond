@@ -21,13 +21,13 @@
 	FeatureController *nextPage;
 }
 
-@property (nonatomic, retain) IBOutlet UIScrollView *scrollView;
-@property (nonatomic, retain) IBOutlet UIButton *imageView1;
-@property (nonatomic, retain) IBOutlet UIButton *imageView2;
-@property (nonatomic, retain) IBOutlet UIButton *imageView3;
-@property (nonatomic, retain) IBOutlet UIButton *imageView4;
+@property (nonatomic, weak) IBOutlet UIScrollView *scrollView;
+@property (nonatomic, weak) IBOutlet UIButton *imageView1;
+@property (nonatomic, weak) IBOutlet UIButton *imageView2;
+@property (nonatomic, weak) IBOutlet UIButton *imageView3;
+@property (nonatomic, weak) IBOutlet UIButton *imageView4;
 @property (weak, nonatomic) IBOutlet UIButton *imageView5;
-@property (nonatomic, retain) RSSFeed *rssFeed;
+@property (nonatomic, weak) RSSFeed *rssFeed;
 
 - (void)updateFeed;
 - (IBAction)onFeature:(id)sender;

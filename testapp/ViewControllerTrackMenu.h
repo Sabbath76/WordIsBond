@@ -8,8 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import "TrackInfo.h"
+#import "GAITrackedViewController.h"
 
-@interface ViewControllerTrackMenu : UIViewController
+@interface ViewControllerTrackMenu : GAITrackedViewController
 
 - (void) setTrackItem:(TrackInfo *)trackInfo;
 

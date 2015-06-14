@@ -10,6 +10,15 @@
 #import "UserData.h"
 #import "GAI.h"
 #import "CoreDefines.h"
+#import "RSSFeed.h"
+#import "CRSSItem.h"
+
+@interface AppDelegate ()
+{
+    bool isInBackground;
+}
+
+@end
 
 @implementation AppDelegate
 
@@ -39,12 +48,16 @@
 void myExceptionHandler(NSException *exception)
 {
     NSArray *stack = [exception callStackReturnAddresses];
+//    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+//    [tracker sendException:YES // Boolean indicates non-fatal exception.
+//           withDescription:@"Exception: %@", stack];
     NSLog(@"Stack trace: %@", stack);
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    NSSetUncaughtExceptionHandler(&myExceptionHandler);
+    isInBackground = false;
+//    NSSetUncaughtExceptionHandler(&myExceptionHandler);
     
 //    // TODO! Split view controller
     // Override point for customization after application launch.
@@ -265,10 +278,23 @@ void myExceptionHandler(NSException *exception)
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
+    isInBackground = true;
+
+    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     
     [[UserData get] save];
+    
+    RSSFeed *feed = [RSSFeed getInstance];
+    for (CRSSItem *item in feed.items)
+    {
+        [item freeImages];
+    }
+    for (CRSSItem *feature in feed.features)
+    {
+        [feature freeImages];
+    }
+    [CRSSItem clearDefaults];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -278,12 +304,25 @@ void myExceptionHandler(NSException *exception)
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-    // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    if (isInBackground)
+    {
+        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        RSSFeed *feed = [RSSFeed getInstance];
+        [feed LoadPage:[feed GetPage]];
+
+        application.applicationIconBadgeNumber = 0;
+        
+        isInBackground = false;
+
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"OnBeginRefresh" object:feed];
+    }
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+
+    [[UserData get] save];
 }
 
 @end

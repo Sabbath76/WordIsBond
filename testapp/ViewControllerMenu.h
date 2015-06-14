@@ -8,8 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import "UserData.h"
+#import "GAITrackedViewController.h"
 
-@interface ViewControllerMenu : UIViewController <UISearchBarDelegate, UITableViewDelegate, UITableViewDataSource, FavouritesChangedDelegate>
+@interface ViewControllerMenu : GAITrackedViewController <UISearchBarDelegate, UITableViewDelegate, UITableViewDataSource, FavouritesChangedDelegate>
 
 @property (weak, nonatomic) IBOutlet UISwitch *filterAudio;
 @property (weak, nonatomic) IBOutlet UISwitch *filterVideo;
