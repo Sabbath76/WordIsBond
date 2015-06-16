@@ -18,6 +18,8 @@
 
 #import "SelectedItem.h"
 
+#import "AppDelegate.h"
+
 #import "GAI.h"
 #import "GAIDictionaryBuilder.h"
 
@@ -186,8 +188,26 @@
     self.screenName = @"Post Details Screen";
 //    self.automaticallyAdjustsScrollViewInsets = NO;
 //    [m_header setContentInset:UIEdgeInsetsMake(64, 0, 64, 0)];
-}
 
+
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    
+#define IS_OS_6_OR_LATER    ([[[UIDevice currentDevice] systemVersion] floatValue] >= 6.0)
+#define IS_OS_8_OR_LATER    ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
+    
+    if(IS_OS_6_OR_LATER){
+        
+        [[NSNotificationCenter defaultCenter] addObserver:appDelegate selector:@selector(moviePlayerWillEnterFullscreenNotification:) name:@"UIMoviePlayerControllerDidEnterFullscreenNotification" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:appDelegate selector:@selector(moviePlayerWillExitFullscreenNotification:) name:@"UIMoviePlayerControllerWillExitFullscreenNotification" object:nil];
+        
+    }
+    if (IS_OS_8_OR_LATER) {
+        
+        [[NSNotificationCenter defaultCenter] addObserver:appDelegate selector:@selector(moviePlayerWillEnterFullscreenNotification:) name:UIWindowDidBecomeVisibleNotification object:self.view.window];
+        [[NSNotificationCenter defaultCenter] addObserver:appDelegate selector:@selector(moviePlayerWillExitFullscreenNotification:) name:UIWindowDidBecomeHiddenNotification object:self.view.window];
+        
+    }
+}
 
 - (void) notifyNewDetailItem:(NSNotification *) notification
 {

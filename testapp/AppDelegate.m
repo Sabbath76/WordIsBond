@@ -13,9 +13,11 @@
 #import "RSSFeed.h"
 #import "CRSSItem.h"
 
+
 @interface AppDelegate ()
 {
     bool isInBackground;
+    bool allowRotation;
 }
 
 @end
@@ -110,21 +112,23 @@ void myExceptionHandler(NSException *exception)
     [GAI sharedInstance].dispatchInterval = 20;
 //    [[[GAI sharedInstance] logger] setLogLevel:kGAILogLevelVerbose];
     [[GAI sharedInstance] trackerWithTrackingId:@"UA-11823155-6"];
-
-/*    for (NSString* family in [UIFont familyNames])
-    {
-        NSLog(@"%@", family);
-        
-        for (NSString* name in [UIFont fontNamesForFamilyName: family])
-        {
-            NSLog(@"  %@", name);
-        }
-    }
     
-    [UIFont fontWithName:@"MyriadPro-Regular" size:20];
-*/
+    allowRotation = false;
+    isInBackground = false;
+    
     return YES;
 }
+
+- (void) moviePlayerWillEnterFullscreenNotification:(NSNotification*)notification {
+    allowRotation = YES; }
+
+- (void) moviePlayerWillExitFullscreenNotification:(NSNotification*)notification {
+    allowRotation = NO;
+    
+    NSNumber *value = [NSNumber numberWithInt:UIInterfaceOrientationPortrait];
+    [[UIDevice currentDevice] setValue:value forKey:@"orientation"];
+}
+
 
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
 {
@@ -295,6 +299,8 @@ void myExceptionHandler(NSException *exception)
         [feature freeImages];
     }
     [CRSSItem clearDefaults];
+    
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -323,6 +329,19 @@ void myExceptionHandler(NSException *exception)
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 
     [[UserData get] save];
+}
+
+-(BOOL)shouldAutorotate {
+    return YES;
+}
+
+- (NSUInteger)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window
+{
+    if  ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) || allowRotation ){
+        return UIInterfaceOrientationMaskAll;
+    } else {
+        return UIInterfaceOrientationMaskPortrait;
+    }
 }
 
 @end

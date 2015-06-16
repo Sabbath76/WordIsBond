@@ -107,52 +107,24 @@ static UIImage *defaultBlurredImage;
     return retString;
 }
 
-static NSDateFormatter *sDateFormatter = nil;
+static NSDateFormatter *sDateFormatterFrom = nil;
+static NSDateFormatter *sDateFormatterTo = nil;
 - (NSString *) convertDate:(NSString *)initialDate
 {
-    if (sDateFormatter == nil)
+    if (sDateFormatterFrom == nil)
     {
-        sDateFormatter = [[NSDateFormatter alloc] init];
+        sDateFormatterFrom = [[NSDateFormatter alloc] init];
+        [sDateFormatterFrom setDateFormat:@"yyyy'-'MM'-'dd' 'HH':'mm':'ss"];
+        sDateFormatterFrom.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
     }
-    NSDateFormatter *formatter = sDateFormatter;
-    //    [formatter setDateStyle:NSDateFormatterShortStyle];
-    //    [formatter setTimeStyle:NSDateFormatterShortStyle];
-    //    [formatter setDateFormat:@"yyyy-MM-dd HH:MM:SS"];
-    [formatter setDateFormat:@"yyyy'-'MM'-'dd' 'HH':'mm':'ss"];
-    
-    
-    
-    //SET YOUT TIMEZONE HERE
-    formatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
-    NSDate *myDate = [formatter dateFromString:initialDate];
-    
-    [formatter setDateFormat:@"MMM dd"];
-    return[formatter stringFromDate:myDate];
-    
-    /*    NSString *month = [initialDate substringWithRange:NSMakeRange(5, 2)];
-     NSString *day = [initialDate substringWithRange:NSMakeRange(8, 2)];
-     int monthNum = [month intValue];
-     int dayNum = [day intValue];
-     
-     //    NSString *day = [initialDate substringWithRange:NSMakeRange(5, 2)];
-     NSDateFormatter *dateformatter = [[NSDateFormatter alloc]init];
-     NSString *extensions[4] = {@"st", @"nd", @"rd", @"th"};
-     
-     return [NSString stringWithFormat:@"%@ %d%@", [dateformatter standaloneMonthSymbols][monthNum], dayNum, extensions[MIN(dayNum, 3)]];
-     */
-    /*    [dateformatter setDateStyle:NSDateFormatterShortStyle];
-     [dateformatter setTimeStyle:NSDateFormatterNoStyle];
-     [dateformatter setDateFormat:@"yyyy-MM-dd"];
-     NSDate *myDate = [[NSDate alloc] init];
-     
-     //SET YOUT TIMEZONE HERE
-     dateformatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"PDT"];
-     myDate = [dateformatter dateFromString:initialDate];
-     [dateformatter standaloneMonthSymbols][]
-     myDate.month
-     
-     return [dateformatter stringFromDate:myDate];
-     */
+    if (sDateFormatterTo == nil)
+    {
+        sDateFormatterTo = [[NSDateFormatter alloc] init];
+        [sDateFormatterTo setDateFormat:@"MMM dd"];
+    }
+
+    NSDate *myDate = [sDateFormatterFrom dateFromString:initialDate];
+    return[sDateFormatterTo stringFromDate:myDate];
 }
 
 - (void) initAsStub:(int)postId postTitle:(NSString*)postTitle isFeature:(bool)_isFeature

@@ -300,24 +300,6 @@
     return retString;
 }
 
-- (NSString *) convertDate:(NSString *)initialDate
-{
-    NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
-//    [formatter setDateStyle:NSDateFormatterShortStyle];
-//    [formatter setTimeStyle:NSDateFormatterShortStyle];
-//    [formatter setDateFormat:@"yyyy-MM-dd HH:MM:SS"];
-    [formatter setDateFormat:@"yyyy'-'MM'-'dd' 'HH':'mm':'ss"];
-    
-
- 
-    //SET YOUT TIMEZONE HERE
-    formatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
-    NSDate *myDate = [formatter dateFromString:initialDate];
-
-    [formatter setDateFormat:@"MMM dd"];
-    return[formatter stringFromDate:myDate];
- }
-
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
     bool isPosts = (connection == m_connectionPosts);

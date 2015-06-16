@@ -316,16 +316,16 @@ float BLUR_IMAGE_RANGE = 100.0f;
 - (void) receiveNewRSSFeed:(NSNotification *) notification
 {
     RSSFeed *feed = [RSSFeed getInstance];
+    
+    if (feed.reset)
+    {
+        [m_audioTracks removeAllObjects];
+    }
 
     for (CRSSItem *item in feed.items)
     {
         if ([item waitingOnTracks])
             return;
-    }
-    
-    if (feed.reset)
-    {
-        [m_audioTracks removeAllObjects];
     }
     
     Boolean hadTracks = m_audioTracks.count > 0;
@@ -542,10 +542,10 @@ float BLUR_IMAGE_RANGE = 100.0f;
             [self streamData:nextTrack->url];
         }
         
-        [[NSNotificationCenter defaultCenter] addObserver:self
+/*        [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(playerItemDidReachEnd:)
                                                      name:AVPlayerItemDidPlayToEndTimeNotification object:[m_player currentItem]];
-        
+*/
 /*
         NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
         [songInfo setObject:trackInfo->title forKey:MPMediaItemPropertyTitle];
@@ -639,20 +639,24 @@ float BLUR_IMAGE_RANGE = 100.0f;
 
     [self updateCurrentTrack:newTrack updateListItems:true];
 
+    TrackInfo *newTrackInfo = m_audioTracks[newTrack];
+    NSLog(@"onNextTrack %@", newTrackInfo->title);
+
     //--- Queue up the next track
     TrackInfo *nextTrack = [self getNextTrack];
     if (nextTrack)
     {
         [self streamData:nextTrack->url];
 
-//        NSLog(@"onNextTrack %u %@", [m_player items].count, [m_player currentItem].description);
+        NSLog(@"onNextTrack %lu %@", (unsigned long)[m_player items].count, [m_player currentItem].description);
+        NSLog(@"onNextTrack:Streaming %@", nextTrack->title);
         
-        if ([m_player items].count > 1)
+/*        if ([m_player items].count > 1)
         {
             [[NSNotificationCenter defaultCenter] addObserver:self
                                                   selector:@selector(playerItemDidReachEnd:)
                                                   name:AVPlayerItemDidPlayToEndTimeNotification object:[m_player items][1]];
-        }
+        }*/
     }
     
 //    [self updateTracks];
@@ -663,7 +667,8 @@ float BLUR_IMAGE_RANGE = 100.0f;
 
 - (void)playerItemDidReachEnd:(NSNotification *)notification
 {
-    NSLog(@"playerItemDidReachEnd");
+    TrackInfo *curTrack = m_audioTracks[currentTrack];
+    NSLog(@"playerItemDidReachEnd %@", curTrack->title);
     
     //allow for state updates, UI changes
     [self onNextTrack];
@@ -837,11 +842,18 @@ float BLUR_IMAGE_RANGE = 100.0f;
     
     if (playerItem != nil)
     {
+        NSLog(@"streamData %@", url);
+
         [m_player insertItem:playerItem afterItem:nil];
         
         [playerItem addObserver:self forKeyPath:@"status" options:0
                         context:nil];
         [m_observedItems addObject:playerItem];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(playerItemDidReachEnd:)
+                                                     name:AVPlayerItemDidPlayToEndTimeNotification object:playerItem];
+
     }
 }
 
@@ -864,7 +876,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
         if ([keyPath isEqualToString:@"status"])
         {   //yes->check it...
             
-//            NSLog(@"observeValueForKeyPath %u %@", item.status, (item == [m_player currentItem]) ? @"latest" : @"different");
+            NSLog(@"observeValueForKeyPath %ld %@", (long)item.status, (item == [m_player currentItem]) ? @"latest" : @"different");
             
             if (item == [m_player currentItem])
             {
