@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="QlP-QW-IWM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="QlP-QW-IWM">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -358,7 +358,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="80"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <toolbar hidden="YES" clearsContextBeforeDrawing="NO" tag="6" contentMode="scaleToFill" barStyle="black" translatesAutoresizingMaskIntoConstraints="NO" id="9rZ-qx-IcB">
+                                        <toolbar hidden="YES" clearsContextBeforeDrawing="NO" tag="6" contentMode="scaleToFill" barStyle="black" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9rZ-qx-IcB">
                                             <rect key="frame" x="0.0" y="36" width="320" height="44"/>
                                             <items>
                                                 <barButtonItem style="plain" systemItem="flexibleSpace" id="duu-g1-wFh"/>
@@ -635,7 +635,6 @@
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                             <constraints>
-                                                <constraint firstItem="GfR-M9-mDU" firstAttribute="top" secondItem="QVF-tQ-J72" secondAttribute="topMargin" constant="14" id="5g4-gG-2V9"/>
                                                 <constraint firstItem="x2v-w0-QCA" firstAttribute="leading" secondItem="V95-Vg-Hyp" secondAttribute="trailing" constant="8" id="BuQ-n9-W4n"/>
                                                 <constraint firstAttribute="trailing" secondItem="x2v-w0-QCA" secondAttribute="trailing" constant="25" id="I1t-vK-8hK"/>
                                                 <constraint firstItem="V95-Vg-Hyp" firstAttribute="centerY" secondItem="QVF-tQ-J72" secondAttribute="centerY" id="WpN-Qz-BrL"/>
@@ -1072,7 +1071,6 @@
                             <constraint firstAttribute="trailingMargin" secondItem="Lab-tg-2Rn" secondAttribute="trailing" constant="-16" id="R1B-sp-JEB"/>
                             <constraint firstAttribute="trailingMargin" secondItem="gcO-It-Qj9" secondAttribute="trailing" constant="-16" id="R1Y-6h-h3K"/>
                             <constraint firstItem="Ms9-Hh-2YG" firstAttribute="leading" secondItem="f9A-mD-Jv3" secondAttribute="leadingMargin" constant="-6" id="RYS-pv-4oo"/>
-                            <constraint firstItem="Ms9-Hh-2YG" firstAttribute="leading" secondItem="ZET-NH-kII" secondAttribute="trailing" constant="-260" id="Ru0-2C-Dw7"/>
                             <constraint firstItem="gcO-It-Qj9" firstAttribute="leading" secondItem="f9A-mD-Jv3" secondAttribute="leadingMargin" constant="-16" id="dTf-mL-qoK"/>
                             <constraint firstItem="Lab-tg-2Rn" firstAttribute="leading" secondItem="f9A-mD-Jv3" secondAttribute="leadingMargin" constant="-16" id="geX-lN-q0x"/>
                             <constraint firstItem="ZET-NH-kII" firstAttribute="top" secondItem="Ms9-Hh-2YG" secondAttribute="bottom" constant="2" id="lyr-Ot-kYg"/>

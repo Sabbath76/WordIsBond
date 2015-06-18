@@ -286,19 +286,23 @@
 
 -(void)changePic
 {
-    CGFloat pageWidth = scrollView.frame.size.width;
-    float fractionalPage = scrollView.contentOffset.x / pageWidth;
-	NSInteger lowerNumber = floor(fractionalPage);
-    lowerNumber++;
-    if(lowerNumber==MIN(m_thumbnails.count, rssFeed.features.count))
-    {
-        lowerNumber=0;
-    }
-    [scrollView scrollRectToVisible:CGRectMake(scrollView.frame.size.width*lowerNumber, 0, scrollView.frame.size.width , scrollView.frame.size.height) animated:YES];
-    [self updateHighlight:lowerNumber];
-    
     [m_timer invalidate];
-    m_timer = [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(changePic) userInfo:nil repeats:NO];
+    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateActive)
+    {
+        CGFloat pageWidth = scrollView.frame.size.width;
+        float fractionalPage = scrollView.contentOffset.x / pageWidth;
+        NSInteger lowerNumber = floor(fractionalPage);
+        lowerNumber++;
+        if(lowerNumber==MIN(m_thumbnails.count, rssFeed.features.count))
+        {
+            lowerNumber=0;
+        }
+        [scrollView scrollRectToVisible:CGRectMake(scrollView.frame.size.width*lowerNumber, 0, scrollView.frame.size.width , scrollView.frame.size.height) animated:YES];
+        [self updateHighlight:lowerNumber];
+        
+        [m_timer invalidate];
+        m_timer = [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(changePic) userInfo:nil repeats:NO];
+    }
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)newScrollView

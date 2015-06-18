@@ -23,6 +23,9 @@
 #import "GAI.h"
 #import "GAIDictionaryBuilder.h"
 
+#import "CoreDefines.h"
+
+
 @interface DetailViewController ()
 {
     __weak IBOutlet UIScrollView *m_header;
@@ -191,10 +194,7 @@
 
 
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    
-#define IS_OS_6_OR_LATER    ([[[UIDevice currentDevice] systemVersion] floatValue] >= 6.0)
-#define IS_OS_8_OR_LATER    ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
-    
+        
     if(IS_OS_6_OR_LATER){
         
         [[NSNotificationCenter defaultCenter] addObserver:appDelegate selector:@selector(moviePlayerWillEnterFullscreenNotification:) name:@"UIMoviePlayerControllerDidEnterFullscreenNotification" object:nil];

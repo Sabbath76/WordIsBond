@@ -29,6 +29,8 @@
 
 #import <Accounts/Accounts.h>
 
+#import "CoreDefines.h"
+
 typedef enum
 {
     LoadNewer,
@@ -60,7 +62,7 @@ const int ExpandedSectionSize = 120;
     __weak FeatureViewController *m_featuresController;
     __weak ViewControllerRoot *m_rootViewController;
     
-    UIImageView *m_searchOverlay;
+    UIView *m_searchOverlay;
     UIImageView *m_searchSpinner;
     
     SelectedItem *m_forcedDetailItem;
@@ -254,8 +256,9 @@ const int ExpandedSectionSize = 120;
     UIRefreshControl *refresh = [[UIRefreshControl alloc] init];
 //    refresh.attributedTitle = [[NSAttributedString alloc] initWithString:@"Pull to Refresh"];
     [refresh setTintColor:[UIColor whiteColor]];
-    UIFont * font = [UIFont fontWithName:@"Helvetica-Light" size:10.0];
-    NSDictionary *attributes = @{NSFontAttributeName:font, NSForegroundColorAttributeName : [UIColor whiteColor]};
+//    UIFont * font = [UIFont fontWithName:@"Helvetica-Light" size:10.0];
+//    NSDictionary *attributes = @{NSFontAttributeName:font, NSForegroundColorAttributeName : [UIColor whiteColor]};
+    NSDictionary *attributes = @{NSForegroundColorAttributeName : [UIColor whiteColor]};
     refresh.attributedTitle = [[NSAttributedString alloc] initWithString:@"Get latest posts" attributes:attributes];
 
     [refresh addTarget:self action:@selector(loadNewer) forControlEvents:UIControlEventValueChanged];
@@ -267,38 +270,20 @@ const int ExpandedSectionSize = 120;
         [self.refreshControl endRefreshing];
     });
     
-//    UISwipeGestureRecognizer *swipeRecognizerLeft = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipePost:)];
-//    [swipeRecognizerLeft setDirection:(UISwipeGestureRecognizerDirectionLeft)];
-//    [self.tableView addGestureRecognizer:swipeRecognizerLeft];
-    
-///    UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(onPan:)];
-///    [panRecognizer setDelegate:self];
-///    [self.tableView addGestureRecognizer:panRecognizer];
-
-///    UISwipeGestureRecognizer *swipeRecognizerRight = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(expandPost:)];
-///    [swipeRecognizerRight setDirection:(UISwipeGestureRecognizerDirectionRight)];
-///    [self.tableView addGestureRecognizer:swipeRecognizerRight];
-    
-//    [self.tableView registerClass:[PostCell class] forCellReuseIdentifier:@"ItemCell"];
-
-
-/*    UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc]
-                                          initWithTarget:self action:@selector(handleLongPress:)];
-    lpgr.minimumPressDuration = 2.0; //seconds
-    lpgr.delegate = self;
-    [self.tableView addGestureRecognizer:lpgr];*/
-    
     m_quickMenu = [[[NSBundle mainBundle] loadNibNamed:@"PostQuickMenu" owner:self options:nil] objectAtIndex:0];
 
-    m_searchOverlay = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"WIB_BG_blur"]];
-//    CGRect vframe = self.view.frame;
+    if (IS_OS_8_OR_LATER) {
+        UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+        m_searchOverlay = [[UIVisualEffectView alloc]initWithEffect:blur];
+    } else {
+        m_searchOverlay = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"WIB_BG_blur"]];
+    }
+
     CGRect frame = self.tableView.frame;
     m_searchOverlay.frame = frame;
     m_searchSpinner = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"icon_loading"]];
     m_searchSpinner.frame = frame;
     m_searchSpinner.contentMode = UIViewContentModeCenter;
-//    m_searchOverlay = [[UIView alloc]  initWithFrame:self. view.frame];
-//    m_searchOverlay.backgroundColor=[UIColor blackColor];
     m_searchOverlay.alpha = 0;
     m_searchSpinner.alpha = 0;
     [m_searchOverlay addSubview:m_searchSpinner];
@@ -580,8 +565,6 @@ const int ExpandedSectionSize = 120;
 
 - (void)didReceiveMemoryWarning
 {
-    [super didReceiveMemoryWarning];
-    
     // Dispose of any resources that can be recreated.
     
     NSInteger minItem = _feed.items.count;
@@ -614,6 +597,8 @@ const int ExpandedSectionSize = 120;
             [appRecord freeImages];
         }
     }
+    
+    [super didReceiveMemoryWarning];
 }
 
 #pragma mark - Table View

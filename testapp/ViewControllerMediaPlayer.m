@@ -38,6 +38,7 @@
     NSInteger currentTrack;
     bool m_isPlaying;
     bool m_autoPlay;
+    bool m_autoScrolling;
     
     NSMutableArray *m_observedItems;
     
@@ -182,6 +183,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
     currentTrack = 0;
     m_isPlaying = false;
     m_autoPlay = false;
+    m_autoScrolling = false;
     
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1)
     {
@@ -493,6 +495,9 @@ float BLUR_IMAGE_RANGE = 100.0f;
         TrackInfo *trackInfo = m_audioTracks[currentTrack];
         CRSSItem *item = trackInfo->pItem;
         
+        NSLog(@"Prepare music: %@", trackInfo->title);
+
+        
         NSString* resourcePath = trackInfo ? trackInfo->url : item.mediaURLString;
 
 ////        [m_playSpinner setHidden:false];
@@ -539,6 +544,8 @@ float BLUR_IMAGE_RANGE = 100.0f;
         TrackInfo *nextTrack = [self getNextTrack];
         if (nextTrack)
         {
+            NSLog(@"Prepare music: Streaming %@", nextTrack->title);
+
             [self streamData:nextTrack->url];
         }
         
@@ -637,7 +644,8 @@ float BLUR_IMAGE_RANGE = 100.0f;
     //--- Update UI
     NSInteger newTrack = [self getNextTrackIdx];
 
-    [self updateCurrentTrack:newTrack updateListItems:true];
+    bool updateListItems = ([[UIApplication sharedApplication] applicationState] == UIApplicationStateActive);
+    [self updateCurrentTrack:newTrack updateListItems:updateListItems];
 
     TrackInfo *newTrackInfo = m_audioTracks[newTrack];
     NSLog(@"onNextTrack %@", newTrackInfo->title);
@@ -704,6 +712,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
         m_displayedTrack = currentTrack;
         [self updateTrackCell:m_displayedTrack];
         
+        m_autoScrolling = true;
         [m_scrollTrackHeader scrollRectToVisible:CGRectMake(m_scrollTrackHeader.frame.size.width*track, 0, m_scrollTrackHeader.frame.size.width , m_scrollTrackHeader.frame.size.height) animated:YES];
     }
     
@@ -784,6 +793,14 @@ float BLUR_IMAGE_RANGE = 100.0f;
                          animations:^{
                              [moveView layoutIfNeeded]; // Called on parent view
                          }];
+        
+        if (!isAtBottom)
+        {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:currentTrack inSection:0];
+            [self.tableView scrollToRowAtIndexPath:indexPath
+                                 atScrollPosition:UITableViewScrollPositionTop
+                                         animated:YES];
+        }
     }
 }
 
@@ -1181,36 +1198,40 @@ float BLUR_IMAGE_RANGE = 100.0f;
 {
     if (sender == m_scrollTrackHeader)
     {
-        CGFloat pageWidth = m_scrollTrackHeader.frame.size.width;
-        float fractionalPage = m_scrollTrackHeader.contentOffset.x / pageWidth;
-        NSInteger nearestNumber = lround(fractionalPage);
-        
-        if (m_currentPage.pageIndex != nearestNumber)
+        if (!m_autoScrolling)
         {
-            MediaTrackController *swapController = m_currentPage;
-            m_currentPage = m_nextPage;
-            m_nextPage = swapController;
-        }
-
-        if (nearestNumber == currentTrack+1)
-        {
-            AVPlayerItem *playerItem = [m_player currentItem];
-            if([m_observedItems containsObject:playerItem])
+            CGFloat pageWidth = m_scrollTrackHeader.frame.size.width;
+            float fractionalPage = m_scrollTrackHeader.contentOffset.x / pageWidth;
+            NSInteger nearestNumber = lround(fractionalPage);
+            
+            if (m_currentPage.pageIndex != nearestNumber)
             {
-                [playerItem removeObserver:self forKeyPath:@"status"];
-                [m_observedItems removeObject:playerItem];
+                MediaTrackController *swapController = m_currentPage;
+                m_currentPage = m_nextPage;
+                m_nextPage = swapController;
             }
 
-            [m_player advanceToNextItem];
-            [self onNextTrack];
+            if (nearestNumber == currentTrack+1)
+            {
+                AVPlayerItem *playerItem = [m_player currentItem];
+                if([m_observedItems containsObject:playerItem])
+                {
+                    [playerItem removeObserver:self forKeyPath:@"status"];
+                    [m_observedItems removeObject:playerItem];
+                }
+
+                [m_player advanceToNextItem];
+                [self onNextTrack];
+            }
+            else if (nearestNumber != currentTrack)
+            {
+                [self updateCurrentTrack:nearestNumber updateListItems:true];
+                [self prepareMusic];
+            }
+            
+            [m_currentPage updateTextViews:YES];
         }
-        else if (nearestNumber != currentTrack)
-        {
-            [self updateCurrentTrack:nearestNumber updateListItems:true];
-            [self prepareMusic];
-        }
-        
-        [m_currentPage updateTextViews:YES];
+        m_autoScrolling = false;
     }
 }
 

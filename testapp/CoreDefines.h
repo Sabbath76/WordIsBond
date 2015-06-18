@@ -9,6 +9,9 @@
 #ifndef WordIsBond_CoreDefines_h
 #define WordIsBond_CoreDefines_h
 
+#define IS_OS_6_OR_LATER    ([[[UIDevice currentDevice] systemVersion] floatValue] >= 6.0)
+#define IS_OS_8_OR_LATER    ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
+
 extern NSString * const BASE_WEB_URL;
 
 extern NSString * const NOTIFICATION_URL;

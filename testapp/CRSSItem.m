@@ -35,9 +35,9 @@ static UIImage *defaultBlurredImage;
 //static NSString * BAND_CAMP_ALBUM_QUERY = @"http://api.bandcamp.com/api/album/2/info?key=godsthannlitanpalafreyregna&album_id=";
 //static NSString * BAND_CAMP_TRACK_URL = @"http://popplers5.bandcamp.com/download/track?enc=mp3-128&id=%@&stream=1";
 
-@synthesize title, description, imageURLString, appIcon, iconImage, mediaURLString, postID, audioHost, requiresDownload, tracks, dateString, author, blurb, postURL, blurredImage;
+@synthesize title, imageURLString, appIcon, iconImage, mediaURLString, postID, audioHost, requiresDownload, tracks, dateString, author, blurb, postURL, blurredImage;
 
-- (NSString*) findProperty: (NSString *)search
+- (NSString*) findProperty:(NSString *)search desc:(NSString *)description
 {
     NSRange rangeOuter = [description rangeOfString:search];
     if (rangeOuter.location != NSNotFound)
@@ -142,7 +142,7 @@ static NSDateFormatter *sDateFormatterTo = nil;
 //    float width = screenBounds.size.width * screenScale;
 
     title = [self convertWordPressString:[post objectForKey:@"title_plain"]];
-    description = [post objectForKey:@"content"];
+    NSString *description = [post objectForKey:@"content"];
     isFeature = _isFeature;
 
     NSRange range = [description rangeOfString:@"width="];
@@ -240,7 +240,7 @@ static NSDateFormatter *sDateFormatterTo = nil;
     if (_type == Text)
     {
         //--- Not found anything else? Fallback to the iFrame
-        NSString *media = [self findProperty:@"iframe"];
+        NSString *media = [self findProperty:@"iframe" desc:description];
         if (media)
         {
             [self setMediaURL:media];
@@ -285,56 +285,6 @@ static NSDateFormatter *sDateFormatterTo = nil;
     blurb = [blurb stringByAppendingString:disqusCommentBlock];*/
 
     [self setup];
-}
-
-+ (UIImage *)resizeImage:(UIImage*)image newSize:(CGSize)coordSize
-{
-    GLfloat scale = [UIScreen mainScreen].scale;
-    
-//    CGSize newSize = CGSizeMake(coordSize.width * scale, coordSize.height * scale);
-    CGSize newSize = CGSizeMake(coordSize.width, coordSize.height);
-    
-//    GLfloat srcSize = Min(image.size.height, image.size.width);
-//    CGRect newRect = CGRectIntegral(CGRectMake(0, 0, srcSize, srcSize));
-    
-    CGRect newRect = CGRectIntegral(CGRectMake(0, 0, newSize.width, newSize.height));
-  
-    if (image.size.width >= image.size.height)
-    {
-        float aspect = image.size.width / image.size.height;
-        newRect.size.width *= aspect;
-        newRect.origin.x -= (newRect.size.width - newSize.width) * 0.5f;
-    }
-    else
-    {
-        float aspect = image.size.height / image.size.width;
-        newRect.size.height *= aspect;
-        newRect.origin.y -= (newRect.size.height - newSize.height) * 0.5f;
-    }
-    // calculate resize ratio, and apply to rect
-//    newRect = AVMakeRectWithAspectRatioInsideRect(image.size, newRect);
-    
-    CGImageRef imageRef = image.CGImage;
-    
-    UIGraphicsBeginImageContextWithOptions(newSize, NO, scale);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    
-    // Set the quality level to use when rescaling
-    CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
-    CGAffineTransform flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, newSize.height);
-    
-    CGContextConcatCTM(context, flipVertical);
-    // Draw into the context; this scales the image
-    CGContextDrawImage(context, newRect, imageRef);
-    
-    // Get the resized image from the context and a UIImage
-    CGImageRef newImageRef = CGBitmapContextCreateImage(context);
-    UIImage *newImage = [UIImage imageWithCGImage:newImageRef scale:scale orientation:UIImageOrientationUp];
-    
-    CGImageRelease(newImageRef);
-    UIGraphicsEndImageContext();
-    
-    return newImage;
 }
 
 - (void) setMediaURL:(NSString *)media
@@ -514,6 +464,67 @@ static NSDateFormatter *sDateFormatterTo = nil;
     
     track->pItem = self;
     [tracks addObject:track];
+}
+
++ (UIImage *)resizeImage:(UIImage*)image newSize:(CGSize)coordSize
+{
+    GLfloat scale = [UIScreen mainScreen].scale;
+    
+    //    CGSize newSize = CGSizeMake(coordSize.width * scale, coordSize.height * scale);
+    CGSize newSize = CGSizeMake(coordSize.width, coordSize.height);
+    
+    //    GLfloat srcSize = Min(image.size.height, image.size.width);
+    //    CGRect newRect = CGRectIntegral(CGRectMake(0, 0, srcSize, srcSize));
+    
+    CGRect newRect = CGRectIntegral(CGRectMake(0, 0, newSize.width, newSize.height));
+    
+    if (image.size.width >= image.size.height)
+    {
+        float aspect = image.size.width / image.size.height;
+        newRect.size.width *= aspect;
+        newRect.origin.x -= (newRect.size.width - newSize.width) * 0.5f;
+    }
+    else
+    {
+        float aspect = image.size.height / image.size.width;
+        newRect.size.height *= aspect;
+        newRect.origin.y -= (newRect.size.height - newSize.height) * 0.5f;
+    }
+    // calculate resize ratio, and apply to rect
+    //    newRect = AVMakeRectWithAspectRatioInsideRect(image.size, newRect);
+    
+    CGImageRef imageRef = image.CGImage;
+    
+    UIGraphicsBeginImageContextWithOptions(newSize, NO, scale);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    // Set the quality level to use when rescaling
+    CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
+    CGAffineTransform flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, newSize.height);
+    
+    CGContextConcatCTM(context, flipVertical);
+    // Draw into the context; this scales the image
+    CGContextDrawImage(context, newRect, imageRef);
+    
+    // Get the resized image from the context and a UIImage
+    CGImageRef newImageRef = CGBitmapContextCreateImage(context);
+    UIImage *newImage = [UIImage imageWithCGImage:newImageRef scale:scale orientation:UIImageOrientationUp];
+    
+    CGImageRelease(newImageRef);
+    UIGraphicsEndImageContext();
+    
+    return newImage;
+}
+
+- (void) updateImage:(UIImage *)image icon:(UIImage *)imgIcon blur:(UIImage *)imgBlur
+{
+    appIcon = image;
+    iconImage = imgIcon;
+    blurredImage = imgBlur;
+    
+//    iconImage = [CRSSItem resizeImage:image newSize:CGSizeMake(60.0f, 60.0f)];
+    
+//    blurredImage = [iconImage applyLightEffect];
 }
 
 - (void) freeImages
@@ -723,15 +734,6 @@ static NSDateFormatter *sDateFormatterTo = nil;
     }
     
     m_receivedData = nil;
-}
-
-- (void) updateImage:(UIImage *)image
-{
-    appIcon = image;
-
-    iconImage = [CRSSItem resizeImage:image newSize:CGSizeMake(60.0f, 60.0f)];
-
-    blurredImage = [iconImage applyLightEffect];
 }
 
 - (Boolean) waitingOnTracks;

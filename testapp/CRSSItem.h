@@ -28,7 +28,7 @@ typedef enum
 - (void)setup;
 
 @property (nonatomic, retain) NSString *title;
-@property (nonatomic, retain) NSString *description;
+//@property (nonatomic, retain) NSString *description;
 @property (nonatomic, retain) NSString *blurb;
 @property (nonatomic, retain) NSString *imageURLString;
 @property (nonatomic, retain) NSString *mediaURLString;
@@ -52,11 +52,13 @@ typedef enum
 - (void) addTrack:(TrackInfo *) track;
 - (void) initWithDictionary:(NSDictionary*)post isFeature:(bool)isFeature;
 - (void) initAsStub:(int)postId postTitle:(NSString*)postTitle isFeature:(bool)isFeature;
-- (void) updateImage:(UIImage *)image;
+- (void) updateImage:(UIImage *)image icon:(UIImage *)imgIcon blur:(UIImage *)imgBlur;
 - (Boolean) waitingOnTracks;
 
 + (void) setupDefaults;
 + (void) clearDefaults;
+
++ (UIImage *)resizeImage:(UIImage*)image newSize:(CGSize)coordSize;
 
 @end
 
