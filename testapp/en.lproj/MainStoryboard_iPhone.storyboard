@@ -117,7 +117,7 @@
                                         </connections>
                                     </containerView>
                                 </subviews>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                                 <constraints>
                                     <constraint firstItem="Sko-nq-bhn" firstAttribute="top" secondItem="9cX-mw-k1L" secondAttribute="top" id="8H3-bP-RU1"/>
                                     <constraint firstAttribute="bottom" secondItem="Sko-nq-bhn" secondAttribute="bottom" priority="998" id="ENE-jZ-Lng"/>
@@ -131,7 +131,7 @@
                                 </constraints>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="rAN-bf-cMa" firstAttribute="top" secondItem="Scm-0P-77C" secondAttribute="top" id="DN8-ze-jzr"/>
                             <constraint firstAttribute="bottom" secondItem="rAN-bf-cMa" secondAttribute="bottom" id="eZt-BU-J8c"/>
@@ -185,10 +185,11 @@
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="13">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="424"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                         <gestureRecognizers/>
                         <color key="separatorColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <inset key="separatorInset" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
+                        <color key="sectionIndexBackgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                         <color key="sectionIndexTrackingBackgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="FeatureCellScroll" rowHeight="210" id="T4N-v8-nv5" customClass="FeatureCell">
@@ -335,7 +336,7 @@
                                         <constraint firstItem="kBq-Dq-IJD" firstAttribute="top" secondItem="mTR-fx-EzP" secondAttribute="bottom" id="yXj-2e-ukQ"/>
                                     </constraints>
                                 </tableViewCellContentView>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                                 <constraints>
                                     <constraint firstItem="mTR-fx-EzP" firstAttribute="top" secondItem="T4N-v8-nv5" secondAttribute="top" id="2Y5-Fp-mEk"/>
                                     <constraint firstItem="mTR-fx-EzP" firstAttribute="leading" secondItem="T4N-v8-nv5" secondAttribute="leading" id="4GV-Ts-8GD"/>
@@ -455,7 +456,7 @@
                                         <constraint firstAttribute="bottom" secondItem="9rZ-qx-IcB" secondAttribute="bottom" id="zPs-8O-lxT"/>
                                     </constraints>
                                 </tableViewCellContentView>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                                 <connections>
                                     <outlet property="blurredImage" destination="ss5-Rp-TxU" id="lLa-fH-krg"/>
                                     <outlet property="date" destination="zdO-uz-aAK" id="uXg-nJ-zrw"/>
@@ -542,6 +543,7 @@
                                 </connections>
                             </scrollView>
                         </subviews>
+                        <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="shb-TD-ztL" secondAttribute="bottom" id="13y-OI-1Td"/>
                             <constraint firstItem="shb-TD-ztL" firstAttribute="leading" secondItem="pKs-kg-7QB" secondAttribute="leading" id="Gl0-uS-K1z"/>

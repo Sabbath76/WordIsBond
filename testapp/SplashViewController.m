@@ -25,7 +25,7 @@
         // Custom initialization
 
         //--- Animate the loading spinner
-        [self spinWithOptions:UIViewAnimationOptionCurveEaseIn];
+        [self rotateImageView];
        
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(receiveNewRSSFeed:)
@@ -50,7 +50,7 @@
     
     // Custom initialization
     //--- Animate the loading spinner
-    [self spinWithOptions:UIViewAnimationOptionCurveEaseIn];
+    [self rotateImageView];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(receiveNewRSSFeed:)
@@ -65,22 +65,16 @@
     [feed LoadFeed];
 }
 
-- (void) spinWithOptions: (UIViewAnimationOptions) options {
-    // this spin completes 360 degrees every 2 seconds
-    [UIView animateWithDuration: 0.5f
-                          delay: 0.0f
-                        options: options
-                     animations: ^{
-                         self.m_loadingSpinner.transform = CGAffineTransformRotate(self.m_loadingSpinner.transform, M_PI / 2);
-                     }
-                     completion: ^(BOOL finished) {
-                         if (finished) {
-                                  // if flag still set, keep spinning with constant speed
-                                 [self spinWithOptions: UIViewAnimationOptionCurveLinear];
-                        }
-                     }];
+- (void)rotateImageView
+{
+    [UIView animateWithDuration:0.5f delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
+        [self.m_loadingSpinner setTransform:CGAffineTransformRotate(self.m_loadingSpinner.transform, M_PI_2)];
+    }completion:^(BOOL finished){
+        if (finished) {
+            [self rotateImageView];
+        }
+    }];
 }
-
 
 - (void)didReceiveMemoryWarning
 {

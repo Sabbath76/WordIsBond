@@ -67,7 +67,7 @@ const int ExpandedSectionSize = 120;
     
     SelectedItem *m_forcedDetailItem;
     
-    UIView *m_quickMenu;
+//    UIView *m_quickMenu;
     
     NSInteger m_currentQuickMenuItem;
     
@@ -270,7 +270,7 @@ const int ExpandedSectionSize = 120;
         [self.refreshControl endRefreshing];
     });
     
-    m_quickMenu = [[[NSBundle mainBundle] loadNibNamed:@"PostQuickMenu" owner:self options:nil] objectAtIndex:0];
+//    m_quickMenu = [[[NSBundle mainBundle] loadNibNamed:@"PostQuickMenu" owner:self options:nil] objectAtIndex:0];
 
     if (IS_OS_8_OR_LATER) {
         UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];

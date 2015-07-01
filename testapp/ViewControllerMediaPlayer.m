@@ -644,7 +644,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
     //--- Update UI
     NSInteger newTrack = [self getNextTrackIdx];
 
-    bool updateListItems = ([[UIApplication sharedApplication] applicationState] == UIApplicationStateActive);
+    bool updateListItems = true;//([[UIApplication sharedApplication] applicationState] == UIApplicationStateActive);
     [self updateCurrentTrack:newTrack updateListItems:updateListItems];
 
     TrackInfo *newTrackInfo = m_audioTracks[newTrack];
@@ -872,6 +872,11 @@ float BLUR_IMAGE_RANGE = 100.0f;
                                                      name:AVPlayerItemDidPlayToEndTimeNotification object:playerItem];
 
     }
+}
+
+- (void) audioPlayerEndInterruption:(AVAudioPlayer *)player withOptions:(NSUInteger)flags
+{
+    [player play];
 }
 
 - (void)audioPlayerEndInterruption:(AVAudioPlayer *)player

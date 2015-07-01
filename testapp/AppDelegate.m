@@ -16,8 +16,10 @@
 
 @interface AppDelegate ()
 {
+    NSDate *lastUpdateTime;
     bool isInBackground;
     bool allowRotation;
+    bool hasNewData;
 }
 
 @end
@@ -115,6 +117,8 @@ void myExceptionHandler(NSException *exception)
     
     allowRotation = false;
     isInBackground = false;
+    hasNewData = false;
+    lastUpdateTime = [NSDate date];
     
     return YES;
 }
@@ -140,17 +144,44 @@ void myExceptionHandler(NSException *exception)
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
-/*    if (userInfo != nil)
+    if (userInfo != nil)
     {
         NSNumber *postID = [userInfo objectForKey:@"postID"];
         if (postID)
         {
             //--- Start the application by switching to the selected post
             [[UserData get] setTargetPost:[postID intValue]];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"NewRSSFeed" object:self];
+
+//            [[NSNotificationCenter defaultCenter] postNotificationName:@"NewRSSFeed" object:self];
         }
     }
- */
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
+{
+    UIApplicationState state = [application applicationState];
+    // user tapped notification while app was in background
+    if ((state == UIApplicationStateInactive) || (state == UIApplicationStateBackground))
+    {
+        hasNewData = true;
+        
+        // go to screen relevant to Notification content
+        NSNumber *postID = [userInfo objectForKey:@"postID"];
+        if (postID)
+        {
+            //--- Start the application by switching to the selected post
+            [[UserData get] setTargetPost:[postID intValue]];
+        }
+    }
+    else
+    {
+        // App is in UIApplicationStateActive (running in foreground)
+        // perhaps show an UIAlertView
+    }
+    
+    [application setApplicationIconBadgeNumber:[[[userInfo objectForKey:@"aps"] objectForKey:@"badge"] intValue]];
+    
+    completionHandler(UIBackgroundFetchResultNewData);
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application {
@@ -310,17 +341,27 @@ void myExceptionHandler(NSException *exception)
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
+    NSDate *curTime = [NSDate date];
+    
+    NSTimeInterval timeSinceUpdate = [curTime timeIntervalSinceDate:lastUpdateTime];
+
     if (isInBackground)
     {
-        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-        RSSFeed *feed = [RSSFeed getInstance];
-        [feed LoadPage:[feed GetPage]];
-
-        application.applicationIconBadgeNumber = 0;
-        
         isInBackground = false;
+        
+        if (hasNewData || (timeSinceUpdate > (60.0f * 60.0f * 6.0f)))
+        {
+            // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+            RSSFeed *feed = [RSSFeed getInstance];
+            [feed LoadPage:[feed GetPage]];
 
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"OnBeginRefresh" object:feed];
+            application.applicationIconBadgeNumber = 0;
+            
+            hasNewData = false;
+            lastUpdateTime = curTime;
+
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"OnBeginRefresh" object:feed];
+        }
     }
 }
 

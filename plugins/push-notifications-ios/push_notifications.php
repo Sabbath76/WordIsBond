@@ -703,7 +703,19 @@ function push_notifications_create_form(){
 
 
 	}
-	if (isset($_POST['push_notifications_feedback_push_btn'])) 
+    if (isset($_POST['push_notifications_pushpost_btn']))
+    {
+        if ( function_exists('current_user_can') &&
+            !current_user_can('manage_options') )
+            die ( _e('Hacker?', 'push_notifications') );
+        
+        if (function_exists ('check_admin_referer') )
+            check_admin_referer('push_notifications_form');
+        
+        $post = get_post($_POST['pn_postID']);
+        on_new_post( 'publish', 'draft', $post );
+    }
+	if (isset($_POST['push_notifications_feedback_push_btn']))
 	{   
 	   if ( function_exists('current_user_can') && 
 			!current_user_can('manage_options') )
@@ -734,7 +746,7 @@ function push_notifications_create_form(){
         if (function_exists ('check_admin_referer') )
             check_admin_referer('push_notifications_form');
         
-        on_new_post(2);
+//        on_new_post(2);
     }
 
 	echo
@@ -760,6 +772,9 @@ function push_notifications_create_form(){
 						<div>
 							<input type='submit' id="push_button" class='pn blue push_button' name='push_notifications_push_btn' value='Send' />
 						</div>
+                        <div>
+                            <input type='submit' id="push_button" class='pn blue push_button' name='push_notifications_pushpost_btn' value='SendPost' />
+                        </div>
 						<div>
 							<input type='submit' id="push_button" class='pn blue push_button' name='push_notifications_feedback_push_btn' value='Feedback' />
 						</div>
@@ -865,13 +880,24 @@ Your post <a href="<?php echo get_permalink($post->ID) ?>"><?php the_title_attri
     }
 
 
-    function on_new_post($post_id)
+    function on_new_post($new_status, $old_status, $post)
     {
+        if ( 'publish' !== $new_status or 'publish' === $old_status )
+            return;
+
+        if ( 'post' !== $post->post_type )
+            return; // restrict the filter to a specific post type
+        
+        $post_id = $post->ID;
+        
         $count_posts = wp_count_posts();
         
         $published_posts = $count_posts->publish;
         
         $numPosts = (int)$published_posts;
+        
+        $encoded_title = get_the_title($post_id);
+        $new_post_title = html_entity_decode($encoded_title, ENT_NOQUOTES, 'UTF-8');//mb_convert_encoding($encoded_title, "ASCII", "auto");
         
         
         global $wpdb;
@@ -950,6 +976,11 @@ Your post <a href="<?php echo get_permalink($post->ID) ?>"><?php the_title_attri
                              'badge' => $numPosts
                              );
         
+        if ((int)$post_id >= 0)
+        {
+            $body['postID'] = (int)$post_id;
+        }
+        
         $json = json_encode($body);
         
         $payload = $json;
@@ -1014,13 +1045,21 @@ Your post <a href="<?php echo get_permalink($post->ID) ?>"><?php the_title_attri
                 $lastPostCount = $devices_array[$i]->seenposts;
                 
                 $body['aps'] = array(
-                                     'badge' => $numPosts-$lastPostCount
+                                     'badge' => $numPosts-$lastPostCount,
+                                     'alert' => $new_post_title,
+                                     'content-available' => '1'
                                      );
                 
                 $json = json_encode($body);
                 $payload = $json;
 
-                $msg = chr(0) . pack('n', 32) . pack('H*', $deviceToken) . pack('n', strlen($payload)) . $payload;
+                
+                //--- New style
+                $frame = chr(1) . pack('n',32) . pack('H*', $deviceToken) . chr(3) . pack('n', 4) . pack('N', $id) . chr(2) . pack('n', strlen($payload)) . $payload;
+                $msg = chr(2) . pack( 'N', strlen($frame)) . $frame;
+                
+                //--- Old style
+                //$msg = chr(0) . pack('n', 32) . pack('H*', $deviceToken) . pack('n', strlen($payload)) . $payload;
                 
                 $result = fwrite($fp, $msg, strlen($msg));
                 
@@ -1067,7 +1106,7 @@ Your post <a href="<?php echo get_permalink($post->ID) ?>"><?php the_title_attri
 
 
     
-    add_action( 'publish_post', 'on_new_post' );
+    add_action( 'transition_post_status', 'on_new_post', 10, 3 );
 /*----------------------------------*/
 /*----------------------------------*/
 
