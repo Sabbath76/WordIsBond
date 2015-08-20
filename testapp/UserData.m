@@ -126,5 +126,20 @@ static UserData *s_userData;
     return wibColour;
 }
 
++ (UIColor *)wibTintColour {
+        
+        static UIColor *wibTintColour;
+        
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            wibTintColour = [UIColor colorWithRed:161.0 / 255.0
+                                        green:73.0 / 255.0
+                                         blue:51.0 / 255.0
+                                        alpha:0.5];
+        });
+
+    return wibTintColour;
+}
+
 @end
 

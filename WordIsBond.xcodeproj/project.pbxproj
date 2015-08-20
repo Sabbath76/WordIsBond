@@ -56,6 +56,8 @@
 		0E5D2CA5182E551D0036870A /* streaming@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E5D2CA3182E551D0036870A /* streaming@2x.png */; };
 		0E5D2CA6182E551D0036870A /* streamingOn@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E5D2CA4182E551D0036870A /* streamingOn@2x.png */; };
 		0E5D2CA8182E8DD60036870A /* player_playhead_off.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E5D2CA7182E8DD60036870A /* player_playhead_off.png */; };
+		0E6268071B791835007B05CF /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E6268051B791835007B05CF /* Fabric.framework */; };
+		0E6268081B791835007B05CF /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E6268061B791835007B05CF /* Crashlytics.framework */; };
 		0E63968A184FBCC800868311 /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E639689184FBCC800868311 /* UIImage+ImageEffects.m */; };
 		0E63968C184FCEE900868311 /* StreamFeed.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0E63968B184FCEE900868311 /* StreamFeed.xib */; };
 		0E639691184FD17000868311 /* SplashViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E639690184FD17000868311 /* SplashViewController.m */; };

@@ -35,5 +35,6 @@
 @interface UIColor (CustomColors)
 
 + (UIColor *)wibColour;
++ (UIColor *)wibTintColour;
 
 @end

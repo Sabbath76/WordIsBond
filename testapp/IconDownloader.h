@@ -15,10 +15,6 @@
 {
     CRSSItem *appRecord;
     CRSSItem *appRecord2;
-    NSIndexPath *indexPathInTableView;
-    id <IconDownloaderDelegate> delegate;
-    Boolean isItem;
-//    int postID;
     UIImage *image;
     
     NSMutableData *activeDownload;
@@ -27,7 +23,6 @@
 
 @property (nonatomic, retain) CRSSItem *appRecord;
 @property (nonatomic, retain) CRSSItem *appRecord2;
-@property (nonatomic, retain) NSIndexPath *indexPathInTableView;
 @property (nonatomic, readwrite) Boolean isItem;
 @property (nonatomic, readonly) int postID;
 
@@ -36,9 +31,7 @@
 
 - (void)startDownload;
 - (void)cancelDownload;
-+ (bool)download:(CRSSItem *)item indexPath:(NSIndexPath *)indexPathInTableView delegate:(id<IconDownloaderDelegate>)delegate isItem:(Boolean)isItem;
 + (bool)download:(CRSSItem *)item delegate:(id<IconDownloaderDelegate>)delegate;
-+ (void) removeDownload:(NSIndexPath *)indexPathInTableView;
 
 @end
 

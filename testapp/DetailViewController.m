@@ -330,7 +330,12 @@
         m_extendedNavBar = enable;
         if (enable)
         {
-            UIBarButtonItem *playButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"player_play_off"] style:UIBarButtonItemStylePlain target:self action:@selector(onPlay:)];
+            //set back button color
+            [[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor], UITextAttributeTextColor,nil] forState:UIControlStateNormal];
+            //set back button arrow color
+            [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+
+            UIBarButtonItem *playButton = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemPlay target:self action:@selector(onPlay:)];
 //            UIBarButtonItem *commentButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_comments"] style:UIBarButtonItemStylePlain target:self action:@selector(onComment:)];
             UIBarButtonItem *fbButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"facebook_off"] style:UIBarButtonItemStylePlain target:self action:@selector(onFacebook:)];
             UIBarButtonItem *twButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"twitter_off"] style:UIBarButtonItemStylePlain target:self action:@selector(onTweet:)];

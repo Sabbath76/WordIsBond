@@ -1380,6 +1380,7 @@ const int ExpandedSectionSize = 120;
         UISearchBar *searchBar = [[UISearchBar alloc] initWithFrame:CGRectZero];
         [searchBar sizeToFit];
         searchBar.delegate = self;
+        searchBar.tintColor = [UIColor blackColor];
         self.navigationItem.titleView = searchBar;
         
         m_searchShouldBeginEditing = true;
@@ -1399,6 +1400,7 @@ const int ExpandedSectionSize = 120;
     {
         // user tapped the 'clear' button
         m_searchShouldBeginEditing = NO;
+        bar.delegate = NULL;
         
         [_feed clearSearch];
         
@@ -1443,6 +1445,7 @@ const int ExpandedSectionSize = 120;
 - (void) searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
     [searchBar resignFirstResponder];
+    searchBar.delegate = NULL;
     
     [_feed LoadFeed];
     

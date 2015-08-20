@@ -12,7 +12,8 @@
 #import "CoreDefines.h"
 #import "RSSFeed.h"
 #import "CRSSItem.h"
-
+#import <Fabric/Fabric.h>
+#import <Crashlytics/Crashlytics.h>
 
 @interface AppDelegate ()
 {
@@ -38,6 +39,9 @@
 //                                       forBarMetrics:UIBarMetricsDefault];
     [[UINavigationBar appearance] setBackgroundImage:navBarImage
                                        forBarMetrics:UIBarMetricsDefault];
+    
+///    [[UINavigationBar appearance] setBarTintColor:[UIColor wibTintColour]];
+//    [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
     
 //    [[UINavigationBar appearance] set setBarStyle:UIStatusBarStyleLightContent];
 //    [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"topbanner.jpg"]
@@ -73,7 +77,9 @@ void myExceptionHandler(NSException *exception)
         splitViewController.delegate = (id)navigationController.topViewController;
         [splitViewController setMinimumPrimaryColumnWidth:320];
     }
-
+    
+    [Fabric with:@[CrashlyticsKit]];
+    
     //--- Init the URL cache to stop it eating too much memory
     int cacheSizeMemory = 4*1024*1024; // 4MB
     int cacheSizeDisk = 32*1024*1024; // 32MB
@@ -110,7 +116,7 @@ void myExceptionHandler(NSException *exception)
     }
     
     //--- Google Analytics
-    [GAI sharedInstance].trackUncaughtExceptions = YES;
+    [GAI sharedInstance].trackUncaughtExceptions = NO;
     [GAI sharedInstance].dispatchInterval = 20;
 //    [[[GAI sharedInstance] logger] setLogLevel:kGAILogLevelVerbose];
     [[GAI sharedInstance] trackerWithTrackingId:@"UA-11823155-6"];

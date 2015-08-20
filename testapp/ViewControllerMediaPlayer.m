@@ -712,8 +712,12 @@ float BLUR_IMAGE_RANGE = 100.0f;
         m_displayedTrack = currentTrack;
         [self updateTrackCell:m_displayedTrack];
         
-        m_autoScrolling = true;
-        [m_scrollTrackHeader scrollRectToVisible:CGRectMake(m_scrollTrackHeader.frame.size.width*track, 0, m_scrollTrackHeader.frame.size.width , m_scrollTrackHeader.frame.size.height) animated:YES];
+        NSInteger newTarget = m_scrollTrackHeader.frame.size.width*track;
+        if (m_scrollTrackHeader.contentOffset.x != newTarget)
+        {
+            m_autoScrolling = true;
+            [m_scrollTrackHeader scrollRectToVisible:CGRectMake(newTarget, 0, m_scrollTrackHeader.frame.size.width , m_scrollTrackHeader.frame.size.height) animated:YES];
+        }
     }
     
     TrackInfo *trackInfo = m_audioTracks[currentTrack];
@@ -809,7 +813,7 @@ float BLUR_IMAGE_RANGE = 100.0f;
     if (m_isPlaying != play)
     {
         m_isPlaying = play;
-    
+            
         if (m_player)
         {
             if (m_isPlaying)
@@ -934,34 +938,30 @@ float BLUR_IMAGE_RANGE = 100.0f;
                         [m_currentPage.streaming stopAnimating];
                         [m_nextPage.streaming stopAnimating];
 
-    //                    [m_spinner removeFromSuperview];
-    //                    [btnPlay.layer removeAllAnimations];
-    //                    [btnPlay setImage:[UIImage imageNamed:@"player_play_off"] forState:UIControlStateNormal];
-    //                    [btnPlay setImage:[UIImage imageNamed:@"player_play_on"] forState:UIControlStateSelected];
-    //                    [btnPlay setHidden:false];
-
-                        TrackInfo *trackInfo = m_audioTracks[currentTrack];
-                        trackInfo->duration = CMTimeGetSeconds([item asset].duration);
-
-                        if (m_isPlaying)
+                        if (currentTrack < [m_audioTracks count])
                         {
-                            [m_player play];
+                            TrackInfo *trackInfo = m_audioTracks[currentTrack];
+                            trackInfo->duration = CMTimeGetSeconds([item asset].duration);
+
+                            if (m_isPlaying)
+                            {
+                                [m_player play];
+                            }
+
+                            UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead_on"];
+                            [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateNormal];
+                            [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateHighlighted];
+                            
+                            sldrPosition2.maximumValue = trackInfo->duration;
+                            sldrPosition2.value = 0.0f;
+                            
+                            m_labelCurTime.text = @"0:00";
+                            m_labelDuration.text = [NSString stringWithFormat:@"%d:%02d", (int)(trackInfo->duration / 60.0f), (int)(trackInfo)%60];
+                            
+                            [self updateCurrentTrack:currentTrack updateListItems:false];
+
+        //                    NSLog(@"player item status is ready to play");
                         }
-//                        [self updateTracks];
-
-                        UIImage *sliderThumb = [UIImage imageNamed:@"player_playhead_on"];
-                        [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateNormal];
-                        [sldrPosition2 setThumbImage:sliderThumb forState:UIControlStateHighlighted];
-                        
-                        sldrPosition2.maximumValue = trackInfo->duration;
-                        sldrPosition2.value = 0.0f;
-                        
-                        m_labelCurTime.text = @"0:00";
-                        m_labelDuration.text = [NSString stringWithFormat:@"%d:%02d", (int)(trackInfo->duration / 60.0f), (int)(trackInfo)%60];
-                        
-                        [self updateCurrentTrack:currentTrack updateListItems:false];
-
-    //                    NSLog(@"player item status is ready to play");
                     }
                         break;
                     case AVPlayerItemStatusUnknown:
